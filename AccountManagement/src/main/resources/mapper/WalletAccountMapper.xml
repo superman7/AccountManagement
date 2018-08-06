@@ -8,7 +8,13 @@
   <sql id="BASE_COLUMN">
     id,itcode,phone,balance,status,email,remark,password
   </sql>
-
+  	
+  <select id="selectWallatAccount" resultType="com.digitalchina.xa.it.model.WallatAccountDomain">
+      SELECT
+        <include refid="BASE_COLUMN"/>
+      FROM
+        <include refid="BASE_TABLE"/>
+  </select>
   <!-- <insert id="insert" parameterType="com.digitalchina.xa.it.model.UserDomain">
     INSERT INTO
       <include refid="BASE_TABLE"/>
@@ -20,12 +26,6 @@
     </trim>
   </insert>
 
-  <select id="selectUsers" resultType="com.digitalchina.xa.it.model.UserDomain">
-      SELECT
-        <include refid="BASE_COLUMN"/>
-      FROM
-        <include refid="BASE_TABLE"/>
-  </select>
   <select id="selectUserByItcode" parameterType="com.digitalchina.xa.it.model.UserDomain" resultType="com.digitalchina.xa.it.model.UserDomain">
       SELECT
         <include refid="BASE_COLUMN"/>
