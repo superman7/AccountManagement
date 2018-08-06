@@ -14,6 +14,7 @@ import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.http.HttpService;
 
 import com.digitalchina.xa.it.dao.WalletAccountDAO;
+import com.digitalchina.xa.it.model.WalletAccountDomain;
 import com.digitalchina.xa.it.service.WalletAccountService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -30,6 +31,15 @@ public class WalletAccountServiceImpl implements WalletAccountService {
     
     @Autowired
     private WalletAccountDAO walletAccountDAO;//这里会报错，但是并不会影响
+
+	@Override
+	public PageInfo<WalletAccountDomain> findAllWalletAccount(int pageNum, int pageSize) {
+		//将参数传给这个方法就可以实现物理分页了，非常简单。
+        PageHelper.startPage(pageNum, pageSize);
+        List<WalletAccountDomain> walletAccountDomains = walletAccountDAO.selectWallatAccount();
+        PageInfo<WalletAccountDomain> result = new PageInfo<WalletAccountDomain>(walletAccountDomains);
+        return result;
+	}
 
 //    @Override
 //    @Transactional

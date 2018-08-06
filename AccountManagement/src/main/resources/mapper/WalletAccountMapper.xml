@@ -9,7 +9,7 @@
     id,itcode,phone,balance,status,email,remark,password
   </sql>
   	
-  <select id="selectWallatAccount" resultType="com.digitalchina.xa.it.model.WallatAccountDomain">
+  <select id="selectWallatAccount" resultType="com.digitalchina.xa.it.model.WalletAccountDomain">
       SELECT
         <include refid="BASE_COLUMN"/>
       FROM

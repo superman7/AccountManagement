@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.digitalchina.xa.it.service.WalletAccountService;
 
 @Controller
-@RequestMapping(value = "/user")
+@RequestMapping(value = "/walletAccount")
 public class WalletAccountController {
 	@Autowired
 	private WalletAccountService walletAccountService;
@@ -32,13 +32,13 @@ public class WalletAccountController {
 //	    userService.updateBalance(itcode, Double.valueOf(balance));
 //	}
 //	
-//	@ResponseBody
-//	@GetMapping("/all")
-//	public Object findAllUser(
-//	        @RequestParam(name = "pageNum", required = false, defaultValue = "1")
-//	                int pageNum,
-//	        @RequestParam(name = "pageSize", required = false, defaultValue = "10")
-//	                int pageSize){
-//	    return userService.findAllUser(pageNum,pageSize);
-//	}
+	@ResponseBody
+	@GetMapping("/all")
+	public Object findAllUser(
+	        @RequestParam(name = "pageNum", required = false, defaultValue = "1")
+	                int pageNum,
+	        @RequestParam(name = "pageSize", required = false, defaultValue = "10")
+	                int pageSize){
+	    return walletAccountService.findAllWalletAccount(pageNum, pageSize);
+	}
 }
