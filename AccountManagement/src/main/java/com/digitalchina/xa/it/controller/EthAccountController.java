@@ -63,7 +63,7 @@ public class EthAccountController {
 	
 //	创建地址请求
 	@ResponseBody
-	@PostMapping("/newAddress")
+	@GetMapping("/newAddress")
 	public Map<String, Object> newAddress(String mnemonicSentence) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		//获取前端发送的数据，包括密语，密语密码和itcode
@@ -98,7 +98,7 @@ public class EthAccountController {
 	
 //	创建账户请求
 	@ResponseBody
-	@PostMapping("/newAccount")
+	@GetMapping("/newAccount")
 	public Map<String, Object> newAccount(String allInfoSentence) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		//获取前端发送的密语，密语密码，地址名和交易密码
