@@ -50,8 +50,7 @@ public class WalletAccountServiceImpl implements WalletAccountService {
 	@Transactional
 	public Boolean insertWalletAccount(WalletAccountDomain walletAccountDomain) {
 		if(walletAccountDomain == null) {
-			System.out.println("walletAccountDomain = null");
-			return false;
+			throw new RuntimeException("walletAccountDomain为null");
 		}
 		if(walletAccountDomain.getItcode() != null && walletAccountDomain.getItcode() != "") {
 			try {
@@ -59,16 +58,13 @@ public class WalletAccountServiceImpl implements WalletAccountService {
 				if(effectedNumber > 0) {
 					return true;
 				} else {
-					System.out.println("插入信息失败！");
-					return false;
+					throw new RuntimeException("插入信息失败");
 				}
 			} catch(Exception e) {
-				System.out.println("插入信息失败 ！" + e.getMessage());
-				return false;
+				throw new RuntimeException("插入信息失败 " + e.getMessage());
 			}
 		} else {
-			System.out.println("插入用户itcode不能为空！");
-			return false;
+			throw new RuntimeException("插入用户itcode不能为空");
 		}
 	}
 
