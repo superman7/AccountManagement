@@ -1,8 +1,12 @@
 package com.digitalchina.xa.it.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.digitalchina.xa.it.service.MnemonicService;
+import com.digitalchina.xa.it.util.MerkleTrees;
 
 /**
  * Created by fannl on 2018/8/7.
@@ -251,5 +255,24 @@ public class MnemonicServiceImpl implements MnemonicService{
 		}
 		result = result.substring(0, result.length() - 1);
 		return result;
+	}
+
+	@Override
+	public List<String> lockMnemonicByPwd(String mnemonics, String pwd) {
+		String[] mnemonicList = mnemonics.split(" ");
+		List<String> tempTxList = new ArrayList<String>();
+		for(String mnemonic : mnemonicList){
+			tempTxList.add(mnemonic);
+		}
+		tempTxList.add(pwd);
+		return tempTxList;
+	}
+
+	@Override
+	public String merkleTreeRoot(List<String> mnemonicList) {
+		MerkleTrees merkleTrees = new MerkleTrees(mnemonicList);
+	    merkleTrees.merkle_tree();
+		
+		return merkleTrees.getRoot();
 	}
 }
