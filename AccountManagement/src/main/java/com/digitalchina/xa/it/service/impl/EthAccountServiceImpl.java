@@ -115,6 +115,24 @@ public class EthAccountServiceImpl implements EthAccountService {
 			throw new RuntimeException("更新钱包余额itcode,status,balance不能为空");
 		}
 	}
+
+	@Override
+	public Boolean updateKeystoreAndAlias(String keystore, String alias, String address) {
+		if(keystore != null && keystore != "" && alias != null && alias != "") {
+			try {
+				int effectedNumber = ethAccountDAO.updateKeystoreAndAlias(keystore, alias, address);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					throw new RuntimeException("更新keystore与alias失败");
+				}
+			} catch (Exception e) {
+				throw new RuntimeException("更新keystore与alias失败" + e.getMessage());
+			}
+		} else {
+			throw new RuntimeException("更新keystore与alias不能为空");
+		}
+	}
 }
 	
 //	@Override
