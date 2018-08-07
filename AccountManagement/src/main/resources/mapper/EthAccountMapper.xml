@@ -75,4 +75,14 @@
 		AND
 			status = #{1}
 	</update>
+	
+	<update id="updateKeystoreAndAlias">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET
+			keystore = #{0},
+			alias = #{1}			
+		WHERE
+			account = #{2}
+	</update>
 </mapper>
