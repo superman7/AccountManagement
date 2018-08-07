@@ -20,4 +20,6 @@ public interface EthAccountService {
 	Boolean updateAccountBalance(String address, BigDecimal balance);
 	
 	Boolean updateDefaultBalance(String itcode, String status, BigDecimal balance);
+	
+	Boolean updateKeystoreAndAlias(String keystore, String alias, String address);
 }
