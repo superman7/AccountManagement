@@ -10,6 +10,4 @@ public interface WalletAccountDAO {
 	WalletAccountDomain selectWalletAccountByItcode(String itcode);
 	
 	int insertWalletAccount(WalletAccountDomain walletAccountDomain);
-	
-	int updateWalletAccount(WalletAccountDomain walletAccountDomain);
 }

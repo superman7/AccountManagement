@@ -72,32 +72,6 @@ public class WalletAccountServiceImpl implements WalletAccountService {
 		}
 	}
 
-	@Override
-	@Transactional
-	public Boolean updateWalletAccount(WalletAccountDomain walletAccountDomain) {
-		if(walletAccountDomain == null) {
-			System.out.println("walletAccountDomain = null");
-			return false;
-		}
-		if(walletAccountDomain.getItcode() != null && walletAccountDomain.getItcode() != "") {
-			try {
-				int effectedNumber = walletAccountDAO.updateWalletAccount(walletAccountDomain);
-				if(effectedNumber > 0) {
-					return true;
-				} else {
-					System.out.println("更新信息失败！");
-					return false;
-				}
-			} catch(Exception e) {
-				System.out.println("更新信息失败 ！" + e.getMessage());
-				return false;
-			}
-		} else {
-			System.out.println("更新用户itcode不能为空！");
-			return false;
-		}
-	}
-
 //    @Override
 //    @Transactional
 //    public int addUser(UserDomain user) {

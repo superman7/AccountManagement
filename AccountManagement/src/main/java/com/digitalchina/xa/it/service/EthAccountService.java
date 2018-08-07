@@ -17,8 +17,6 @@ public interface EthAccountService {
 	
 	Boolean insertEthAccount(EthAccountDomain ethAccountDomain);
 	
-	Boolean updateEthAccountByAddress(EthAccountDomain ethAccountDomain);
-	
 	Boolean updateAccountBalance(String address, BigDecimal balance);
 	
 	Boolean updateDefaultBalance(String itcode, String status, BigDecimal balance);

@@ -85,41 +85,39 @@ public class EthAccountServiceImpl implements EthAccountService {
 	}
 
 	@Override
-	@Transactional
-	public Boolean updateEthAccountByAddress(EthAccountDomain ethAccountDomain) {
-		if(ethAccountDomain == null) {
-			System.out.println("ethAccountDomain = null");
-			return false;
-		}
-		if(ethAccountDomain.getAccount() != null && ethAccountDomain.getAccount() != "") {
+	public Boolean updateAccountBalance(String address, BigDecimal balance) {
+		if(address != null && address != "" && balance != null) {
 			try {
-				int effectedNumber = ethAccountDAO.updateEthAccountByAddress(ethAccountDomain);
+				int effectedNumber = ethAccountDAO.updateAccountBalance(address, balance);
 				if(effectedNumber > 0) {
 					return true;
 				} else {
-					System.out.println("更新信息失败！");
-					return false;
+					throw new RuntimeException("");
 				}
-			} catch(Exception e) {
-				System.out.println("更新信息失败 ！" + e.getMessage());
-				return false;
+			} catch (Exception e) {
+				throw new RuntimeException("");
 			}
 		} else {
-			System.out.println("更新账户 itcode，account， keystore不能为空！");
-			return false;
+			throw new RuntimeException("");
 		}
-	}
-
-	@Override
-	public Boolean updateAccountBalance(String address, BigDecimal balance) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
 	public Boolean updateDefaultBalance(String itcode, String status, BigDecimal balance) {
-		// TODO Auto-generated method stub
-		return null;
+		if(itcode != null && itcode != "" && status != null && status != "" && balance != null) {
+			try {
+				int effectedNumber = ethAccountDAO.updateDefaultBalance(itcode, status, balance);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					throw new RuntimeException("");
+				}
+			} catch (Exception e) {
+				throw new RuntimeException("");
+			}
+		} else {
+			throw new RuntimeException("");
+		}
 	}
 }
 	
