@@ -60,8 +60,7 @@ public class EthAccountServiceImpl implements EthAccountService {
 	@Transactional
 	public Boolean insertEthAccount(EthAccountDomain ethAccountDomain) {
 		if(ethAccountDomain == null) {
-			System.out.println("ethAccountDomain = null");
-			return false;
+			throw new RuntimeException("ethAccountDomain为null");
 		}
 		if(ethAccountDomain.getItcode() != null && ethAccountDomain.getItcode() != ""
 				&& ethAccountDomain.getAccount() != null && ethAccountDomain.getAccount() != ""
@@ -71,55 +70,50 @@ public class EthAccountServiceImpl implements EthAccountService {
 				if(effectedNumber > 0) {
 					return true;
 				} else {
-					System.out.println("插入信息失败！");
-					return false;
+					throw new RuntimeException("插入账户失败");
 				}
 			} catch(Exception e) {
-				System.out.println("插入信息失败 ！" + e.getMessage());
-				return false;
+				throw new RuntimeException("插入账户失败 " + e.getMessage());
 			}
 		} else {
-			System.out.println("插入账户 itcode，account， keystore不能为空！");
-			return false;
-		}
-	}
-
-	@Override
-	@Transactional
-	public Boolean updateEthAccountByAddress(EthAccountDomain ethAccountDomain) {
-		if(ethAccountDomain == null) {
-			System.out.println("ethAccountDomain = null");
-			return false;
-		}
-		if(ethAccountDomain.getAccount() != null && ethAccountDomain.getAccount() != "") {
-			try {
-				int effectedNumber = ethAccountDAO.updateEthAccountByAddress(ethAccountDomain);
-				if(effectedNumber > 0) {
-					return true;
-				} else {
-					System.out.println("更新信息失败！");
-					return false;
-				}
-			} catch(Exception e) {
-				System.out.println("更新信息失败 ！" + e.getMessage());
-				return false;
-			}
-		} else {
-			System.out.println("更新账户 itcode，account， keystore不能为空！");
-			return false;
+			throw new RuntimeException("插入账户 itcode，account， keystore不能为空");
 		}
 	}
 
 	@Override
 	public Boolean updateAccountBalance(String address, BigDecimal balance) {
-		// TODO Auto-generated method stub
-		return null;
+		if(address != null && address != "" && balance != null) {
+			try {
+				int effectedNumber = ethAccountDAO.updateAccountBalance(address, balance);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					throw new RuntimeException("更新账户余额失败");
+				}
+			} catch (Exception e) {
+				throw new RuntimeException("更新账户余额失败" + e.getMessage());
+			}
+		} else {
+			throw new RuntimeException("更新账户余额address,balance不能为空");
+		}
 	}
 
 	@Override
 	public Boolean updateDefaultBalance(String itcode, String status, BigDecimal balance) {
-		// TODO Auto-generated method stub
-		return null;
+		if(itcode != null && itcode != "" && status != null && status != "" && balance != null) {
+			try {
+				int effectedNumber = ethAccountDAO.updateDefaultBalance(itcode, status, balance);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					throw new RuntimeException("更新钱包余额失败");
+				}
+			} catch (Exception e) {
+				throw new RuntimeException("更新钱包余额失败" + e.getMessage());
+			}
+		} else {
+			throw new RuntimeException("更新钱包余额itcode,status,balance不能为空");
+		}
 	}
 }
 	

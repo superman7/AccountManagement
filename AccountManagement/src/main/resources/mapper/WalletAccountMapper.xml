@@ -37,13 +37,4 @@
 			#{status, jdbcType=INTEGER},#{email, jdbcType=VARCHAR},#{remark, jdbcType=VARCHAR},#{password, jdbcType=VARCHAR}
 			</trim>
 	</insert>
-
-	<update id="updateWalletAccount" parameterType="com.digitalchina.xa.it.model.WalletAccountDomain">
-		UPDATE 
-			<include refid="BASE_TABLE"/>
-		SET
-			balance = #{balance, jdbcType=DOUBLE}
-		WHERE
-			itcode = #{itcode, jdbcType=VARCHAR}
-	</update> -->
 </mapper>

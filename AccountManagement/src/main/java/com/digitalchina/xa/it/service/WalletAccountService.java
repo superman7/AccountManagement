@@ -9,6 +9,4 @@ public interface WalletAccountService {
 	WalletAccountDomain findWalletAccount(String itcode);
 	
 	Boolean insertWalletAccount(WalletAccountDomain walletAccountDomain);
-	
-	Boolean updateWalletAccount(WalletAccountDomain walletAccountDomain);
 }
