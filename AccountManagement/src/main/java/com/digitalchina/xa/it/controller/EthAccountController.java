@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.digitalchina.xa.it.service.WalletAccountService;
+import com.digitalchina.xa.it.service.EthAccountService;
+
 
 @Controller
-@RequestMapping(value = "/walletAccount")
-public class WalletAccountController {
+@RequestMapping(value = "/ethAccount")
+public class EthAccountController {
 	@Autowired
-	private WalletAccountService walletAccountService;
+	private EthAccountService ethAccountService;
 	
 //	@ResponseBody
 //	@GetMapping("/refreshAllUsersBalance")
@@ -39,6 +40,6 @@ public class WalletAccountController {
 	                int pageNum,
 	        @RequestParam(name = "pageSize", required = false, defaultValue = "10")
 	                int pageSize){
-	    return walletAccountService.findAllWalletAccount(pageNum, pageSize);
+	    return ethAccountService.findAllEthAccount(pageNum, pageSize);
 	}
 }

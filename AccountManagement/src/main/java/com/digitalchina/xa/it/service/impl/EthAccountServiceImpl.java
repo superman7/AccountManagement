@@ -13,31 +13,31 @@ import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.http.HttpService;
 
-import com.digitalchina.xa.it.dao.WalletAccountDAO;
-import com.digitalchina.xa.it.model.WalletAccountDomain;
-import com.digitalchina.xa.it.service.WalletAccountService;
+import com.digitalchina.xa.it.dao.EthAccountDAO;
+import com.digitalchina.xa.it.model.EthAccountDomain;
+import com.digitalchina.xa.it.service.EthAccountService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 /**
  * Created by Administrator on 2017/8/16.
  */
-@Service(value = "walletAccountService")
-public class WalletAccountServiceImpl implements WalletAccountService {
+@Service(value = "ethAccountService")
+public class EthAccountServiceImpl implements EthAccountService {
 
 	private volatile static Web3j web3j;
     private static String ip = "http://10.7.10.124:8545";
     private static String[] ipArr = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
     
     @Autowired
-    private WalletAccountDAO walletAccountDAO;//这里会报错，但是并不会影响
+    private EthAccountDAO ethAccountDAO;//这里会报错，但是并不会影响
 
 	@Override
-	public PageInfo<WalletAccountDomain> findAllWalletAccount(int pageNum, int pageSize) {
+	public PageInfo<EthAccountDomain> findAllEthAccount(int pageNum, int pageSize) {
 		//将参数传给这个方法就可以实现物理分页了，非常简单。
         PageHelper.startPage(pageNum, pageSize);
-        List<WalletAccountDomain> walletAccountDomains = walletAccountDAO.selectWallatAccount();
-        PageInfo<WalletAccountDomain> result = new PageInfo<WalletAccountDomain>(walletAccountDomains);
+        List<EthAccountDomain> ethAccountDomains = ethAccountDAO.selectEthAccount();
+        PageInfo<EthAccountDomain> result = new PageInfo<EthAccountDomain>(ethAccountDomains);
         return result;
 	}
 
