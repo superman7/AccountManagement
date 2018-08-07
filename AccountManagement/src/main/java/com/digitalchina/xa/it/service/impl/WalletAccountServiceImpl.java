@@ -36,9 +36,66 @@ public class WalletAccountServiceImpl implements WalletAccountService {
 	public PageInfo<WalletAccountDomain> findAllWalletAccount(int pageNum, int pageSize) {
 		//将参数传给这个方法就可以实现物理分页了，非常简单。
         PageHelper.startPage(pageNum, pageSize);
-        List<WalletAccountDomain> walletAccountDomains = walletAccountDAO.selectWallatAccount();
+        List<WalletAccountDomain> walletAccountDomains = walletAccountDAO.selectWalletAccount();
         PageInfo<WalletAccountDomain> result = new PageInfo<WalletAccountDomain>(walletAccountDomains);
         return result;
+	}
+
+	@Override
+	public WalletAccountDomain findWalletAccount(String itcode) {
+		return walletAccountDAO.selectWalletAccountByItcode(itcode);
+	}
+
+	@Override
+	@Transactional
+	public Boolean insertWalletAccount(WalletAccountDomain walletAccountDomain) {
+		if(walletAccountDomain == null) {
+			System.out.println("walletAccountDomain = null");
+			return false;
+		}
+		if(walletAccountDomain.getItcode() != null && walletAccountDomain.getItcode() != "") {
+			try {
+				int effectedNumber = walletAccountDAO.insertWalletAccount(walletAccountDomain);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					System.out.println("插入信息失败！");
+					return false;
+				}
+			} catch(Exception e) {
+				System.out.println("插入信息失败 ！" + e.getMessage());
+				return false;
+			}
+		} else {
+			System.out.println("插入用户itcode不能为空！");
+			return false;
+		}
+	}
+
+	@Override
+	@Transactional
+	public Boolean updateWalletAccount(WalletAccountDomain walletAccountDomain) {
+		if(walletAccountDomain == null) {
+			System.out.println("walletAccountDomain = null");
+			return false;
+		}
+		if(walletAccountDomain.getItcode() != null && walletAccountDomain.getItcode() != "") {
+			try {
+				int effectedNumber = walletAccountDAO.updateWalletAccount(walletAccountDomain);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					System.out.println("更新信息失败！");
+					return false;
+				}
+			} catch(Exception e) {
+				System.out.println("更新信息失败 ！" + e.getMessage());
+				return false;
+			}
+		} else {
+			System.out.println("更新用户itcode不能为空！");
+			return false;
+		}
 	}
 
 //    @Override

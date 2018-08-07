@@ -5,4 +5,10 @@ import com.github.pagehelper.PageInfo;
 
 public interface WalletAccountService {
 	PageInfo<WalletAccountDomain> findAllWalletAccount(int pageNum, int pageSize);
+	
+	WalletAccountDomain findWalletAccount(String itcode);
+	
+	Boolean insertWalletAccount(WalletAccountDomain walletAccountDomain);
+	
+	Boolean updateWalletAccount(WalletAccountDomain walletAccountDomain);
 }

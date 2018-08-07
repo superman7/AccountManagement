@@ -41,36 +41,88 @@ public class EthAccountServiceImpl implements EthAccountService {
         return result;
 	}
 
-//    @Override
-//    @Transactional
-//    public int addUser(UserDomain user) {
-//        return userDAO.insert(user);
-//    }
-//
-//    /*
-//    * 这个方法中用到了我们开头配置依赖的分页插件pagehelper
-//    * 很简单，只需要在service层传入参数，然后将参数传递给一个插件的一个静态方法即可；
-//    * pageNum 开始页数
-//    * pageSize 每页显示的数据条数
-//    * */
-//    @Override
-//    public PageInfo<UserDomain> findAllUser(int pageNum, int pageSize) {
-//        //将参数传给这个方法就可以实现物理分页了，非常简单。
-//        PageHelper.startPage(pageNum, pageSize);
-//        List<UserDomain> userDomains = userDAO.selectUsers();
-//        PageInfo<UserDomain> result = new PageInfo<UserDomain>(userDomains);
-//        return result;
-//    }
-//
-//	@Override
-//    @Transactional
-//	public void updateBalance(String itcode, Double balance) {
-//		UserDomain ud = new UserDomain();
-//		ud.setItcode(itcode);
-//		ud.setBalance(balance);
-//		userDAO.updateBalance(ud);
-//	}
-//
+	@Override
+	public List<EthAccountDomain> selectEthAccountByItcode(String itcode) {
+		return ethAccountDAO.selectEthAccountByItcode(itcode);
+	}
+
+	@Override
+	public EthAccountDomain selectEthAccountByAddress(String address) {
+		return ethAccountDAO.selectEthAccountByAddress(address);
+	}
+
+	@Override
+	public EthAccountDomain selectDefaultEthAccount(String itcode, String status) {
+		return ethAccountDAO.selectDefaultEthAccount(itcode, status);
+	}
+
+	@Override
+	@Transactional
+	public Boolean insertEthAccount(EthAccountDomain ethAccountDomain) {
+		if(ethAccountDomain == null) {
+			System.out.println("ethAccountDomain = null");
+			return false;
+		}
+		if(ethAccountDomain.getItcode() != null && ethAccountDomain.getItcode() != ""
+				&& ethAccountDomain.getAccount() != null && ethAccountDomain.getAccount() != ""
+				&& ethAccountDomain.getKeystore() != null && ethAccountDomain.getKeystore() != "") {
+			try {
+				int effectedNumber = ethAccountDAO.insertEthAccount(ethAccountDomain);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					System.out.println("插入信息失败！");
+					return false;
+				}
+			} catch(Exception e) {
+				System.out.println("插入信息失败 ！" + e.getMessage());
+				return false;
+			}
+		} else {
+			System.out.println("插入账户 itcode，account， keystore不能为空！");
+			return false;
+		}
+	}
+
+	@Override
+	@Transactional
+	public Boolean updateEthAccountByAddress(EthAccountDomain ethAccountDomain) {
+		if(ethAccountDomain == null) {
+			System.out.println("ethAccountDomain = null");
+			return false;
+		}
+		if(ethAccountDomain.getAccount() != null && ethAccountDomain.getAccount() != "") {
+			try {
+				int effectedNumber = ethAccountDAO.updateEthAccountByAddress(ethAccountDomain);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					System.out.println("更新信息失败！");
+					return false;
+				}
+			} catch(Exception e) {
+				System.out.println("更新信息失败 ！" + e.getMessage());
+				return false;
+			}
+		} else {
+			System.out.println("更新账户 itcode，account， keystore不能为空！");
+			return false;
+		}
+	}
+
+	@Override
+	public Boolean updateAccountBalance(String address, BigDecimal balance) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean updateDefaultBalance(String itcode, String status, BigDecimal balance) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}
+	
 //	@Override
 //	public void refreshBalance() {
 //		List<UserDomain> userDomains = userDAO.selectUsers();
@@ -95,10 +147,40 @@ public class EthAccountServiceImpl implements EthAccountService {
 //	        System.out.println(i + ":" + nbalance);
 //		}
 //	}
-//
+//}
+	
+	
 //	@Override
 //	public List<UserDomain> findUserByItcode(String itcode) {
 //		List<UserDomain> result = userDAO.selectUserByItcode(itcode);
 //		return result;
 //	}
-}
+//  @Override
+//  @Transactional
+//  public int addUser(UserDomain user) {
+//      return userDAO.insert(user);
+//  }
+//
+//  /*
+//  * 这个方法中用到了我们开头配置依赖的分页插件pagehelper
+//  * 很简单，只需要在service层传入参数，然后将参数传递给一个插件的一个静态方法即可；
+//  * pageNum 开始页数
+//  * pageSize 每页显示的数据条数
+//  * */
+//  @Override
+//  public PageInfo<UserDomain> findAllUser(int pageNum, int pageSize) {
+//      //将参数传给这个方法就可以实现物理分页了，非常简单。
+//      PageHelper.startPage(pageNum, pageSize);
+//      List<UserDomain> userDomains = userDAO.selectUsers();
+//      PageInfo<UserDomain> result = new PageInfo<UserDomain>(userDomains);
+//      return result;
+//  }
+//
+//	@Override
+//  @Transactional
+//	public void updateBalance(String itcode, Double balance) {
+//		UserDomain ud = new UserDomain();
+//		ud.setItcode(itcode);
+//		ud.setBalance(balance);
+//		userDAO.updateBalance(ud);
+//	}
