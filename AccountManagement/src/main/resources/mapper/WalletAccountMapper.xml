@@ -1,42 +1,49 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.digitalchina.xa.it.dao.WalletAccountDAO" >
-  <sql id="BASE_TABLE">
-    am_walletaccount
-  </sql>
+	<sql id="BASE_TABLE">
+		am_walletaccount
+	</sql>
 
-  <sql id="BASE_COLUMN">
-    id,itcode,phone,balance,status,email,remark,password
-  </sql>
+	<sql id="BASE_COLUMN">
+	 	id,itcode,phone,balance,status,email,remark,password
+	</sql>
   	
-  <select id="selectWallatAccount" resultType="com.digitalchina.xa.it.model.WalletAccountDomain">
-      SELECT
-        <include refid="BASE_COLUMN"/>
-      FROM
-        <include refid="BASE_TABLE"/>
-  </select>
-  <!-- <insert id="insert" parameterType="com.digitalchina.xa.it.model.UserDomain">
-    INSERT INTO
-      <include refid="BASE_TABLE"/>
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      itcode,account,balance,status,keystore,
-    </trim>
-    <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-      #{itcode, jdbcType=VARCHAR},#{account, jdbcType=VARCHAR},#{balance, jdbcType=DOUBLE},#{status, jdbcType=INTEGER},#{keystore, jdbcType=VARCHAR}
-    </trim>
-  </insert>
+	<select id="selectWallatAccount" resultType="com.digitalchina.xa.it.model.WalletAccountDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+	</select>
+  
+	<select id="selectWalletAccountByItcode" resultType="com.digitalchina.xa.it.model.WalletAccountDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode, jdbcType=VARCHAR}
+	</select>
+	  
+	<insert id="insertWalletAccount" useGeneratedKeys="true"
+		parameterType="com.digitalchina.xa.it.model.WalletAccountDomain">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			itcode,phone,balance,status,email,remark,password
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			#{itcode, jdbcType=VARCHAR},#{phone, jdbcType=VARCHAR},#{balance, jdbcType=DOUBLE},
+			#{status, jdbcType=INTEGER},#{email, jdbcType=VARCHAR},#{remark, jdbcType=VARCHAR},#{password, jdbcType=VARCHAR}
+			</trim>
+	</insert>
 
-  <select id="selectUserByItcode" parameterType="com.digitalchina.xa.it.model.UserDomain" resultType="com.digitalchina.xa.it.model.UserDomain">
-      SELECT
-        <include refid="BASE_COLUMN"/>
-      FROM
-        <include refid="BASE_TABLE"/>
-       where itcode = #{itcode, jdbcType=VARCHAR}
-  </select>
-	<update id="updateBalance" parameterType="com.digitalchina.xa.it.model.UserDomain">
-	   UPDATE 
-	   <include refid="BASE_TABLE"/>
-	   SET    balance = #{balance, jdbcType=DOUBLE}
-	   WHERE  itcode = #{itcode, jdbcType=VARCHAR}
+	<update id="updateWalletAccount" parameterType="com.digitalchina.xa.it.model.WalletAccountDomain">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET
+			balance = #{balance, jdbcType=DOUBLE}
+		WHERE
+			itcode = #{itcode, jdbcType=VARCHAR}
 	</update> -->
 </mapper>
