@@ -6,7 +6,7 @@
 	</sql>
 
 	<sql id="BASE_COLUMN">
-		id,itcode,account,balance,status,keystore,alias,backup1,backup2,backup3
+		id,itcode,account,balance,available,keystore,alias,backup1,backup2,backup3
 	</sql>
   	
 	<select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
@@ -40,7 +40,7 @@
 		FROM
 			<include refid="BASE_TABLE"/>
 		WHERE
-			itcode = #{0} AND status = #{1}
+			itcode = #{0} AND available = #{1}
 	</select>
   
 	<insert id="insertItcodeAndAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
@@ -71,16 +71,17 @@
 		WHERE
 			itcode = #{0}
 		AND
-			status = #{1}
+			available = #{1}
 	</update>
 	
-	<update id="updateKeystoreAndAlias">
+	<update id="updateKeystoreAndAlias" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
 		UPDATE 
 			<include refid="BASE_TABLE"/>
 		SET
-			keystore = #{0},
-			alias = #{1}			
+			keystore = #{keystore, jdbcType=VARCHAR},
+			alias = #{alias, jdbcType=VARCHAR},
+			available = 1
 		WHERE
-			account = #{2}
+			account = #{account, jdbcType=VARCHAR}
 	</update>
 </mapper>

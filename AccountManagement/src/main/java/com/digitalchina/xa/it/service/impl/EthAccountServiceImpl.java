@@ -119,7 +119,11 @@ public class EthAccountServiceImpl implements EthAccountService {
 	public Boolean updateKeystoreAndAlias(String keystore, String alias, String address) {
 		if(keystore != null && keystore != "" && alias != null && alias != "") {
 			try {
-				int effectedNumber = ethAccountDAO.updateKeystoreAndAlias(keystore, alias, address);
+				EthAccountDomain xxxx = new EthAccountDomain();
+				xxxx.setKeystore(keystore);
+				xxxx.setAlias(alias);
+				xxxx.setAccount(address);
+				int effectedNumber = ethAccountDAO.updateKeystoreAndAlias(xxxx);
 				if(effectedNumber > 0) {
 					return true;
 				} else {

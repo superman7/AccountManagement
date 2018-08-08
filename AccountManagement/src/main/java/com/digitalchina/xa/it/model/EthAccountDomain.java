@@ -10,7 +10,7 @@ public class EthAccountDomain {
 
     private Double balance;
 
-    private Integer status;
+    private Integer available;
     
     private String keystore;
     
@@ -54,14 +54,6 @@ public class EthAccountDomain {
 		this.balance = balance;
 	}
 
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-
 	public String getKeystore() {
 		return keystore;
 	}
@@ -100,5 +92,13 @@ public class EthAccountDomain {
 
 	public void setBackup3(String backup3) {
 		this.backup3 = backup3;
+	}
+
+	public Integer getAvailable() {
+		return available;
+	}
+
+	public void setAvailable(Integer available) {
+		this.available = available;
 	}
 }

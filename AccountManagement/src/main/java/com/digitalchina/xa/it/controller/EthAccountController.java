@@ -151,7 +151,7 @@ public class EthAccountController {
     	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
     	
 		//获取前端发送的密语，密语密码，地址名和交易密码
-		JSONObject allInfoSentenceJson = JSONObject.parseObject(jsonValue);
+		JSONObject allInfoSentenceJson = JSONObject.parseObject(data);
 		String mnemonic = allInfoSentenceJson.getString("mnemonic");
 		String mnePassword = allInfoSentenceJson.getString("mnePassword");
 		String alias = allInfoSentenceJson.getString("alias");
@@ -163,6 +163,7 @@ public class EthAccountController {
 		try {
 			WalletFile walletFile = Wallet.createLight(traPassword, ecKeyPair);
 			String keystore = ((JSONObject) JSONObject.toJSON(walletFile)).toJSONString();
+			System.out.println(keystore);
 			ethAccountService.updateKeystoreAndAlias(keystore, alias, address);
 		} catch (CipherException e) {
 			e.printStackTrace();
