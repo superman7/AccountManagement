@@ -51,7 +51,7 @@ public class EthAccountController {
 	
 //	重选密语请求，返回新生成的密语
 	@ResponseBody
-	@PostMapping("/refreshMnemonic")
+	@GetMapping("/refreshMnemonic")
 	public Map<String, Object> refreshMnemonic() {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		String mnemonicSentence = mnemonicService.chooseMnemonic();
@@ -120,6 +120,29 @@ public class EthAccountController {
 		}
 		
 		modelMap.put("success", true);
+		
+		return modelMap;
+	}
+	
+//	检测地址名是否重复
+	@ResponseBody
+	@GetMapping("/checkUp")
+	public Map<String, Object> checkUp(String aliasInfo) {
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		JSONObject aliasInfoJson = JSONObject.parseObject(aliasInfo);
+		String itcode = aliasInfoJson.getString("itcode");
+		String alias = aliasInfoJson.getString("addressName");
+		
+		List<EthAccountDomain> accountList = ethAccountService.selectEthAccountByItcode(itcode);
+		for(int index = 0; index < accountList.size(); index++) {
+			if(accountList.get(index).getAlias().equals(alias)) {
+				modelMap.put("success", true);
+				modelMap.put("valid", false);
+				return modelMap;
+			}
+		}
+		modelMap.put("success", true);
+		modelMap.put("valid", true);
 		
 		return modelMap;
 	}
