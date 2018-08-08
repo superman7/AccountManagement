@@ -65,6 +65,42 @@ public class EthAccountController {
 		return modelMap;
 	}
 	
+	@ResponseBody
+	@GetMapping("/accountList")
+	public Map<String, Object> accountList(
+            @RequestParam(name = "param", required = true) String jsonValue) {
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		//FIXME 封装为统一的静态方法调用		
+		System.out.println(jsonValue);
+		Encrypt encrypt = new EncryptImpl();
+    	String decrypt = null;
+		try {
+			decrypt = encrypt.decrypt(jsonValue);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！");
+			return modelMap;
+		}
+    	String data = null;
+		try {
+			data = URLDecoder.decode(decrypt, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！非utf-8编码。");
+			return modelMap;
+		}
+    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
+    	
+		JSONObject mnemonicJson = JSONObject.parseObject(data);
+		String itcode = mnemonicJson.getString("itcode");
+		List<EthAccountDomain> accountList = ethAccountService.selectEthAccountByItcode(itcode);
+		modelMap.put("accountList", accountList);
+		
+		return modelMap;
+	}
+	
 //	创建地址请求
 	@ResponseBody
 	@GetMapping("/newAddress")
