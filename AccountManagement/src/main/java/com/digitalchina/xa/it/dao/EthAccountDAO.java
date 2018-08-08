@@ -14,7 +14,7 @@ public interface EthAccountDAO {
 	
 	EthAccountDomain selectDefaultEthAccount(String itcode, String status);
 	
-	int insertEthAccount(EthAccountDomain ethAccountDomain);
+	int insertItcodeAndAccount(EthAccountDomain ethAccountDomain);
 	
 	int updateAccountBalance(String address, BigDecimal balance);
 	

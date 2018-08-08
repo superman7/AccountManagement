@@ -112,7 +112,7 @@ public class EthAccountController {
 			EthAccountDomain ethAccountDomain = new EthAccountDomain();
 			ethAccountDomain.setItcode(itcode);
 			ethAccountDomain.setAccount(address);
-			ethAccountService.insertEthAccount(ethAccountDomain);
+			ethAccountService.insertItcodeAndAccount(ethAccountDomain);
 			
 			modelMap.put("success", true);
 			modelMap.put("address", address);
@@ -125,10 +125,10 @@ public class EthAccountController {
 //	创建账户请求
 	@ResponseBody
 	@GetMapping("/newAccount")
-	public Map<String, Object> newAccount(String allInfoSentence) {
+	public Map<String, Object> newAccount(@RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		//获取前端发送的密语，密语密码，地址名和交易密码
-		JSONObject allInfoSentenceJson = JSONObject.parseObject(allInfoSentence);
+		JSONObject allInfoSentenceJson = JSONObject.parseObject(jsonValue);
 		String mnemonic = allInfoSentenceJson.getString("mnemonic");
 		String mnePassword = allInfoSentenceJson.getString("mnePassword");
 		String alias = allInfoSentenceJson.getString("alias");
@@ -153,21 +153,19 @@ public class EthAccountController {
 //	检测地址名是否重复
 	@ResponseBody
 	@GetMapping("/checkUp")
-	public Map<String, Object> checkUp(String aliasInfo) {
+	public Map<String, Object> checkUp(@RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		JSONObject aliasInfoJson = JSONObject.parseObject(aliasInfo);
+		JSONObject aliasInfoJson = JSONObject.parseObject(jsonValue);
 		String itcode = aliasInfoJson.getString("itcode");
-		String alias = aliasInfoJson.getString("addressName");
+		String alias = aliasInfoJson.getString("alias");
 		
 		List<EthAccountDomain> accountList = ethAccountService.selectEthAccountByItcode(itcode);
 		for(int index = 0; index < accountList.size(); index++) {
 			if(accountList.get(index).getAlias().equals(alias)) {
-				modelMap.put("success", true);
 				modelMap.put("valid", false);
 				return modelMap;
 			}
 		}
-		modelMap.put("success", true);
 		modelMap.put("valid", true);
 		
 		return modelMap;
