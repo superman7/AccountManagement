@@ -54,13 +54,13 @@
 			</trim>
 	</insert>
   
-	<update id="updateAccountBalance">
+	<update id="updateAccountBalance" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
 		UPDATE 
 			<include refid="BASE_TABLE"/>
 		SET    
-			balance = #{1}
+			balance = #{balance, jdbcType=DOUBLE}
 		WHERE
-			account = #{0}
+			account = #{account, jdbcType=VARCHAR}
 	</update>
 	
 	<update id="updateDefaultBalance">

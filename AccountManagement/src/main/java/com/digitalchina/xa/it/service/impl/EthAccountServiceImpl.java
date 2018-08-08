@@ -80,10 +80,13 @@ public class EthAccountServiceImpl implements EthAccountService {
 	}
 
 	@Override
-	public Boolean updateAccountBalance(String address, BigDecimal balance) {
+	public Boolean updateAccountBalance(String address, Double balance) {
 		if(address != null && address != "" && balance != null) {
 			try {
-				int effectedNumber = ethAccountDAO.updateAccountBalance(address, balance);
+				EthAccountDomain xxxx = new EthAccountDomain();
+				xxxx.setAccount(address);
+				xxxx.setBalance(balance);
+				int effectedNumber = ethAccountDAO.updateAccountBalance(xxxx);
 				if(effectedNumber > 0) {
 					return true;
 				} else {
@@ -136,35 +139,33 @@ public class EthAccountServiceImpl implements EthAccountService {
 			throw new RuntimeException("更新keystore与alias不能为空");
 		}
 	}
-}
 	
-//	@Override
-//	public void refreshBalance() {
-//		List<UserDomain> userDomains = userDAO.selectUsers();
-//		for(int i = 0; i < userDomains.size(); i++){
-//			if(web3j==null){
-//	            synchronized (UserService.class){
-//	                if(web3j==null){
-//	                    web3j =Web3j.build(new HttpService(ip));
-//	                }
-//	            }
-//	        }
-//	        EthGetBalance send = null;
-//			try {
-//				send = web3j.ethGetBalance(userDomains.get(i).getAccount(), DefaultBlockParameter.valueOf("latest")).send();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//				System.err.println("获取账户余额时得到send对象时发生的异常为:"+e.toString());
-//			}
-//	        BigDecimal balance = new BigDecimal(send.getBalance().divide(new BigInteger("100000000000")).toString());
-//	        BigDecimal nbalance = balance.divide(new BigDecimal("100000"),2,BigDecimal.ROUND_DOWN);
-//	        updateBalance(userDomains.get(i).getItcode(), nbalance.doubleValue());
-//	        System.out.println(i + ":" + nbalance);
-//		}
-//	}
-//}
-	
-	
+	@Override
+	public void refreshBalance(String itcode) {
+		List<EthAccountDomain> ethAccountDomains = ethAccountDAO.selectEthAccountByItcode(itcode);
+		Integer index = (int)(Math.random()*5);
+    	ip = ipArr[index];
+		for(int i = 0; i < ethAccountDomains.size(); i++){
+			if(web3j==null){
+	            synchronized (EthAccountService.class){
+	                if(web3j==null){
+	                    web3j =Web3j.build(new HttpService(ip));
+	                }
+	            }
+	        }
+	        EthGetBalance send = null;
+			try {
+				send = web3j.ethGetBalance(ethAccountDomains.get(i).getAccount(), DefaultBlockParameter.valueOf("latest")).send();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.err.println("获取账户余额时得到send对象时发生的异常为:"+e.toString());
+			}
+	        BigDecimal balance = new BigDecimal(send.getBalance().divide(new BigInteger("100000000000")).toString());
+	        BigDecimal nbalance = balance.divide(new BigDecimal("100000"),2,BigDecimal.ROUND_DOWN);
+	        this.updateAccountBalance(ethAccountDomains.get(i).getAccount(), nbalance.doubleValue());
+	        System.out.println(i + ":" + nbalance);
+		}
+	}
 //	@Override
 //	public List<UserDomain> findUserByItcode(String itcode) {
 //		List<UserDomain> result = userDAO.selectUserByItcode(itcode);
@@ -191,11 +192,4 @@ public class EthAccountServiceImpl implements EthAccountService {
 //      return result;
 //  }
 //
-//	@Override
-//  @Transactional
-//	public void updateBalance(String itcode, Double balance) {
-//		UserDomain ud = new UserDomain();
-//		ud.setItcode(itcode);
-//		ud.setBalance(balance);
-//		userDAO.updateBalance(ud);
-//	}
+}

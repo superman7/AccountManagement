@@ -17,9 +17,11 @@ public interface EthAccountService {
 	
 	Boolean insertItcodeAndAccount(EthAccountDomain ethAccountDomain);
 	
-	Boolean updateAccountBalance(String address, BigDecimal balance);
+	Boolean updateAccountBalance(String address, Double balance);
 	
 	Boolean updateDefaultBalance(String itcode, String status, BigDecimal balance);
 	
 	Boolean updateKeystoreAndAlias(String keystore, String alias, String address);
+
+	void refreshBalance(String itcode);
 }

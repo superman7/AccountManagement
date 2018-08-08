@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,6 +68,7 @@ public class EthAccountController {
 	
 	@ResponseBody
 	@GetMapping("/accountList")
+	@Transactional
 	public Map<String, Object> accountList(
             @RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
@@ -95,6 +97,8 @@ public class EthAccountController {
     	
 		JSONObject mnemonicJson = JSONObject.parseObject(data);
 		String itcode = mnemonicJson.getString("itcode");
+		ethAccountService.refreshBalance(itcode);
+		modelMap.put("success", true);
 		List<EthAccountDomain> accountList = ethAccountService.selectEthAccountByItcode(itcode);
 		modelMap.put("accountList", accountList);
 		
@@ -136,7 +140,7 @@ public class EthAccountController {
 		String itcode = mnemonicJson.getString("itcode");
 		//生成ECKeyPair，再得到账户地址
 		ECKeyPair ecKeyPair= getECKeyPair(mnemonic, mnePassword);
-		String address = Keys.getAddress(ecKeyPair);
+		String address = "0x" + Keys.getAddress(ecKeyPair);
 		
 		//查询数据库中该用户拥有的账户个数，如果超过10个，返回false
 		List<EthAccountDomain> accountList = ethAccountService.selectEthAccountByItcode(itcode);
@@ -193,7 +197,7 @@ public class EthAccountController {
 		String alias = allInfoSentenceJson.getString("alias");
 		String traPassword = allInfoSentenceJson.getString("traPassword");
 		ECKeyPair ecKeyPair = getECKeyPair(mnemonic, mnePassword);
-		String address = Keys.getAddress(ecKeyPair);
+		String address = "0x" + Keys.getAddress(ecKeyPair);
 		
 		//生成WalletFile(keystore)，更新数据库，根据address存入keystore和alias
 		try {
