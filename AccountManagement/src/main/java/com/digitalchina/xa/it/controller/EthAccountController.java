@@ -71,7 +71,7 @@ public class EthAccountController {
 	public Map<String, Object> newAddress(
             @RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		
+		//FIXME 封装为统一的静态方法调用		
 		System.out.println(jsonValue);
 		Encrypt encrypt = new EncryptImpl();
     	String decrypt = null;
@@ -127,6 +127,29 @@ public class EthAccountController {
 	@GetMapping("/newAccount")
 	public Map<String, Object> newAccount(@RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
+		//FIXME 封装为统一的静态方法调用
+		System.out.println(jsonValue);
+		Encrypt encrypt = new EncryptImpl();
+    	String decrypt = null;
+		try {
+			decrypt = encrypt.decrypt(jsonValue);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！");
+			return modelMap;
+		}
+    	String data = null;
+		try {
+			data = URLDecoder.decode(decrypt, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！非utf-8编码。");
+			return modelMap;
+		}
+    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
+    	
 		//获取前端发送的密语，密语密码，地址名和交易密码
 		JSONObject allInfoSentenceJson = JSONObject.parseObject(jsonValue);
 		String mnemonic = allInfoSentenceJson.getString("mnemonic");
@@ -155,7 +178,30 @@ public class EthAccountController {
 	@GetMapping("/checkUp")
 	public Map<String, Object> checkUp(@RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		JSONObject aliasInfoJson = JSONObject.parseObject(jsonValue);
+		//FIXME 封装为统一的静态方法调用		
+		System.out.println(jsonValue);
+		Encrypt encrypt = new EncryptImpl();
+    	String decrypt = null;
+		try {
+			decrypt = encrypt.decrypt(jsonValue);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！");
+			return modelMap;
+		}
+    	String data = null;
+		try {
+			data = URLDecoder.decode(decrypt, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！非utf-8编码。");
+			return modelMap;
+		}
+    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
+    	
+		JSONObject aliasInfoJson = JSONObject.parseObject(data);
 		String itcode = aliasInfoJson.getString("itcode");
 		String alias = aliasInfoJson.getString("alias");
 		
