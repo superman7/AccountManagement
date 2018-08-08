@@ -63,8 +63,7 @@ public class EthAccountServiceImpl implements EthAccountService {
 			throw new RuntimeException("ethAccountDomain为null");
 		}
 		if(ethAccountDomain.getItcode() != null && ethAccountDomain.getItcode() != ""
-				&& ethAccountDomain.getAccount() != null && ethAccountDomain.getAccount() != ""
-				&& ethAccountDomain.getKeystore() != null && ethAccountDomain.getKeystore() != "") {
+				&& ethAccountDomain.getAccount() != null && ethAccountDomain.getAccount() != "") {
 			try {
 				int effectedNumber = ethAccountDAO.insertEthAccount(ethAccountDomain);
 				if(effectedNumber > 0) {

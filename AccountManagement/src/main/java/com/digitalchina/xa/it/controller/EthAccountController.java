@@ -1,5 +1,7 @@
 package com.digitalchina.xa.it.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +24,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.model.EthAccountDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.MnemonicService;
+import com.digitalchina.xa.it.util.Encrypt;
+import com.digitalchina.xa.it.util.EncryptImpl;
 
 
 @Controller
@@ -64,14 +68,36 @@ public class EthAccountController {
 //	创建地址请求
 	@ResponseBody
 	@GetMapping("/newAddress")
-	public Map<String, Object> newAddress(String mnemonicSentence) {
+	public Map<String, Object> newAddress(
+            @RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
+		
+		System.out.println(jsonValue);
+		Encrypt encrypt = new EncryptImpl();
+    	String decrypt = null;
+		try {
+			decrypt = encrypt.decrypt(jsonValue);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！");
+			return modelMap;
+		}
+    	String data = null;
+		try {
+			data = URLDecoder.decode(decrypt, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！非utf-8编码。");
+			return modelMap;
+		}
+    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
 		//获取前端发送的数据，包括密语，密语密码和itcode
-		JSONObject mnemonicJson = JSONObject.parseObject(mnemonicSentence);
+		JSONObject mnemonicJson = JSONObject.parseObject(data);
 		String mnemonic = mnemonicJson.getString("mnemonic");
 		String mnePassword = mnemonicJson.getString("mnePassword");
 		String itcode = mnemonicJson.getString("itcode");
-		
 		//生成ECKeyPair，再得到账户地址
 		ECKeyPair ecKeyPair= getECKeyPair(mnemonic, mnePassword);
 		String address = Keys.getAddress(ecKeyPair);

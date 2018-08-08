@@ -43,16 +43,14 @@
 			itcode = #{0} AND status = #{1}
 	</select>
   
-	<insert id="insert" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
+	<insert id="insertEthAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
 		INSERT INTO
 			<include refid="BASE_TABLE"/>
 			<trim prefix="(" suffix=")" suffixOverrides=",">
-				itcode,account,balance,status,keystore,alias,backup1,backup2,backup3
+				itcode,account
 			</trim>
 			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-				#{itcode, jdbcType=VARCHAR},#{account, jdbcType=VARCHAR},#{balance, jdbcType=DOUBLE},
-				#{status, jdbcType=INTEGER},#{keystore, jdbcType=VARCHAR},#{alias, jdbcType=VARCHAR},
-				#{backup1, jdbcType=VARCHAR},,#{backup2, jdbcType=VARCHAR},,#{backup3, jdbcType=VARCHAR}
+				#{itcode, jdbcType=VARCHAR},#{account, jdbcType=VARCHAR}
 			</trim>
 	</insert>
   
