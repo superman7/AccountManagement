@@ -43,7 +43,7 @@
 			itcode = #{0} AND status = #{1}
 	</select>
   
-	<insert id="insertEthAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
+	<insert id="insertItcodeAndAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
 		INSERT INTO
 			<include refid="BASE_TABLE"/>
 			<trim prefix="(" suffix=")" suffixOverrides=",">

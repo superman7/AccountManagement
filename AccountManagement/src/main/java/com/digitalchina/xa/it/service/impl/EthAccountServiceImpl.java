@@ -58,14 +58,14 @@ public class EthAccountServiceImpl implements EthAccountService {
 
 	@Override
 	@Transactional
-	public Boolean insertEthAccount(EthAccountDomain ethAccountDomain) {
+	public Boolean insertItcodeAndAccount(EthAccountDomain ethAccountDomain) {
 		if(ethAccountDomain == null) {
 			throw new RuntimeException("ethAccountDomain为null");
 		}
 		if(ethAccountDomain.getItcode() != null && ethAccountDomain.getItcode() != ""
 				&& ethAccountDomain.getAccount() != null && ethAccountDomain.getAccount() != "") {
 			try {
-				int effectedNumber = ethAccountDAO.insertEthAccount(ethAccountDomain);
+				int effectedNumber = ethAccountDAO.insertItcodeAndAccount(ethAccountDomain);
 				if(effectedNumber > 0) {
 					return true;
 				} else {
