@@ -15,6 +15,8 @@ public interface EthAccountService {
 	
 	EthAccountDomain selectDefaultEthAccount(String itcode, String status);
 	
+	String getKeystore(String account);
+	
 	Boolean insertItcodeAndAccount(EthAccountDomain ethAccountDomain);
 	
 	Boolean updateAccountBalance(String address, Double balance);

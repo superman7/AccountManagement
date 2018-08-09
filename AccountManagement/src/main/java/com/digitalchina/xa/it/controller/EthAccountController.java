@@ -1,6 +1,11 @@
 package com.digitalchina.xa.it.controller;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.util.HashMap;
@@ -15,13 +20,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.web3j.abi.datatypes.Address;
 import org.web3j.crypto.CipherException;
+import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
 import org.web3j.crypto.Wallet;
 import org.web3j.crypto.WalletFile;
+import org.web3j.crypto.WalletUtils;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.http.HttpService;
 
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.xa.it.contract.Transfer;
 import com.digitalchina.xa.it.model.EthAccountDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.MnemonicService;
@@ -36,6 +47,10 @@ public class EthAccountController {
 	private EthAccountService ethAccountService;
 	@Autowired
 	private MnemonicService mnemonicService;
+	private static String ip = "http://10.7.10.124:8545";
+	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
+	private static String tempFilePath = "C://temp/";
+	private static String keystoreName = "keystore.json";
 	
 //	@ResponseBody
 //	@GetMapping("/refreshAllUsersBalance")
@@ -53,6 +68,67 @@ public class EthAccountController {
 //	    userService.updateBalance(itcode, Double.valueOf(balance));
 //	}
 //	
+	
+//	确认充值请求，提交账户地址（FROM），密码，金额，钱包地址（TO）
+	@ResponseBody
+	@GetMapping("/chargeConfirm")
+	public Map<String, Object> chargeConfirm(
+			@RequestParam(name = "param", required = true) String jsonValue) {
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		System.out.println(jsonValue);
+		Encrypt encrypt = new EncryptImpl();
+    	String decrypt = null;
+		try {
+			decrypt = encrypt.decrypt(jsonValue);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！");
+			return modelMap;
+		}
+    	String data = null;
+		try {
+			data = URLDecoder.decode(decrypt, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！非utf-8编码。");
+			return modelMap;
+		}
+    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
+    	JSONObject chargeJson = JSONObject.parseObject(data);
+		String account = chargeJson.getString("account");
+		String password = chargeJson.getString("password");
+		String money = chargeJson.getString("money");
+		String defaultAcc = chargeJson.getString("defaultAcc");
+		String keystore = ethAccountService.getKeystore(account);
+		//充值
+		try {
+			Web3j web3j =Web3j.build(new HttpService(ip));
+			Credentials credentials = WalletUtils.loadCredentials(password, keystoreToFile(keystore));
+			System.out.println("解锁成功。。。");
+			Transfer contract = Transfer.load(address, web3j, credentials, BigInteger.valueOf(2200000000L), BigInteger.valueOf(4300000L));
+			contract.transferAToB(new Address(defaultAcc), BigInteger.valueOf(Long.parseLong(money))).observable().subscribe(x -> {
+				System.out.println(x.getBlockHash());
+				System.out.println(x.getBlockNumber());
+				System.out.println(x.getCumulativeGasUsed());
+				System.out.println(x.getGasUsed());
+				System.out.println(x.getStatus());
+				System.out.println(x.getTransactionHash());
+				
+				modelMap.put("success", true);
+			});
+		} catch (Exception e) {
+			if(e.getMessage().contains("Invalid")) {
+				modelMap.put("success", false);
+				modelMap.put("errMsg", "invalidPassword");
+				return modelMap;
+			}
+		}
+    	
+		return modelMap;
+	}
+	
 	
 //	重选密语请求，返回新生成的密语
 	@ResponseBody
@@ -288,5 +364,19 @@ public class EthAccountController {
 		ECKeyPair ecKeyPair= ECKeyPair.create(getSHA2HexValue(ecKeyPairStr));
 		
 		return ecKeyPair;
+	}
+	
+	private File keystoreToFile(String keystore) throws IOException {
+		File file = new File(tempFilePath + keystoreName);
+        if(!file.exists()){
+         file.createNewFile();
+        }
+        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        BufferedWriter bw = new BufferedWriter(fw);
+        bw.write(keystore);
+        bw.close();
+        System.out.println("创建keystore。。。");
+        
+        return file;
 	}
 }

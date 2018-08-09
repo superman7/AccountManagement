@@ -42,6 +42,14 @@
 		WHERE
 			itcode = #{0} AND available = #{1}
 	</select>
+	<select id="getKeystore" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
+		SELECT
+			keystore
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			account = #{account,jdbcType=VARCHAR}
+	</select>
   
 	<insert id="insertItcodeAndAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
 		INSERT INTO
