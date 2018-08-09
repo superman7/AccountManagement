@@ -101,7 +101,9 @@ public class EthAccountController {
 		String password = chargeJson.getString("password");
 		String money = chargeJson.getString("money");
 		String defaultAcc = chargeJson.getString("defaultAcc");
-		String keystore = ethAccountService.selectKeystore(account);
+		EthAccountDomain ethAccountDomain = new EthAccountDomain();
+		ethAccountDomain.setAccount(account);
+		String keystore = ethAccountService.selectKeystoreByAccount(ethAccountDomain);
 		//充值
 		try {
 			Web3j web3j =Web3j.build(new HttpService(ip));
