@@ -42,8 +42,8 @@ public class EthAccountServiceImpl implements EthAccountService {
 	}
 
 	@Override
-	public String getKeystore(String account) {
-		return ethAccountDAO.getKeystore(account);
+	public String selectKeystore(String account) {
+		return ethAccountDAO.selectKeystore(account);
 	}
 	
 	@Override

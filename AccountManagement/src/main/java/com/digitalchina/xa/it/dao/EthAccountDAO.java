@@ -14,7 +14,7 @@ public interface EthAccountDAO {
 	
 	EthAccountDomain selectDefaultEthAccount(String itcode, String status);
 	
-	String getKeystore(String account);
+	String selectKeystore(String account);
 	
 	int insertItcodeAndAccount(EthAccountDomain ethAccountDomain);
 	
