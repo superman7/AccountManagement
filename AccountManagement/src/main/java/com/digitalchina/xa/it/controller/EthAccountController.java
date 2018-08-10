@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
@@ -25,11 +26,19 @@ import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
+import org.web3j.crypto.RawTransaction;
+import org.web3j.crypto.TransactionEncoder;
 import org.web3j.crypto.Wallet;
 import org.web3j.crypto.WalletFile;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.Contract;
+import org.web3j.utils.Numeric;
 
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.contract.Transfer;
@@ -47,10 +56,10 @@ public class EthAccountController {
 	private EthAccountService ethAccountService;
 	@Autowired
 	private MnemonicService mnemonicService;
-	private static String ip = "http://10.7.10.124:8545";
+	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
 	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
 	private static String tempFilePath = "C://temp/";
-	private static String keystoreName = "keystore.json";
+//	private static String keystoreName = "keystore.json";
 	
 //	@ResponseBody
 //	@GetMapping("/refreshAllUsersBalance")
@@ -99,28 +108,77 @@ public class EthAccountController {
     	JSONObject chargeJson = JSONObject.parseObject(data);
 		String account = chargeJson.getString("account");
 		String password = chargeJson.getString("password");
-		String money = chargeJson.getString("money");
+		Double money = (Double.parseDouble(chargeJson.getString("money")))*10000000000000000L;
+		BigDecimal moneyBigDecimal = new BigDecimal(money);// 转账金额
 		String defaultAcc = chargeJson.getString("defaultAcc");
-		EthAccountDomain ethAccountDomain = new EthAccountDomain();
-		ethAccountDomain.setAccount(account);
-		String keystore = ethAccountService.selectKeystoreByAccount(ethAccountDomain);
+		EthAccountDomain aaxz = new EthAccountDomain();
+		aaxz.setAccount(account);
+		String keystore = ethAccountService.selectKeystoreByAccount(aaxz);
+		System.out.println(keystore);
 		//充值
 		try {
-			Web3j web3j =Web3j.build(new HttpService(ip));
-			Credentials credentials = WalletUtils.loadCredentials(password, keystoreToFile(keystore));
+			Web3j web3j0 = Web3j.build(new HttpService(ip[0]));
+			Web3j web3j1 = Web3j.build(new HttpService(ip[1]));
+			Web3j web3j2 = Web3j.build(new HttpService(ip[2]));
+			Web3j web3j3 = Web3j.build(new HttpService(ip[3]));
+			Web3j web3j4 = Web3j.build(new HttpService(ip[4]));
+			
+			File keystoreFile = keystoreToFile(keystore, account + ".json");
+			Credentials credentials = WalletUtils.loadCredentials(password, keystoreFile);
 			System.out.println("解锁成功。。。");
-			Transfer contract = Transfer.load(address, web3j, credentials, BigInteger.valueOf(2200000000L), BigInteger.valueOf(4300000L));
-			contract.transferAToB(new Address(defaultAcc), BigInteger.valueOf(Long.parseLong(money))).observable().subscribe(x -> {
-				System.out.println(x.getBlockHash());
-				System.out.println(x.getBlockNumber());
-				System.out.println(x.getCumulativeGasUsed());
-				System.out.println(x.getGasUsed());
-				System.out.println(x.getStatus());
-				System.out.println(x.getTransactionHash());
-				
-				modelMap.put("success", true);
-			});
+			keystoreFile.delete();
+			System.out.println("删除临时keystore文件成功。。。");
+//			Transfer contract = Transfer.load(address, web3j, credentials, BigInteger.valueOf(2200000000L), BigInteger.valueOf(4300000L));
+//			contract.transferAToB(new Address(defaultAcc), BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(Long.parseLong(money)))).observable().subscribe(x -> {
+//				System.out.println(x.getBlockHash());
+//				System.out.println(x.getBlockNumber());
+//				System.out.println(x.getCumulativeGasUsed());
+//				System.out.println(x.getGasUsed());
+//				System.out.println(x.getStatus());
+//				System.out.println(x.getTransactionHash());
+//				
+//				modelMap.put("success", true);
+//			});
+			
+			EthGetTransactionCount ethGetTransactionCount = web3j0.ethGetTransactionCount(account, DefaultBlockParameterName.LATEST).sendAsync().get();
+			BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+			System.err.println("nonce:" + nonce);
+			RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, BigInteger.valueOf(2200000000L), BigInteger.valueOf(2100000L), defaultAcc, moneyBigDecimal.toBigInteger());
+			//签名Transaction，这里要对交易做签名
+			byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+			String hexValue = Numeric.toHexString(signedMessage);
+			System.err.println("hexValue:" + hexValue);
+			//发送交易
+//			EthSendTransaction ethSendTransaction = web3j.ethSendRawTransaction(hexValue).sendAsync().get();
+//			String transactionHash = ethSendTransaction.getTransactionHash();
+//			System.err.println("transactionHash:" + transactionHash);
+			
+			EthSendTransaction ethSendTransaction0 = web3j0.ethSendRawTransaction(hexValue).sendAsync().get();
+			String transactionHash0 = ethSendTransaction0.getTransactionHash();
+			System.err.println("transactionHash0:" + transactionHash0);
+
+			EthSendTransaction ethSendTransaction1 = web3j1.ethSendRawTransaction(hexValue).sendAsync().get();
+			String transactionHash1 = ethSendTransaction1.getTransactionHash();
+			System.err.println("transactionHash1:" + transactionHash1);
+
+			EthSendTransaction ethSendTransaction2 = web3j2.ethSendRawTransaction(hexValue).sendAsync().get();
+			String transactionHash2 = ethSendTransaction2.getTransactionHash();
+			System.err.println("transactionHash2:" + transactionHash2);
+
+			EthSendTransaction ethSendTransaction3 = web3j3.ethSendRawTransaction(hexValue).sendAsync().get();
+			String transactionHash3 = ethSendTransaction3.getTransactionHash();
+			System.err.println("transactionHash3:" + transactionHash3);
+
+			EthSendTransaction ethSendTransaction4 = web3j4.ethSendRawTransaction(hexValue).sendAsync().get();
+			String transactionHash4 = ethSendTransaction4.getTransactionHash();
+			System.err.println("transactionHash4:" + transactionHash4);
+//			TransactionReceipt transactionReceipt = contract.transferAToB(new Address(defaultAcc), BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(Long.parseLong(money)))).sendAsync().get();
+//			String transactionHash = transactionReceipt.getTransactionHash();
+			modelMap.put("success", true);
+			modelMap.put("transactionHash", transactionHash0);
 		} catch (Exception e) {
+//			System.out.println(e.getMessage());
+			e.printStackTrace();
 			if(e.getMessage().contains("Invalid")) {
 				modelMap.put("success", false);
 				modelMap.put("errMsg", "invalidPassword");
@@ -368,7 +426,7 @@ public class EthAccountController {
 		return ecKeyPair;
 	}
 	
-	private File keystoreToFile(String keystore) throws IOException {
+	private File keystoreToFile(String keystore, String keystoreName) throws IOException {
 		File file = new File(tempFilePath + keystoreName);
         if(!file.exists()){
          file.createNewFile();
