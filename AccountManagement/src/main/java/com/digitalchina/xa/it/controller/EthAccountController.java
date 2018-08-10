@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,84 @@ public class EthAccountController {
 //	}
 //	
 	
+//	确认提现请求，提交账户地址（TO），金额，钱包地址（FROM）
+	@ResponseBody
+	@GetMapping("/withdrawConfirm")
+	public Map<String, Object> withdrawConfirm(
+			@RequestParam(name = "param", required = true) String jsonValue) {
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		System.out.println(jsonValue);
+		Encrypt encrypt = new EncryptImpl();
+    	String decrypt = null;
+		try {
+			decrypt = encrypt.decrypt(jsonValue);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！");
+			return modelMap;
+		}
+    	String data = null;
+		try {
+			data = URLDecoder.decode(decrypt, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！非utf-8编码。");
+			return modelMap;
+		}
+    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
+    	JSONObject withdrawJson = JSONObject.parseObject(data);
+		String account = withdrawJson.getString("account");
+		Double money = (Double.parseDouble(withdrawJson.getString("money")))*10000000000000000L;
+		BigDecimal moneyBigDecimal = new BigDecimal(money);// 转账金额
+		String defaultAcc = withdrawJson.getString("defaultAcc");
+		EthAccountDomain aaxz = new EthAccountDomain();
+		aaxz.setAccount(defaultAcc);
+		String keystore = ethAccountService.selectKeystoreByAccount(aaxz);
+		System.out.println(keystore);
+		try {
+			List<Web3j> web3jList = new ArrayList<>();
+			for(int i = 0; i < ip.length; i++) {
+				web3jList.add(Web3j.build(new HttpService(ip[i])));
+			}
+			File keystoreFile = keystoreToFile(keystore, defaultAcc + ".json");
+			Credentials credentials = WalletUtils.loadCredentials("", keystoreFile);
+			System.out.println("解锁成功。。。");
+			keystoreFile.delete();
+			System.out.println("删除临时keystore文件成功。。。");
+			
+			EthGetTransactionCount ethGetTransactionCount = web3jList.get(0).ethGetTransactionCount(defaultAcc, DefaultBlockParameterName.LATEST).sendAsync().get();
+			BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+			System.err.println("nonce:" + nonce);
+			RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, BigInteger.valueOf(2200000000L), BigInteger.valueOf(2100000L), account, moneyBigDecimal.toBigInteger());
+			//签名Transaction，这里要对交易做签名
+			byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+			String hexValue = Numeric.toHexString(signedMessage);
+			System.err.println("hexValue:" + hexValue);
+			//发送交易
+			String transactionHash = "";
+			for(int i = 0; i < web3jList.size(); i++) {
+				transactionHash = web3jList.get(i).ethSendRawTransaction(hexValue).sendAsync().get().getTransactionHash();
+				if(transactionHash != null) {
+					System.out.println(transactionHash);
+				}
+			}
+			
+			modelMap.put("success", true);
+			modelMap.put("transactionHash", transactionHash);
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(e.getMessage().contains("Invalid")) {
+				modelMap.put("success", false);
+				modelMap.put("errMsg", "invalidPassword");
+				return modelMap;
+			}
+		}
+    	
+		return modelMap;
+	}
+	
 //	确认充值请求，提交账户地址（FROM），密码，金额，钱包地址（TO）
 	@ResponseBody
 	@GetMapping("/chargeConfirm")
@@ -115,32 +194,18 @@ public class EthAccountController {
 		aaxz.setAccount(account);
 		String keystore = ethAccountService.selectKeystoreByAccount(aaxz);
 		System.out.println(keystore);
-		//充值
 		try {
-			Web3j web3j0 = Web3j.build(new HttpService(ip[0]));
-			Web3j web3j1 = Web3j.build(new HttpService(ip[1]));
-			Web3j web3j2 = Web3j.build(new HttpService(ip[2]));
-			Web3j web3j3 = Web3j.build(new HttpService(ip[3]));
-			Web3j web3j4 = Web3j.build(new HttpService(ip[4]));
-			
+			List<Web3j> web3jList = new ArrayList<>();
+			for(int i = 0; i < ip.length; i++) {
+				web3jList.add(Web3j.build(new HttpService(ip[i])));
+			}
 			File keystoreFile = keystoreToFile(keystore, account + ".json");
 			Credentials credentials = WalletUtils.loadCredentials(password, keystoreFile);
 			System.out.println("解锁成功。。。");
 			keystoreFile.delete();
 			System.out.println("删除临时keystore文件成功。。。");
-//			Transfer contract = Transfer.load(address, web3j, credentials, BigInteger.valueOf(2200000000L), BigInteger.valueOf(4300000L));
-//			contract.transferAToB(new Address(defaultAcc), BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(Long.parseLong(money)))).observable().subscribe(x -> {
-//				System.out.println(x.getBlockHash());
-//				System.out.println(x.getBlockNumber());
-//				System.out.println(x.getCumulativeGasUsed());
-//				System.out.println(x.getGasUsed());
-//				System.out.println(x.getStatus());
-//				System.out.println(x.getTransactionHash());
-//				
-//				modelMap.put("success", true);
-//			});
 			
-			EthGetTransactionCount ethGetTransactionCount = web3j0.ethGetTransactionCount(account, DefaultBlockParameterName.LATEST).sendAsync().get();
+			EthGetTransactionCount ethGetTransactionCount = web3jList.get(0).ethGetTransactionCount(account, DefaultBlockParameterName.LATEST).sendAsync().get();
 			BigInteger nonce = ethGetTransactionCount.getTransactionCount();
 			System.err.println("nonce:" + nonce);
 			RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, BigInteger.valueOf(2200000000L), BigInteger.valueOf(2100000L), defaultAcc, moneyBigDecimal.toBigInteger());
@@ -149,35 +214,17 @@ public class EthAccountController {
 			String hexValue = Numeric.toHexString(signedMessage);
 			System.err.println("hexValue:" + hexValue);
 			//发送交易
-//			EthSendTransaction ethSendTransaction = web3j.ethSendRawTransaction(hexValue).sendAsync().get();
-//			String transactionHash = ethSendTransaction.getTransactionHash();
-//			System.err.println("transactionHash:" + transactionHash);
+			String transactionHash = "";
+			for(int i = 0; i < web3jList.size(); i++) {
+				transactionHash = web3jList.get(i).ethSendRawTransaction(hexValue).sendAsync().get().getTransactionHash();
+				if(transactionHash != null) {
+					System.out.println(transactionHash);
+				}
+			}
 			
-			EthSendTransaction ethSendTransaction0 = web3j0.ethSendRawTransaction(hexValue).sendAsync().get();
-			String transactionHash0 = ethSendTransaction0.getTransactionHash();
-			System.err.println("transactionHash0:" + transactionHash0);
-
-			EthSendTransaction ethSendTransaction1 = web3j1.ethSendRawTransaction(hexValue).sendAsync().get();
-			String transactionHash1 = ethSendTransaction1.getTransactionHash();
-			System.err.println("transactionHash1:" + transactionHash1);
-
-			EthSendTransaction ethSendTransaction2 = web3j2.ethSendRawTransaction(hexValue).sendAsync().get();
-			String transactionHash2 = ethSendTransaction2.getTransactionHash();
-			System.err.println("transactionHash2:" + transactionHash2);
-
-			EthSendTransaction ethSendTransaction3 = web3j3.ethSendRawTransaction(hexValue).sendAsync().get();
-			String transactionHash3 = ethSendTransaction3.getTransactionHash();
-			System.err.println("transactionHash3:" + transactionHash3);
-
-			EthSendTransaction ethSendTransaction4 = web3j4.ethSendRawTransaction(hexValue).sendAsync().get();
-			String transactionHash4 = ethSendTransaction4.getTransactionHash();
-			System.err.println("transactionHash4:" + transactionHash4);
-//			TransactionReceipt transactionReceipt = contract.transferAToB(new Address(defaultAcc), BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(Long.parseLong(money)))).sendAsync().get();
-//			String transactionHash = transactionReceipt.getTransactionHash();
 			modelMap.put("success", true);
-			modelMap.put("transactionHash", transactionHash0);
+			modelMap.put("transactionHash", transactionHash);
 		} catch (Exception e) {
-//			System.out.println(e.getMessage());
 			e.printStackTrace();
 			if(e.getMessage().contains("Invalid")) {
 				modelMap.put("success", false);
