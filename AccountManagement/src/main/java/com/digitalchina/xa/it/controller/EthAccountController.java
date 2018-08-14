@@ -79,6 +79,49 @@ public class EthAccountController {
 //	}
 //	
 	
+//	获取keystore
+	@ResponseBody
+	@GetMapping("/getKeystore")
+	public Map<String, Object> getKeystore(
+			@RequestParam(name = "param", required = true) String jsonValue) {
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		
+		System.out.println(jsonValue);
+		Encrypt encrypt = new EncryptImpl();
+    	String decrypt = null;
+		try {
+			decrypt = encrypt.decrypt(jsonValue);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！");
+			return modelMap;
+		}
+    	String data = null;
+		try {
+			data = URLDecoder.decode(decrypt, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！非utf-8编码。");
+			return modelMap;
+		}
+    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
+    	JSONObject accountJson = JSONObject.parseObject(data);
+		String account = accountJson.getString("account");
+		
+		EthAccountDomain ethAccountDomain = new EthAccountDomain();
+		ethAccountDomain.setAccount(account);
+		String keystore = ethAccountService.selectKeystoreByAccount(ethAccountDomain);
+		
+		System.out.println(keystore);
+		
+		modelMap.put("success", true);
+		modelMap.put("keystore", keystore);
+		
+		return modelMap;
+	}
+	
 //	确认提现请求，提交账户地址（TO），金额，钱包地址（FROM）
 	@ResponseBody
 	@GetMapping("/withdrawConfirm")
@@ -235,7 +278,6 @@ public class EthAccountController {
     	
 		return modelMap;
 	}
-	
 	
 //	重选密语请求，返回新生成的密语
 	@ResponseBody
