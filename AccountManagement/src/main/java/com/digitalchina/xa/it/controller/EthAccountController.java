@@ -59,7 +59,8 @@ public class EthAccountController {
 	private MnemonicService mnemonicService;
 	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
 	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
-	private static String tempFilePath = "C://temp/";
+//	private static String tempFilePath = "C://temp/";
+	private static String tempFilePath = "/eth/javaServer/wallet/temp/";
 //	private static String keystoreName = "keystore.json";
 	
 //	@ResponseBody
@@ -121,7 +122,7 @@ public class EthAccountController {
 				web3jList.add(Web3j.build(new HttpService(ip[i])));
 			}
 			File keystoreFile = keystoreToFile(keystore, defaultAcc + ".json");
-			Credentials credentials = WalletUtils.loadCredentials("", keystoreFile);
+			Credentials credentials = WalletUtils.loadCredentials("mini0823", keystoreFile);
 			System.out.println("解锁成功。。。");
 			keystoreFile.delete();
 			System.out.println("删除临时keystore文件成功。。。");
@@ -141,6 +142,7 @@ public class EthAccountController {
 				if(transactionHash != null) {
 					System.out.println(transactionHash);
 				}
+				web3jList.get(i).shutdown();
 			}
 			
 			modelMap.put("success", true);
@@ -183,7 +185,7 @@ public class EthAccountController {
 			modelMap.put("errMsg", "解密失败！非utf-8编码。");
 			return modelMap;
 		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
+    	System.err.println("确认充值的及itcode的JSON为:" + data);
     	JSONObject chargeJson = JSONObject.parseObject(data);
 		String account = chargeJson.getString("account");
 		String password = chargeJson.getString("password");
@@ -220,6 +222,7 @@ public class EthAccountController {
 				if(transactionHash != null) {
 					System.out.println(transactionHash);
 				}
+				web3jList.get(i).shutdown();
 			}
 			
 			modelMap.put("success", true);
