@@ -37,4 +37,42 @@
 			#{status, jdbcType=INTEGER},#{email, jdbcType=VARCHAR},#{remark, jdbcType=VARCHAR},#{password, jdbcType=VARCHAR}
 			</trim>
 	</insert>
+	
+	<select id="selectUserNoBefore8" resultType="java.lang.String">
+		SELECT
+			UserNo
+		FROM
+			(
+				SELECT
+					UserNo,beat_card_firsttime
+				FROM
+					beat_card
+				WHERE
+					date_format(beat_card_date, '%Y%m%d') = date_format(
+						date_add(NOW(), INTERVAL - 1 DAY),
+						'%Y%m%d'
+					)
+			) as baseTable
+		WHERE
+			baseTable.beat_card_firsttime &lt;= '080000';
+	</select>
+	
+	<select id="selectUserNoAfter21" resultType="java.lang.String">
+		SELECT
+			UserNo
+		FROM
+			(
+				SELECT
+					UserNo,beat_card_lasttime
+				FROM
+					beat_card
+				WHERE
+					date_format(beat_card_date, '%Y%m%d') = date_format(
+						date_add(NOW(), INTERVAL - 1 DAY),
+						'%Y%m%d'
+					)
+			) as baseTable
+		WHERE
+			baseTable.beat_card_lasttime &gt;= '210000';
+	</select>
 </mapper>

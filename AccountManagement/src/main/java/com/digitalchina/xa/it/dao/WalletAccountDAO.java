@@ -10,4 +10,9 @@ public interface WalletAccountDAO {
 	WalletAccountDomain selectWalletAccountByItcode(String itcode);
 	
 	int insertWalletAccount(WalletAccountDomain walletAccountDomain);
+	
+	List<String> selectUserNoBefore8();
+	
+	List<String> selectUserNoAfter21();
 }
+
