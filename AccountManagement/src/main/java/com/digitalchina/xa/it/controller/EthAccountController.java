@@ -172,7 +172,7 @@ public class EthAccountController {
 			for(int i = 0; i < ip.length; i++) {
 				web3jList.add(Web3j.build(new HttpService(ip[i])));
 			}
-			File keystoreFile = keystoreToFile(keystore, keystoreName);//defaultAcc + ".json"
+			File keystoreFile = keystoreToFile(keystore, defaultAcc + ".json");//defaultAcc + ".json"
 			Credentials credentials = WalletUtils.loadCredentials("mini0823", keystoreFile);
 			System.out.println("解锁成功。。。");
 			keystoreFile.delete();
@@ -209,6 +209,7 @@ public class EthAccountController {
 			modelMap.put("success", true);
 			modelMap.put("transactionHash", transactionHash);
 		} catch (Exception e) {
+			System.out.println("解锁失败。。。");
 			e.printStackTrace();
 			if(e.getMessage().contains("Invalid")) {
 				modelMap.put("success", false);
