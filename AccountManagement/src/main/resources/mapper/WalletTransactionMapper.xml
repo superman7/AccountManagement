@@ -1,5 +1,51 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.digitalchina.xa.it.dao.WalletTransactionDAO" >
+	<sql id="BASE_TABLE">
+		am_wallettransaction
+	</sql>
 	
+	<sql id="BASE_COLUMN">
+		id,itcode,accountFrom,accountTo,aliasFrom,aliasTo,balance,gas,transactionHash,confirmTime,confirmBlock,status
+	</sql>
+	
+	<select id="selectTransactionHashUnconfirm" resultType="java.lang.String">
+		SELECT
+			transactionHash
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			status = 0
+	</select>
+	
+	<select id="selectRecordsByItcode" resultType="com.digitalchina.xa.it.model.WalletTransactionDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode}
+	</select>
+	
+	<insert id="insertBaseInfo" parameterType="com.digitalchina.xa.it.model.WalletTransactionDomain">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				itcode,accountFrom,accountTo,aliasFrom,aliasTo,balance,transactionHash
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{itcode, jdbcType=VARCHAR},#{accountFrom, jdbcType=VARCHAR},#{accountTo, jdbcType=VARCHAR},
+				#{aliasFrom, jdbcType=VARCHAR},#{aliasTo, jdbcType=VARCHAR},#{balance, jdbcType=DOUBLE},
+				#{transactionHash, jdbcType=VARCHAR}
+			</trim>
+	</insert>
+	
+	<update id="updateByTransactionHash" parameterType="com.digitalchina.xa.it.model.WalletTransactionDomain">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			gas = #{gas, jdbcType=DOUBLE},confirmBlock = #{confirmBlock, jdbcType=INTEGER},status = #{status, jdbcType=INTEGER}
+		WHERE
+			transactionHash = #{transactionHash, jdbcType=VARCHAR}
+	</update>
 </mapper>

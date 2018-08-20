@@ -24,6 +24,8 @@ public class WalletTransactionDomain {
     private Timestamp confirmTime;
     
     private Integer confirmBlock;
+    
+    private Integer status;
 
 	public Integer getId() {
 		return id;
@@ -111,5 +113,13 @@ public class WalletTransactionDomain {
 
 	public void setConfirmBlock(Integer confirmBlock) {
 		this.confirmBlock = confirmBlock;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 }
