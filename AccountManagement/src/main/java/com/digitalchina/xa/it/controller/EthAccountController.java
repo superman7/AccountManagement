@@ -63,8 +63,9 @@ public class EthAccountController {
 	private WalletTransactionService walletTransactionService;
 	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
 	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
-	private static String tempFilePath = "C://temp/";
-	private static String keystoreName = "keystore.json";
+//	private static String tempFilePath = "C://temp/";
+	private static String tempFilePath = "/eth/javaServer/wallet/temp/";
+//	private static String keystoreName = "keystore.json";
 	
 //	@ResponseBody
 //	@GetMapping("/refreshAllUsersBalance")
@@ -266,6 +267,7 @@ public class EthAccountController {
 				web3jList.add(Web3j.build(new HttpService(ip[i])));
 			}
 			File keystoreFile = keystoreToFile(keystore, account + ".json");
+			System.out.println("开始解锁。。。");
 			Credentials credentials = WalletUtils.loadCredentials(password, keystoreFile);
 			System.out.println("解锁成功。。。");
 			keystoreFile.delete();
@@ -302,6 +304,7 @@ public class EthAccountController {
 			modelMap.put("success", true);
 			modelMap.put("transactionHash", transactionHash);
 		} catch (Exception e) {
+			System.out.println("解锁失败。。。");
 			e.printStackTrace();
 			if(e.getMessage().contains("Invalid")) {
 				modelMap.put("success", false);
@@ -321,7 +324,7 @@ public class EthAccountController {
 		String mnemonicSentence = mnemonicService.chooseMnemonic();
 		modelMap.put("success", true);
 		modelMap.put("mnemonic", mnemonicSentence);
-			
+		
 		return modelMap;
 	}
 	
