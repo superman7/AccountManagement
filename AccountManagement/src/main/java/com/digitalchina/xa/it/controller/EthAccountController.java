@@ -9,7 +9,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,9 +65,9 @@ public class EthAccountController {
 	private WalletTransactionService walletTransactionService;
 	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
 	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
-//	private static String tempFilePath = "C://temp/";
-	private static String tempFilePath = "/eth/javaServer/wallet/temp/";
-//	private static String keystoreName = "keystore.json";
+	private static String tempFilePath = "C://temp/";
+//	private static String tempFilePath = "/eth/javaServer/wallet/temp/";
+	private static String keystoreName = "keystore.json";
 	
 //	@ResponseBody
 //	@GetMapping("/refreshAllUsersBalance")
@@ -172,7 +174,7 @@ public class EthAccountController {
 			for(int i = 0; i < ip.length; i++) {
 				web3jList.add(Web3j.build(new HttpService(ip[i])));
 			}
-			File keystoreFile = keystoreToFile(keystore, defaultAcc + ".json");//defaultAcc + ".json"
+			File keystoreFile = keystoreToFile(keystore, keystoreName);//defaultAcc + ".json"
 			Credentials credentials = WalletUtils.loadCredentials("mini0823", keystoreFile);
 			System.out.println("解锁成功。。。");
 			keystoreFile.delete();
@@ -204,6 +206,7 @@ public class EthAccountController {
 			wtd.setAliasTo(alias);
 			wtd.setBalance(money);
 			wtd.setTransactionHash(realTransactionHash);
+			wtd.setConfirmTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 			walletTransactionService.insertBaseInfo(wtd);
 			
 			modelMap.put("success", true);
@@ -300,6 +303,7 @@ public class EthAccountController {
 			wtd.setAliasTo("默认账户");
 			wtd.setBalance(money);
 			wtd.setTransactionHash(realTransactionHash);
+			wtd.setConfirmTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 			walletTransactionService.insertBaseInfo(wtd);
 			
 			modelMap.put("success", true);
