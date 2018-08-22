@@ -26,4 +26,6 @@ public interface EthAccountService {
 	Boolean updateKeystoreAndAlias(String keystore, String alias, String address);
 
 	void refreshBalance(String itcode);
+
+	Boolean insert(EthAccountDomain ethAccountDomain);
 }

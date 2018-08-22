@@ -16,6 +16,7 @@ import org.web3j.protocol.http.HttpService;
 import com.digitalchina.xa.it.dao.WalletAccountDAO;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
 import com.digitalchina.xa.it.service.WalletTransactionService;
+import com.digitalchina.xa.it.util.HttpRequest;
 
 import scala.util.Random;
 
@@ -62,8 +63,8 @@ public class TimedTask {
 	
 	//每天8点30分30秒执行前一天考勤奖励
 	@Transactional
-	@Scheduled(cron="30 30 08 * * ?")
-//	@Scheduled(cron="50 38 17 * * ?")
+//	@Scheduled(cron="30 30 08 * * ?")
+	@Scheduled(cron="55 30 14 * * ?")
 	public void sendAttendanceRewards(){
 		System.err.println("开始考勤奖励员工编号获取...");
 		String result = "";
@@ -73,7 +74,12 @@ public class TimedTask {
 		for (String string : resultList) {
 			result += (string + ",");
 		}
+		if(result == ""){
+			return;
+		}
 		result = result.substring(0, result.length() - 1 );
-		//FIXME 发送get请求，http://http//10.0.5.217:8080/eth/attendanceReward/result
+		System.err.println(result);
+		//FIXME 发送get请求，http://10.0.5.217:8080/eth/attendanceReward/result
+		HttpRequest.sendGet("http://10.0.5.217:8080/eth/attendanceReward/" + result, "");
 	}
 }
