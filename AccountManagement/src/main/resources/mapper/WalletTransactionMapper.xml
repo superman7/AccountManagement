@@ -31,12 +31,12 @@
 		INSERT INTO
 			<include refid="BASE_TABLE"/>
 			<trim prefix="(" suffix=")" suffixOverrides=",">
-				itcode,accountFrom,accountTo,aliasFrom,aliasTo,balance,transactionHash
+				itcode,accountFrom,accountTo,aliasFrom,aliasTo,balance,transactionHash,confirmTime
 			</trim>
 			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
 				#{itcode, jdbcType=VARCHAR},#{accountFrom, jdbcType=VARCHAR},#{accountTo, jdbcType=VARCHAR},
 				#{aliasFrom, jdbcType=VARCHAR},#{aliasTo, jdbcType=VARCHAR},#{balance, jdbcType=DOUBLE},
-				#{transactionHash, jdbcType=VARCHAR}
+				#{transactionHash, jdbcType=VARCHAR},#{confirmTime, jdbcType=VARCHAR}
 			</trim>
 	</insert>
 	

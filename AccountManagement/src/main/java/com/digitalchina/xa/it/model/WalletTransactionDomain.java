@@ -21,7 +21,7 @@ public class WalletTransactionDomain {
     
     private String transactionHash;
     
-    private Timestamp confirmTime;
+    private String confirmTime;
     
     private Integer confirmBlock;
     
@@ -99,11 +99,11 @@ public class WalletTransactionDomain {
 		this.transactionHash = transactionHash;
 	}
 
-	public Timestamp getConfirmTime() {
+	public String getConfirmTime() {
 		return confirmTime;
 	}
 
-	public void setConfirmTime(Timestamp confirmTime) {
+	public void setConfirmTime(String confirmTime) {
 		this.confirmTime = confirmTime;
 	}
 
