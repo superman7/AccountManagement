@@ -63,8 +63,8 @@ public class TimedTask {
 	
 	//每天8点30分30秒执行前一天考勤奖励
 	@Transactional
-//	@Scheduled(cron="30 30 08 * * ?")
-	@Scheduled(cron="55 30 14 * * ?")
+	@Scheduled(cron="30 30 08 * * ?")
+//	@Scheduled(cron="55 30 14 * * ?")
 	public void sendAttendanceRewards(){
 		System.err.println("开始考勤奖励员工编号获取...");
 		String result = "";
