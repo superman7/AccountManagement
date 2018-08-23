@@ -179,8 +179,8 @@ public class EthAccountController {
 			modelMap.put("transactionHash", transactionHash);
 		} catch (Exception e) {
 			System.out.println("解锁失败。。。");
-			e.printStackTrace();
-			if(e.getMessage().contains("Invalid")) {
+			if(e.getMessage().contains("Invalid password provided")) {
+				System.out.println("密码错误");
 				modelMap.put("success", false);
 				modelMap.put("errMsg", "invalidPassword");
 				return modelMap;
@@ -318,7 +318,7 @@ public class EthAccountController {
 		} catch (Exception e) {
 			System.out.println("解锁失败。。。");
 			e.printStackTrace();
-			if(e.getMessage().contains("Invalid")) {
+			if(e.getMessage().contains("Invalid password provided")) {
 				modelMap.put("success", false);
 				modelMap.put("errMsg", "invalidPassword");
 				return modelMap;
@@ -415,7 +415,7 @@ public class EthAccountController {
 		} catch (Exception e) {
 			System.out.println("解锁失败。。。");
 			e.printStackTrace();
-			if(e.getMessage().contains("Invalid")) {
+			if(e.getMessage().contains("Invalid password provided")) {
 				modelMap.put("success", false);
 				modelMap.put("errMsg", "invalidPassword");
 				return modelMap;
