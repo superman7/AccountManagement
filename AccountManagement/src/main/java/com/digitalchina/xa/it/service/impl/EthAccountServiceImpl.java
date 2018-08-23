@@ -60,7 +60,30 @@ public class EthAccountServiceImpl implements EthAccountService {
 	public EthAccountDomain selectDefaultEthAccount(String itcode, String status) {
 		return ethAccountDAO.selectDefaultEthAccount(itcode, status);
 	}
-
+	
+	@Override
+	@Transactional
+	public Boolean insert(EthAccountDomain ethAccountDomain) {
+		if(ethAccountDomain == null) {
+			throw new RuntimeException("ethAccountDomain为null");
+		}
+		if(ethAccountDomain.getItcode() != null && ethAccountDomain.getItcode() != ""
+				&& ethAccountDomain.getAccount() != null && ethAccountDomain.getAccount() != "") {
+			try {
+				int effectedNumber = ethAccountDAO.insert(ethAccountDomain);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					throw new RuntimeException("插入账户失败");
+				}
+			} catch(Exception e) {
+				throw new RuntimeException("插入账户失败 " + e.getMessage());
+			}
+		} else {
+			throw new RuntimeException("插入账户 itcode，account， keystore不能为空");
+		}
+	}
+	
 	@Override
 	@Transactional
 	public Boolean insertItcodeAndAccount(EthAccountDomain ethAccountDomain) {

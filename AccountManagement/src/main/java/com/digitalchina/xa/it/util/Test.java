@@ -47,6 +47,7 @@ public class Test {
 	
 	private static String ip = "http://10.7.10.124:8545";
 	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
+	private static String[] appList = {"BRIDGE","Manta Flow","PrediCX","Wrike","Cluvio","Plecto","SysAid","Salesforce Sales Cloud","Marketing 360","Peek Pro Tour Operators","monday.com","Zoho CRM","Campaign Monitor","Tableau Software","Sisense","ProsperWorks CRM","TEAMGATE","Brand24","Adaptive Insights","Nutshell CRM","Grow.com","Prisync","Looker","Insightly","AgencyAnalytics","ClicData","Hubble","Zoho Reports","Springboard Retail","Attendify","Tagetik","Livestorm","Datadog","Logicbox","NUVI","LogicMonitor","Style Intelligence","Halo","SE Ranking","Site Search 360","NetSuite","Property Matrix","Logz.io","Windward Solution","Izenda","TapClicks","Geckoboard","Scribe Online","Pyze","WebEngage","Chartio","Caspio","Wave: Salesforce Analytics Cloud","Weekdone","Host Analytics EPM Suite","iAuditor","Incompetitor","Attribution","Cooladata","FullContact","AnswerRocket","dexi.io","ESM Suite","Nexternal Solutions","Bronto","Heap","Yellowfin","ReportGarden","OneStream XF","BluLogix","PlanGuru","Anodot","9 Spokes","prevero","CaptureFast","Systum","Spreadsheet Server","Convertize","Funnel Science","Marketing Optimizer","Presynct_OnDemand","Radar","EngageIP Billing/OSS","Allocable","Dataccuity","Float Cash Flow","Funnel","IntelliFront BI","VelocityEHS","MuniLogic","Swiftype Site Search","Revulytics","Validis","Appsee Mobile Analytics","SQL-RD","LandVision","CRD","Panoply","Zoho PageSense","Avarea Analytics for Marketing","Control","Corporater","Directorpoint","ERES Cloud","Etleap","Host Analytics","Process Director","Questica OpenBook","Synup","Tick","Hootsuite","Google Analytics","Databox","Klipfolio","Followup CRM","ProjectManager.com","SEMrush","BOARD","Smartlook","Dundas BI","Moz","Salesforce Social Studio","Base CRM","Adobe SiteCatalyst","Vivantio ITSM","ITM Platform","GlobiFlow for Podio","Domo","Mothernode CRM","Qlik Sense","WebFOCUS","QlikView","InsightSquared","Bullhorn CRM","Exponea","Optimizely","SAP Business Objects","Revel Systems POS","Hotjar","NetBase","Leadfeeder","Firefish","Tubular","Microsoft Power BI","Leady","Panorama Necto","Wdesk","Cognos","Phocas","Ahrefs","WooRank","Cyfe","SpyFu","VisitorTrack","Azurepath","Docparser","Rebrandly","Alteryx","Numetric","Mozenda","Aviso","Locowise","DataPlay","Vidyard","SAP Analytics Cloud","FinPro","Mixpanel","Prolo","Workmates","CleverTap","Acquisio","SAS BI & Analytics","CiviCRM","Datanyze","Birst","MicroStrategy","Hootsuite Insights","TIBCO Spotfire","ForceManager","Pentaho","PeopleFluent","HasOffers by TUNE","Notion","Crazy Egg","Spinify","Brightedge","FacilityDude GIS","Alexa","ChartMogul","Crimson Hexagon","Hoopla","Poimapper","Periscope","Visual Website Optimizer","Simply Measured","SimilarWeb PRO","Easy Insight","Visme","LiveHive","Slemma","Jaspersoft","BIME by Zendesk","Piwik PRO","Raven","Gainsight","Segment","FORGE","Inspectlet","Predictive intelligence","Predixion","Priceforge","Pro Profs Poll Maker","Proof","Ptengine","Regression Forecasting","Retail Advantage","Rocket Fuel","Roosboard","SAP Predictive Analytics","Salescast","Salesvue","SearchMan","SeeVolution","Semantria","SessionCam","Share a Refund","Sift Science","SimpleFeed","SpatialKey","Splunk Cloud","Statsbot","Surveyi2i","TPO Planner","Taveo","Tidemark","Transera","Trend Miner","Upsight","VUE Software","Velocity","Versium","Vigil","Visual KPI","VueData","Web Maven","Webtrends","WildFire","Windward Arrow","Wise","Wizdee","WordStream SEO for FireFox","XLReporting","Yurbi","ipapi","mailspice","pcFinancials","theBillingBridge","webKPI","whatusersdo.com","SalesChoice","FusionCharts","ReportPlus","CMO COMPLIANCE","CanvasJS Charts","Megalytic","Wink Reports","Mentimeter","YUNO","RESULTS.com","SEO PowerSuite","RapidMiner","SABRE","MoData","Sysomos","GitPrime","MACH Energy","PUBLITRAC","Truedash","Zenput Mobile","Dasheroo","Quantcast","Certent Disclosure Management","DemandJump","Quantum Metric","Roambi Analytics","quintly","Analytics Plus","Brandwatch","Purchase Control","DBHawk","ThoughtBuzz","Kissmetrics","Envisio","Tealium IQ","Albacross","FUTRLI","InviteManager","Knowledge Vault","Qubole Data Service","SalesPredict","ScribbleLive","SumAll","Unomy","Gooddata","Crashlytics","Evergage","Intellicus","Sumo Logic","Mouseflow","Radius","Siteimprove","Authoritas","CloverETL","Majestic","Practi","Amazon Cloud Search","Colibri SEO","Grepsr","Intelex","Librato","PriceGrid","Logi Info","AquaCRM Software","Artesian","Atomic Reach","BI Office","Bonsai.io","Botify","Business Valuation","Centius Qi","Clixtell","Contour BI","Decibel Insight","EMAsphere","EverString","Fathom","Financial Dashboard and Business Intelligence","Leftronic","Localytics","LookBookHQ","ManageEngine Exchange Reporter Plus","OWOX BI","Pixability","Polymita BPMS","RJMetrics","Ranktab","Ruler Analytics","Spotlight Reporting","Unbxd","Xtremepush","Zoola Analytics","intelligentXchange","sales-i","Sailthru","DataHero","Amplitude","Freshmarketer","OverOps","Akita","AppAnnie","AppNeta","Circonus","Contactology","CustomerGauge","DataCycle Reporting","Flurry","Swydo","InsideSales","Datameer","Marin Software","Cloud9","ComScore","Mi360","Webtrekk","Woopra","InPhase","Keen IO","Lex Machina","3PMobile","AB Tasty","AT Internet Web Analytics","Agile Reporting Services","AlchemyAPI","Alooma","Anchor Metrics","Applause Analytics","Apptopia","Attivio","AutoTag","Aviatrix","BEYABLE","BIRT onDemand","Badgeville","Baremetrics","Beckon","Belladati","BluePlanner","Bluekai","Bluenose","Bounce Exchange","Bravo Reporting","Chartbeat","ChurnSpotter","Clarabridge","Cleo Integration Cloud","ClickTale","CloudLock for Google Apps","CloudPhysics","Compete","ConversionSweeper","Criteo","CustomerCradle","Custora","Cxense Insight","DataTap","Datahug","EdgeSpring","EmbeddedAnalytics","Entytle","Etail Solutions","FICO Falcon Fraud Manager","Fiserv","Fliptop","Foresight Intelligence Center","Full Circle Response Management","Futurelytics","GroupQuality","GuestCentric","Happy Apps","Hitwise","Hohli","HomeCare Accounting","HookFeed","Infer","InfoCaptor Dashboard","Jibestream","Juicebox","KnowledgeSCORE","Kognitio Cloud","Kompyte","Lattice","Leadspace","LevelEleven","Loader","Logi Vision","Lumiary","Magnetic","ManageEngine ADAudit Plus","MetricPulse","MonkeyData","Now Assistant","Numerify","OLAP Reporting Tool","OmniContext","OneAll","OpenText Actuate Analytics Designers","OpenText Actuate Information Hub","Operational Insights","Oribi","PPC Keyword","PRO(a)ACT","PhoneTools","Planning In A Box","Platfora","PointPin","PostHelpers","Adaptive Insights"};
 //	private static String ip = "http://10.125.9.21:8545";
 //	private static String address = "0x601f2e867002401cf3f6d1f8e02798d603743170";
     static final int PUBLIC_KEY_SIZE = 64;
@@ -62,13 +63,11 @@ public class Test {
 //	public static void main(String[] args) {
 //		String aa = "asdfxxxzxcvdf4ewrdsfgbxvcxv";
 //		ECKeyPair ecKeyPair= ECKeyPair.create(getSHA2HexValue(aa));
-//		
 //		System.out.println("PrivateKey:" + ecKeyPair.getPrivateKey().toString(16));
-//
 //        System.out.println("PublicKey:" + ecKeyPair.getPublicKey().toString(16));
 //        System.out.println(Keys.getAddress(ecKeyPair));
 //        try {
-//			WalletFile walletFile = Wallet.createStandard("test1", ecKeyPair);
+//			WalletFile walletFile = Wallet.createStandard("getapps", ecKeyPair);
 //
 //	        System.out.println("walletFile:" + walletFile);
 //	        System.out.println("address:" + walletFile.getAddress());
@@ -84,56 +83,51 @@ public class Test {
 //			e.printStackTrace();
 //		}
 //    }
-	
 	public static void main(String[] args) {
-    try{
-		String tempFilePath = "C://temp/";
-		String keystoreName = "keystore.json";
-		String keystore = "{\"address\":\"44b8c62b73a77df17ac4a194c5a68a723aea356a\",\"id\":\"8c2b0b9a-b71a-4dd3-b918-9fd3f76e1654\",\"version\":3,\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"1da057b206f250b0bf92056b1d349dbbd3f279d1b495f64b3efc73bc3d9bbd3f\",\"kdfparams\":{\"p\":1,\"r\":8,\"salt\":\"36ac0d9cf7e63b19fd7714055f155e207e6af333025b4cec02377c82b410936b\",\"dklen\":32,\"n\":262144},\"cipherparams\":{\"iv\":\"f3c2ad317a3018f77a99f5f32e2eaa53\"},\"kdf\":\"scrypt\",\"mac\":\"adecd6a46337120c8d86916ec0ef5a25378657900a7ade55c1f5fc26fba48011\"}}";
-//		String keystore = "{\"address\":\"3981c0a6a05a1a112395bef12cedf33ea324a901\",\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"6cbde339012f1d3910d27f25b39863a38afda79edb18b8abfca58ef726ceef65\",\"cipherparams\":{\"iv\":\"7bd132e8f993d128c29433461261d2d5\"},\"kdf\":\"scrypt\",\"kdfparams\":{\"dklen\":32,\"n\":262144,\"p\":1,\"r\":8,\"salt\":\"474f1c7c5ae09e6c3772c8a1a71eeab15a481f80f60ca951396a653755bc74d8\"},\"mac\":\"01269a43e2ff2ee36a8c20304f5f3314dfdbd446c2376022a95db6a451a9c408\"},\"id\":\"3948a772-8259-4a71-a5d3-05e9380d6c13\",\"version\":3}";
-//		String keystore = "{\"address\":\"5f9e6806342bfa4cdf4f3796c4cba73acdaca751\",\"id\":\"b20152ce-1779-42a7-9c6a-904d8f8775f7\",\"version\":3,\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"e71e6aeb4bf8d5eaf31f61a2a90cdb01544111cd8af0357b26b065d3d0109919\",\"kdfparams\":{\"p\":1,\"r\":8,\"salt\":\"e879d5e76a328c49e052de5478305c570b4894c7e7afcdce33ecb64a72f33f0f\",\"dklen\":32,\"n\":262144},\"cipherparams\":{\"iv\":\"025033568dea89ebdf26a23209f5c19a\"},\"kdf\":\"scrypt\",\"mac\":\"1b0163044f46c490fee09f76a3dadbcf1273a7ab609366000f2889b38e8d8792\"}}";
-//		String keystore = "{\"address\":\"4a5237213423ea6e5994e338d1628cf76e215ca3\",\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"2bf0c50a7fdaf53d2da9a11b171f971ead28d38d5dadc04ffb1d531a93d8f501\",\"cipherparams\":{\"iv\":\"8932e77133311db4320cd02e3740c9ab\"},\"kdf\":\"scrypt\",\"kdfparams\":{\"dklen\":32,\"n\":262144,\"p\":1,\"r\":8,\"salt\":\"ee54aa13826e0eaf0339c2b085f5acec131921142d21293551311423bc8a06e8\"},\"mac\":\"ca4cf1a8347c48324fd917e0a3844ce70480e0d9300ca5dec491aa35475f1dcb\"},\"id\":\"ebd28d3a-3886-4299-849e-43574521c8a5\",\"version\":3}";
-//		String keystore = "{\"address\":\"189abcd4cb82534d9d7b2ee181b28bcc86c64853\",\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"92030d37f698f10ceb08b65e8cf8fcb048d75b81437d7feda004008eb3fa69c8\",\"cipherparams\":{\"iv\":\"2ef3f82c19ee50efebd9f555f6a22fc5\"},\"kdf\":\"scrypt\",\"kdfparams\":{\"dklen\":32,\"n\":262144,\"p\":1,\"r\":8,\"salt\":\"5bee728b4c1a470d9514faab1ab17eaacbdfe8692d042b50ff37f5eacc6d288e\"},\"mac\":\"f094bbc466a969bf939e755ea58900002ffaa7911b36cc4541222f01234b23e4\"},\"id\":\"c337c7c8-df9d-42f8-b59f-176ee9a04d81\",\"version\":3}";
-		File file = new File(tempFilePath + keystoreName);
-        //if file doesnt exists, then create it
-        if(!file.exists()){
-         file.createNewFile();
-        }
-        
-        FileWriter fw = new FileWriter(file.getAbsoluteFile());
-        BufferedWriter bw = new BufferedWriter(fw);
-        bw.write(keystore);
-        bw.close();
-        System.out.println("创建keystore。。。");
-        Credentials credentials;
-		try {
-			Web3j web3j =Web3j.build(new HttpService(ip));
-			credentials = WalletUtils.loadCredentials("test11", file);
-			System.out.println("解锁成功。。。");
-			Transfer contract = Transfer.load(address, web3j, credentials, BigInteger.valueOf(2200000000L), BigInteger.valueOf(4300000L));
-			
-			String tocount = "0x8a950e851344715a51036567ca1b44aab3f15110";
-			contract.transferAToB(new Address(tocount), BigInteger.valueOf(100000000000000000L)).observable().subscribe(x -> {
-				System.out.println(x.getBlockHash());
-				System.out.println(x.getBlockNumber());
-				System.out.println(x.getCumulativeGasUsed());
-				System.out.println(x.getGasUsed());
-				System.out.println(x.getStatus());
-				System.out.println(x.getTransactionHash());
-			});
-//			EthTransaction aa = web3j.ethGetTransactionByHash("0x6544243581596e37f272d2b98599dfabc5422d573c72ef1434b245063d2ad7e9").send();
-//			System.out.println("xxx");
-//			System.out.println(aa.getResult().getBlockNumberRaw());
-//			System.out.println(aa.getResult().getBlockNumber());
-//			System.out.println(aa.getResult().getBlockHash());
-		} catch (Exception e) {	
-			e.printStackTrace();
-		}
-        System.out.println("删除临时keystore：" + file.delete());
-       }catch(IOException e){
-        e.printStackTrace();
-       }
+		
 	}
+	
+	
+//	public static void main(String[] args) {
+//    try{
+//		String tempFilePath = "C://temp/";
+//		String keystoreName = "keystore.json";
+//		String keystore = "{\"address\":\"44b8c62b73a77df17ac4a194c5a68a723aea356a\",\"id\":\"8c2b0b9a-b71a-4dd3-b918-9fd3f76e1654\",\"version\":3,\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"1da057b206f250b0bf92056b1d349dbbd3f279d1b495f64b3efc73bc3d9bbd3f\",\"kdfparams\":{\"p\":1,\"r\":8,\"salt\":\"36ac0d9cf7e63b19fd7714055f155e207e6af333025b4cec02377c82b410936b\",\"dklen\":32,\"n\":262144},\"cipherparams\":{\"iv\":\"f3c2ad317a3018f77a99f5f32e2eaa53\"},\"kdf\":\"scrypt\",\"mac\":\"adecd6a46337120c8d86916ec0ef5a25378657900a7ade55c1f5fc26fba48011\"}}";
+//		File file = new File(tempFilePath + keystoreName);
+//        //if file doesnt exists, then create it
+//        if(!file.exists()){
+//         file.createNewFile();
+//        }
+//        
+//        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+//        BufferedWriter bw = new BufferedWriter(fw);
+//        bw.write(keystore);
+//        bw.close();
+//        System.out.println("创建keystore。。。");
+//        Credentials credentials;
+//		try {
+//			Web3j web3j =Web3j.build(new HttpService(ip));
+//			credentials = WalletUtils.loadCredentials("test11", file);
+//			System.out.println("解锁成功。。。");
+//			Transfer contract = Transfer.load(address, web3j, credentials, BigInteger.valueOf(2200000000L), BigInteger.valueOf(4300000L));
+//			
+//			String tocount = "0x8a950e851344715a51036567ca1b44aab3f15110";
+//			contract.transferAToB(new Address(tocount), BigInteger.valueOf(100000000000000000L)).observable().subscribe(x -> {
+//				System.out.println(x.getBlockHash());
+//				System.out.println(x.getBlockNumber());
+//				System.out.println(x.getCumulativeGasUsed());
+//				System.out.println(x.getGasUsed());
+//				System.out.println(x.getStatus());
+//				System.out.println(x.getTransactionHash());
+//			});
+//		} catch (Exception e) {	
+//			e.printStackTrace();
+//		}
+//        System.out.println("删除临时keystore：" + file.delete());
+//       }catch(IOException e){
+//        e.printStackTrace();
+//       }
+//	}
 	public static byte[] getSHA2HexValue(String str) {
         byte[] cipher_byte;
         try{
