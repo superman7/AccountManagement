@@ -5,7 +5,7 @@ import java.util.List;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
 
 public interface WalletTransactionDAO {
-	List<String> selectTransactionHashUnconfirm();
+	List<WalletTransactionDomain> selectHashAndAccounts();
 	
 	List<WalletTransactionDomain> selectRecordsByItcode(String itcode);
 	

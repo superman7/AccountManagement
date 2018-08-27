@@ -1,7 +1,5 @@
 package com.digitalchina.xa.it.model;
 
-import java.sql.Timestamp;
-
 public class WalletTransactionDomain {
 	private Integer id;
 
@@ -10,6 +8,10 @@ public class WalletTransactionDomain {
 	private String accountFrom;
 	
 	private String accountTo;
+	
+	private Double balanceFrom;
+	
+	private Double balanceTo;
 	
 	private String aliasFrom;
 	
@@ -26,6 +28,22 @@ public class WalletTransactionDomain {
     private Integer confirmBlock;
     
     private Integer status;
+
+	public Double getBalanceFrom() {
+		return balanceFrom;
+	}
+
+	public void setBalanceFrom(Double balanceFrom) {
+		this.balanceFrom = balanceFrom;
+	}
+
+	public Double getBalanceTo() {
+		return balanceTo;
+	}
+
+	public void setBalanceTo(Double balanceTo) {
+		this.balanceTo = balanceTo;
+	}
 
 	public Integer getId() {
 		return id;
