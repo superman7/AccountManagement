@@ -65,12 +65,14 @@ public class EthAccountController {
 	private MnemonicService mnemonicService;
 	@Autowired
 	private WalletTransactionService walletTransactionService;
+	
 	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
-	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
-	private static String tempFilePath = "C://temp/";
-//	private static String tempFilePath = "/eth/javaServer/wallet/temp/";
+
 	private static String keystoreName = "keystore.json";
 	private static final BigInteger tax = BigInteger.valueOf(5000000000000000L);
+	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
+//	private static String tempFilePath = "C://temp/";
+	private static String tempFilePath = "/eth/javaServer/wallet/temp/";
 	
 //	@ResponseBody
 //	@GetMapping("/refreshAllUsersBalance")
@@ -278,7 +280,7 @@ public class EthAccountController {
 			for(int i = 0; i < ip.length; i++) {
 				web3jList.add(Web3j.build(new HttpService(ip[i])));
 			}
-			File keystoreFile = keystoreToFile(keystore, keystoreName);//defaultAcc + ".json"
+			File keystoreFile = keystoreToFile(keystore, defaultAcc + ".json");//
 			Credentials credentials = WalletUtils.loadCredentials("mini0823", keystoreFile);
 			System.out.println("解锁成功。。。");
 			keystoreFile.delete();
@@ -443,7 +445,6 @@ public class EthAccountController {
 	public Map<String, Object> accountList(
             @RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		//FIXME 封装为统一的静态方法调用		
 		System.out.println(jsonValue);
 		Encrypt encrypt = new EncryptImpl();
     	String decrypt = null;
@@ -482,7 +483,6 @@ public class EthAccountController {
 	public Map<String, Object> newAddress(
             @RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		//FIXME 封装为统一的静态方法调用		
 		System.out.println(jsonValue);
 		Encrypt encrypt = new EncryptImpl();
     	String decrypt = null;
@@ -538,7 +538,6 @@ public class EthAccountController {
 	@GetMapping("/newAccount")
 	public Map<String, Object> newAccount(@RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		//FIXME 封装为统一的静态方法调用
 		System.out.println(jsonValue);
 		Encrypt encrypt = new EncryptImpl();
     	String decrypt = null;
@@ -584,13 +583,38 @@ public class EthAccountController {
 		
 		return modelMap;
 	}
+	//FIXME
+	@ResponseBody
+	@GetMapping("/newNounAccount")
+	public String newNounAccount(@RequestParam(name = "param", required = true) String param) {
+		System.out.println("为" + param + "创建账户。");
+		ECKeyPair ecKeyPair= ECKeyPair.create(getSHA2HexValue(param));
+		String address = "0x" + Keys.getAddress(ecKeyPair);
+		
+		EthAccountDomain ethAccountDomain = new EthAccountDomain();
+		ethAccountDomain.setItcode("noun");
+		ethAccountDomain.setAccount(address);
+		ethAccountDomain.setAlias(param);
+		ethAccountDomain.setAvailable(6);
+		ethAccountDomain.setBackup1(param);
+		//生成WalletFile(keystore)，更新数据库，根据address存入keystore和alias Customer Service & Support Software
+		try {
+			WalletFile walletFile = Wallet.createLight("getapps", ecKeyPair);
+			String keystore = ((JSONObject) JSONObject.toJSON(walletFile)).toJSONString();
+			ethAccountDomain.setKeystore(keystore);
+//			System.out.println(keystore);
+		} catch (CipherException e) {
+			e.printStackTrace();
+		}
+		ethAccountService.insert(ethAccountDomain);
+		return "success";
+	}
 	
 //	检测地址名是否重复
 	@ResponseBody
 	@GetMapping("/checkUp")
 	public Map<String, Object> checkUp(@RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		//FIXME 封装为统一的静态方法调用		
 		System.out.println(jsonValue);
 		Encrypt encrypt = new EncryptImpl();
     	String decrypt = null;

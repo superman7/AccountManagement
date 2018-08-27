@@ -50,7 +50,18 @@
 		WHERE
 			account = #{account,jdbcType=VARCHAR}
 	</select>
-  
+  	
+  	<insert id="insert" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				itcode,account,alias,available,keystore,backup1
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{itcode, jdbcType=VARCHAR},#{account, jdbcType=VARCHAR},#{alias,jdbcType=VARCHAR},#{available,jdbcType=INTEGER},#{keystore,jdbcType=VARCHAR},#{backup1,jdbcType=VARCHAR}
+			</trim>
+	</insert>
+	
 	<insert id="insertItcodeAndAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
 		INSERT INTO
 			<include refid="BASE_TABLE"/>
