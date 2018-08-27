@@ -70,7 +70,7 @@ public class EthAccountController {
 
 	private static String keystoreName = "keystore.json";
 	private static final BigInteger tax = BigInteger.valueOf(5000000000000000L);
-  private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
+	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
 //	private static String tempFilePath = "C://temp/";
 	private static String tempFilePath = "/eth/javaServer/wallet/temp/";
 	
