@@ -16,6 +16,8 @@ public interface EthAccountDAO {
 	
 	String selectKeystoreByAccount(EthAccountDomain ethAccountDomain);
 	
+	int insert(EthAccountDomain ethAccountDomain);
+	
 	int insertItcodeAndAccount(EthAccountDomain ethAccountDomain);
 	
 	int updateDefaultBalance(String itcode, String status, BigDecimal balance);
