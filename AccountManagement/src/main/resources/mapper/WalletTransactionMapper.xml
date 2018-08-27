@@ -6,12 +6,12 @@
 	</sql>
 	
 	<sql id="BASE_COLUMN">
-		id,itcode,accountFrom,accountTo,aliasFrom,aliasTo,balance,gas,transactionHash,confirmTime,confirmBlock,status
+		id,itcode,accountFrom,accountTo,balanceFrom,balanceTo,aliasFrom,aliasTo,balance,gas,transactionHash,confirmTime,confirmBlock,status
 	</sql>
 	
-	<select id="selectTransactionHashUnconfirm" resultType="java.lang.String">
+	<select id="selectHashAndAccounts" resultType="com.digitalchina.xa.it.model.WalletTransactionDomain">
 		SELECT
-			transactionHash
+			transactionHash,accountFrom,accountTo
 		FROM
 			<include refid="BASE_TABLE"/>
 		WHERE
@@ -44,7 +44,7 @@
 		UPDATE 
 			<include refid="BASE_TABLE"/>
 		SET    
-			gas = #{gas, jdbcType=DOUBLE},confirmBlock = #{confirmBlock, jdbcType=INTEGER},status = #{status, jdbcType=INTEGER}
+			gas = #{gas, jdbcType=DOUBLE},balanceFrom = #{balanceFrom, jdbcType=DOUBLE},balanceTo = #{balanceTo, jdbcType=DOUBLE},confirmBlock = #{confirmBlock, jdbcType=INTEGER},status = #{status, jdbcType=INTEGER}
 		WHERE
 			transactionHash = #{transactionHash, jdbcType=VARCHAR}
 	</update>

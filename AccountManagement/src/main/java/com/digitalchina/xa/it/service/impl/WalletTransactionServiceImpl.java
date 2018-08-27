@@ -16,8 +16,8 @@ public class WalletTransactionServiceImpl implements WalletTransactionService{
 	private WalletTransactionDAO walletTransactionDAO;
 	
 	@Override
-	public List<String> selectTransactionHashUnconfirm() {
-		return walletTransactionDAO.selectTransactionHashUnconfirm();
+	public List<WalletTransactionDomain> selectHashAndAccounts() {
+		return walletTransactionDAO.selectHashAndAccounts();
 	}
 
 	@Override

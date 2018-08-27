@@ -140,8 +140,8 @@ public class EthAccountController {
 			
 			BigInteger accountBalance = web3jList.get(new Random().nextInt(5)).ethGetBalance(account,DefaultBlockParameterName.LATEST).send().getBalance();
 			accountBalance = accountBalance.subtract(tax);
-			Double money = Double.parseDouble(accountBalance.divide(BigInteger.valueOf(10000000000000000L)).toString());
-			if(money < 0.1) {
+			Double money = Double.parseDouble(accountBalance.toString());
+			if(money < 1000000000000000L) {
 				modelMap.put("success", false);
 				modelMap.put("errMsg", "balanceNotEnough");
 				return modelMap;

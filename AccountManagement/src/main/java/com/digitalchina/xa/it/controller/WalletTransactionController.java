@@ -17,6 +17,7 @@ import org.web3j.protocol.http.HttpService;
 
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
+import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.WalletTransactionService;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
@@ -27,6 +28,8 @@ import com.digitalchina.xa.it.util.EncryptImpl;
 public class WalletTransactionController {
 	@Autowired
 	private WalletTransactionService walletTransactionService;
+	@Autowired
+	private EthAccountService ethAccountService;
 	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
 	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
 	

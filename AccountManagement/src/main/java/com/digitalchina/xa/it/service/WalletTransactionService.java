@@ -8,7 +8,7 @@ import com.digitalchina.xa.it.model.WalletTransactionDomain;
 
 @Service
 public interface WalletTransactionService {
-	List<String> selectTransactionHashUnconfirm();
+	List<WalletTransactionDomain> selectHashAndAccounts();
 	
 	List<WalletTransactionDomain> selectRecordsByItcode(String itcode);
 	
