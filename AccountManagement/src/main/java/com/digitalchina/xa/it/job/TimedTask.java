@@ -22,6 +22,7 @@ import com.digitalchina.xa.it.model.WalletTransactionDomain;
 import com.digitalchina.xa.it.service.WalletTransactionService;
 import com.digitalchina.xa.it.util.HttpRequest;
 
+import rx.Subscription;
 import scala.util.Random;
 
 @Component
@@ -38,6 +39,7 @@ public class TimedTask {
 		Web3j web3j = Web3j.build(new HttpService(ip[new Random().nextInt(5)]));
 		List<WalletTransactionDomain> wtdList = walletTransactionDAO.selectHashAndAccounts();
 		if(wtdList == null) {
+			web3j.shutdown();
 			return;
 		}
 		try {
@@ -72,6 +74,8 @@ public class TimedTask {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			web3j.shutdown();
 		}
 	}
 	
