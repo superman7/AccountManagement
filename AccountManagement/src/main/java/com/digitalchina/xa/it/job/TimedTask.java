@@ -45,9 +45,11 @@ public class TimedTask {
 		try {
 			for(int i = 0; i < wtdList.size(); i++) {
 				String transactionHash = wtdList.get(i).getTransactionHash();
+				System.out.println("定时任务_链上未确认_transactionHash:" + transactionHash);
 				TransactionReceipt tr = web3j.ethGetTransactionReceipt(transactionHash).sendAsync().get().getResult();
 				if(tr == null) {
-					return;
+					System.out.println(transactionHash + "仍未确认，查询下一个未确认交易");
+					continue;
 				}
 				if(!tr.getBlockHash().contains("00000000")) {
 					String accountFrom = wtdList.get(i).getAccountFrom();
