@@ -33,7 +33,7 @@ public class LessonDetailServiceImpl implements LessonDetailService {
 	}
 
 	@Override
-	public List<String> selectOrderCount(String lesson) {
-		return lessonDetailDAO.selectOrderCount(lesson);
+	public List<String> selectOrders(String lesson) {
+		return lessonDetailDAO.selectOrders(lesson);
 	}
 }

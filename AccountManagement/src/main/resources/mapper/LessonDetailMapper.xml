@@ -8,7 +8,7 @@
 	<sql id="BASE_COLUMN">
 	</sql>
 	
-	<select id="selectOrderCount" parameterType="java.lang.String" resultType="java.lang.String">
+	<select id="selectOrders" parameterType="java.lang.String" resultType="java.lang.String">
 		SELECT
 			itcode
 		FROM
@@ -20,13 +20,6 @@
 	</select>
   	
   	<insert id="insertItcode" parameterType="java.lang.String">
-		INSERT INTO
-			<include refid="BASE_TABLE"/>
-			<trim prefix="(" suffix=")" suffixOverrides=",">
-				itcode
-			</trim>
-			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-				#{itcode, jdbcType=VARCHAR}
-			</trim>
+		INSERT INTO am_lessonDetail(lessonId,itcode) select id,#{itcode, jdbcType=VARCHAR} from am_lessons
 	</insert>
 </mapper>

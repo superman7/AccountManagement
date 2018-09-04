@@ -84,7 +84,7 @@ public class LessonsController {
     	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
     	JSONObject jsonObj = JSONObject.parseObject(data);
 		String lesson = jsonObj.getString("lesson");
-		List<String> itcodeList = lessonDetailService.selectOrderCount(lesson);
+		List<String> itcodeList = lessonDetailService.selectOrders(lesson);
 		modelMap.put("success", true);
 		modelMap.put("itcodeList", itcodeList);
 		
