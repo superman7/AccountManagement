@@ -1,9 +1,13 @@
 package com.digitalchina.xa.it.dao;
 
-import java.util.List;
+import org.apache.ibatis.annotations.Param;
+
+import com.digitalchina.xa.it.model.LessonDetailDomain;
 
 public interface LessonDetailDAO {
-	int insertItcode(String itcode);
+	int insertItcode(@Param("itcode")String itcode, @Param("lesson")String lesson);
 	
-	List<String> selectOrders(String lesson);
+	int selectOrderCount(String lesson);
+	
+	LessonDetailDomain selectOneRecord(@Param("itcode")String itcode, @Param("lesson")String lesson);
 }

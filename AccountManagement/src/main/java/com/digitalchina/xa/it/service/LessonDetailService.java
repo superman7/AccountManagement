@@ -1,9 +1,11 @@
 package com.digitalchina.xa.it.service;
 
-import java.util.List;
+import com.digitalchina.xa.it.model.LessonDetailDomain;
 
 public interface LessonDetailService {
-	Boolean insertItcode(String itcode);
+	Boolean insertItcode(String itcode, String lesson);
 
-	List<String> selectOrders(String lesson);
+	Integer selectOrderCount(String lesson);
+	
+	LessonDetailDomain selectOneRecord(String itcode, String lesson);
 }

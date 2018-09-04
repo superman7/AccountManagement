@@ -1,12 +1,10 @@
 package com.digitalchina.xa.it.service.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.digitalchina.xa.it.dao.LessonDetailDAO;
-import com.digitalchina.xa.it.dao.LessonsDAO;
+import com.digitalchina.xa.it.model.LessonDetailDomain;
 import com.digitalchina.xa.it.service.LessonDetailService;
 
 @Service(value = "LessonDetailService")
@@ -15,25 +13,30 @@ public class LessonDetailServiceImpl implements LessonDetailService {
 	private LessonDetailDAO lessonDetailDAO;
 
 	@Override
-	public Boolean insertItcode(String itcode) {
-		if(itcode != null && itcode != "") {
+	public Boolean insertItcode(String itcode,String lesson) {
+		if(itcode != null && itcode !="" && lesson != null && lesson !="") {
 			try {
-				int effectedNumber = lessonDetailDAO.insertItcode(itcode);
+				int effectedNumber = lessonDetailDAO.insertItcode(itcode, lesson);
 				if(effectedNumber > 0) {
 					return true;
 				} else {
-					throw new RuntimeException("插入itcode失败");
+					throw new RuntimeException("插入itcode，lesson失败");
 				}
 			} catch(Exception e) {
-				throw new RuntimeException("插入itcode失败 " + e.getMessage());
+				throw new RuntimeException("插入itcode，lesson失败 " + e.getMessage());
 			}
 		} else {
-			throw new RuntimeException("插入 itcode不能为空");
+			throw new RuntimeException("插入 itcode，lesson不能为空");
 		}
 	}
 
 	@Override
-	public List<String> selectOrders(String lesson) {
-		return lessonDetailDAO.selectOrders(lesson);
+	public Integer selectOrderCount(String lesson) {
+		return lessonDetailDAO.selectOrderCount(lesson);
+	}
+
+	@Override
+	public LessonDetailDomain selectOneRecord(String itcode, String lesson) {
+		return lessonDetailDAO.selectOneRecord(itcode, lesson);
 	}
 }

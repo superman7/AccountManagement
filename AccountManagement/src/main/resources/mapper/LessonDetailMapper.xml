@@ -6,11 +6,12 @@
 	</sql>
 	
 	<sql id="BASE_COLUMN">
+		id,lessonId,itcode,buy,buyTime,cost,recentTime,chapter,backup1,backup2,backup3
 	</sql>
 	
-	<select id="selectOrders" parameterType="java.lang.String" resultType="java.lang.String">
+	<select id="selectOrderCount" parameterType="java.lang.String" resultType="java.lang.Integer">
 		SELECT
-			itcode
+			count(*)
 		FROM
 			<include refid="BASE_TABLE"/> d, am_lessons l
 		WHERE
@@ -18,8 +19,28 @@
 		AND
 			l.lesson = #{lesson, jdbcType=VARCHAR}
 	</select>
+	
+	<select id="selectOneRecord" resultType="com.digitalchina.xa.it.model.LessonDetailDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/> d, am_lessons l
+		WHERE
+			l.id = d.lessonId
+		AND
+			l.lesson = #{lesson, jdbcType=VARCHAR}
+		AND
+			d.itcode = #{itcode, jdbcType=VARCHAR}
+	</select>
   	
-  	<insert id="insertItcode" parameterType="java.lang.String">
-		INSERT INTO am_lessonDetail(lessonId,itcode) select id,#{itcode, jdbcType=VARCHAR} from am_lessons
+  	<insert id="insertItcode">
+		INSERT INTO
+			am_lessonDetail(lessonId,itcode) 
+		SELECT
+			id,#{itcode, jdbcType=VARCHAR} 
+		FROM
+			am_lessons
+		WHERE
+			lesson = #{lesson, jdbcType=VARCHAR}
 	</insert>
 </mapper>

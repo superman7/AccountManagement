@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.xa.it.model.LessonDetailDomain;
 import com.digitalchina.xa.it.service.LessonDetailService;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
@@ -51,7 +52,10 @@ public class LessonsController {
     	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
     	JSONObject jsonObj = JSONObject.parseObject(data);
 		String itcode = jsonObj.getString("itcode");
-		lessonDetailService.insertItcode(itcode);
+		String lesson = jsonObj.getString("lesson");
+		//LessonDetailDomain ld = lessonDetailService.selectOneRecord(itcode, lesson);
+		//System.out.println(ld);
+		lessonDetailService.insertItcode(itcode, lesson);
 		modelMap.put("success", true);
 		
 		return modelMap;
@@ -84,9 +88,9 @@ public class LessonsController {
     	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
     	JSONObject jsonObj = JSONObject.parseObject(data);
 		String lesson = jsonObj.getString("lesson");
-		List<String> itcodeList = lessonDetailService.selectOrders(lesson);
+		Integer count = lessonDetailService.selectOrderCount(lesson);
 		modelMap.put("success", true);
-		modelMap.put("itcodeList", itcodeList);
+		modelMap.put("count", count);
 		
 		return modelMap;
 	}
