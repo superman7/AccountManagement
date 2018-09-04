@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.concurrent.ExecutionException;
 
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.generated.Uint160;
@@ -30,6 +31,8 @@ import org.web3j.utils.Numeric;
 
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.contract.Transfer;
+
+import scala.util.Random;
 
 public class Test {
 
@@ -84,9 +87,20 @@ public class Test {
 //		}
 //    }
 	public static void main(String[] args) {
+		Web3j web3j = Web3j.build(new HttpService(ip));
+		String account = "0x746105fb3a6331ab23a05ace2cda662de4883e0c";
+		EthGetTransactionCount ethGetTransactionCount;
+		try {
+			ethGetTransactionCount = web3j.ethGetTransactionCount(account, DefaultBlockParameterName.LATEST).sendAsync().get();
+			BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+			System.out.println(nonce);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
 		
 	}
-	
 	
 //	public static void main(String[] args) {
 //    try{

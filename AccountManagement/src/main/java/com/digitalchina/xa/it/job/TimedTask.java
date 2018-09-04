@@ -22,6 +22,7 @@ import com.digitalchina.xa.it.model.WalletTransactionDomain;
 import com.digitalchina.xa.it.service.WalletTransactionService;
 import com.digitalchina.xa.it.util.HttpRequest;
 
+import rx.Subscription;
 import scala.util.Random;
 
 @Component
@@ -38,14 +39,17 @@ public class TimedTask {
 		Web3j web3j = Web3j.build(new HttpService(ip[new Random().nextInt(5)]));
 		List<WalletTransactionDomain> wtdList = walletTransactionDAO.selectHashAndAccounts();
 		if(wtdList == null) {
+			web3j.shutdown();
 			return;
 		}
 		try {
 			for(int i = 0; i < wtdList.size(); i++) {
 				String transactionHash = wtdList.get(i).getTransactionHash();
+				System.out.println("定时任务_链上未确认_transactionHash:" + transactionHash);
 				TransactionReceipt tr = web3j.ethGetTransactionReceipt(transactionHash).sendAsync().get().getResult();
 				if(tr == null) {
-					return;
+					System.out.println(transactionHash + "仍未确认，查询下一个未确认交易");
+					continue;
 				}
 				if(!tr.getBlockHash().contains("00000000")) {
 					String accountFrom = wtdList.get(i).getAccountFrom();
@@ -72,6 +76,8 @@ public class TimedTask {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			web3j.shutdown();
 		}
 	}
 	

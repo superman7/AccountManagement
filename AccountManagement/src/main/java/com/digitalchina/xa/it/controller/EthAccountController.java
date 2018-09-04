@@ -91,6 +91,49 @@ public class EthAccountController {
 //	}
 //	
 	
+//	查询输入充值账户的余额
+	@ResponseBody
+	@GetMapping("/balanceQuery")
+	public Map<String, Object> balanceQuery(
+			@RequestParam(name = "param", required = true) String jsonValue) {
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		Web3j web3j = Web3j.build(new HttpService(ip[new Random().nextInt(5)]));
+		Encrypt encrypt = new EncryptImpl();
+    	String decrypt = null;
+		try {
+			decrypt = encrypt.decrypt(jsonValue);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！");
+			return modelMap;
+		}
+    	String data = null;
+		try {
+			data = URLDecoder.decode(decrypt, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！非utf-8编码。");
+			return modelMap;
+		}
+    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
+    	JSONObject accountJson = JSONObject.parseObject(data);
+		String account = accountJson.getString("account");
+		
+		try {
+			BigInteger balance = web3j.ethGetBalance(account,DefaultBlockParameterName.LATEST).send().getBalance();
+			modelMap.put("success", true);
+			modelMap.put("balance", Double.parseDouble(balance.toString()));
+			web3j.shutdown();
+		} catch (IOException e) {
+			modelMap.put("success", false);
+			System.out.println("查询余额失败");
+		}
+		
+		return modelMap;
+	}
+	
 //	输入账户充值请求，提交账户地址（FROM），密码，私钥，钱包地址（TO）
 	@ResponseBody
 	@GetMapping("/chargeFromInput")
