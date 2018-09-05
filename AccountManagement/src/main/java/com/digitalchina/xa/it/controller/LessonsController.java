@@ -53,9 +53,17 @@ public class LessonsController {
     	JSONObject jsonObj = JSONObject.parseObject(data);
 		String itcode = jsonObj.getString("itcode");
 		String lesson = jsonObj.getString("lesson");
+		
+		//FIXME 暂时修改课程学习重复记录itcode的bug 
+		//此处暂时添加第三个参数，lessonid
+		String lessonid = jsonObj.getString("lessonid");
 		//LessonDetailDomain ld = lessonDetailService.selectOneRecord(itcode, lesson);
 		//System.out.println(ld);
-		lessonDetailService.insertItcode(itcode, lesson);
+		Integer counter = lessonDetailService.selectLessonAndItcodeRecord(itcode, Integer.valueOf(lessonid));
+		System.err.println("counter : " + counter);
+		if(counter < 1){
+			lessonDetailService.insertItcode(itcode, lesson);
+		}
 		modelMap.put("success", true);
 		
 		return modelMap;

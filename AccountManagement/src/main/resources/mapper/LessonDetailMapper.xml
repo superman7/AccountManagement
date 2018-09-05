@@ -32,6 +32,18 @@
 		AND
 			d.itcode = #{itcode, jdbcType=VARCHAR}
 	</select>
+	<!-- FIXME 暂时修改课程学习重复记录itcode的bug -->
+	<select id="selectLessonAndItcodeRecord" resultType="java.lang.Integer">
+		SELECT
+			count(id)
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode, jdbcType=VARCHAR}
+		AND
+			lessonId = #{lessonid, jdbcType=INTEGER}
+	</select>
+	
   	
   	<insert id="insertItcode">
 		INSERT INTO

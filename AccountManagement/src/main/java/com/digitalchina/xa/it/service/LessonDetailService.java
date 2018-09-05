@@ -8,4 +8,7 @@ public interface LessonDetailService {
 	Integer selectOrderCount(String lesson);
 	
 	LessonDetailDomain selectOneRecord(String itcode, String lesson);
+
+	//FIXME 暂时修改课程学习重复记录itcode的bug
+	Integer selectLessonAndItcodeRecord(String itcode, Integer lessonid);
 }

@@ -39,4 +39,11 @@ public class LessonDetailServiceImpl implements LessonDetailService {
 	public LessonDetailDomain selectOneRecord(String itcode, String lesson) {
 		return lessonDetailDAO.selectOneRecord(itcode, lesson);
 	}
+
+	//FIXME 暂时修改课程学习重复记录itcode的bug
+	@Override
+	public Integer selectLessonAndItcodeRecord(String itcode, Integer lessonid) {
+		// TODO Auto-generated method stub
+		return lessonDetailDAO.selectLessonAndItcodeRecord(itcode, lessonid);
+	}
 }
