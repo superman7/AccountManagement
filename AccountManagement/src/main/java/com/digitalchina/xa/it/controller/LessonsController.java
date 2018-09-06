@@ -95,10 +95,11 @@ public class LessonsController {
 		}
     	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
     	JSONObject jsonObj = JSONObject.parseObject(data);
-		String lesson = jsonObj.getString("lesson");
-		Integer count = lessonDetailService.selectOrderCount(lesson);
+    	for(String key : jsonObj.keySet()) {
+    		Integer count = lessonDetailService.selectOrderCount(jsonObj.getString(key));
+    		modelMap.put(key, count);
+    	}
 		modelMap.put("success", true);
-		modelMap.put("count", count);
 		
 		return modelMap;
 	}
