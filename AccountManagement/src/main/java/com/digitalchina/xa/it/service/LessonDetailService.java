@@ -1,5 +1,7 @@
 package com.digitalchina.xa.it.service;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.digitalchina.xa.it.model.LessonDetailDomain;
 
 public interface LessonDetailService {
@@ -11,4 +13,8 @@ public interface LessonDetailService {
 
 	//FIXME 暂时修改课程学习重复记录itcode的bug
 	Integer selectLessonAndItcodeRecord(String itcode, Integer lessonid);
+	
+	Boolean updateChapterAndRecentTime(LessonDetailDomain lessonDetailDomain);
+	
+	String selectChapter(@Param("itcode")String itcode, @Param("lessonid")Integer lessonid);
 }
