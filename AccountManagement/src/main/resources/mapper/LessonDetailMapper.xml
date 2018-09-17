@@ -55,4 +55,26 @@
 		WHERE
 			lesson = #{lesson, jdbcType=VARCHAR}
 	</insert>
+	
+	<update id="updateChapterAndRecentTime" parameterType="com.digitalchina.xa.it.model.LessonDetailDomain">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			recentTime = #{recentTime, jdbcType=VARCHAR},chapter = #{chapter, jdbcType=VARCHAR}
+		WHERE
+			lessonId = #{lessonId, jdbcType=INTEGER}
+		AND
+			itcode = #{itcode, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="selectChapter" resultType="java.lang.String">
+		SELECT
+			chapter
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode, jdbcType=VARCHAR}
+		AND
+			lessonId = #{lessonId, jdbcType=INTEGER}
+	</select>
 </mapper>

@@ -46,4 +46,27 @@ public class LessonDetailServiceImpl implements LessonDetailService {
 		// TODO Auto-generated method stub
 		return lessonDetailDAO.selectLessonAndItcodeRecord(itcode, lessonid);
 	}
+
+	@Override
+	public Boolean updateChapterAndRecentTime(LessonDetailDomain lessonDetailDomain) {
+		if(lessonDetailDomain != null) {
+			try {
+				int effectedNumber = lessonDetailDAO.updateChapterAndRecentTime(lessonDetailDomain);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					throw new RuntimeException("插入lessonDetailDomain失败");
+				}
+			} catch(Exception e) {
+				throw new RuntimeException("插入lessonDetailDomain失败 " + e.getMessage());
+			}
+		} else {
+			throw new RuntimeException("插入lessonDetailDomain不能为空");
+		}
+	}
+
+	@Override
+	public String selectChapter(String itcode, Integer lessonid) {
+		return lessonDetailDAO.selectChapter(itcode, lessonid);
+	}
 }

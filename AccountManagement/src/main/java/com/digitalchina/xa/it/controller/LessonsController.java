@@ -2,6 +2,8 @@ package com.digitalchina.xa.it.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,46 @@ import com.digitalchina.xa.it.util.EncryptImpl;
 public class LessonsController {
 	@Autowired
 	private LessonDetailService lessonDetailService;
+	
+	@ResponseBody
+	@GetMapping("/updateChapter")
+	public Object updateChapter(
+	        @RequestParam(name = "param", required = true) String jsonValue){
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		Encrypt encrypt = new EncryptImpl();
+    	String decrypt = null;
+		try {
+			decrypt = encrypt.decrypt(jsonValue);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！");
+			return modelMap;
+		}
+    	String data = null;
+		try {
+			data = URLDecoder.decode(decrypt, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "解密失败！非utf-8编码。");
+			return modelMap;
+		}
+    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
+    	JSONObject jsonObj = JSONObject.parseObject(data);
+		String itcode = jsonObj.getString("itcode");
+		String chapter = jsonObj.getString("chapter");
+		String lessonId = jsonObj.getString("lessonId");
+		LessonDetailDomain ld = new LessonDetailDomain();
+		ld.setItcode(itcode);
+		ld.setChapter(chapter);
+		ld.setLessonId(Integer.parseInt(lessonId));
+		ld.setRecentTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		lessonDetailService.updateChapterAndRecentTime(ld);
+		modelMap.put("success", true);
+		
+		return modelMap;
+	}
 	
 	@ResponseBody
 	@GetMapping("/insertItcode")
@@ -95,10 +137,11 @@ public class LessonsController {
 		}
     	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
     	JSONObject jsonObj = JSONObject.parseObject(data);
-		String lesson = jsonObj.getString("lesson");
-		Integer count = lessonDetailService.selectOrderCount(lesson);
+    	for(String key : jsonObj.keySet()) {
+    		Integer count = lessonDetailService.selectOrderCount(jsonObj.getString(key));
+    		modelMap.put(key, count);
+    	}
 		modelMap.put("success", true);
-		modelMap.put("count", count);
 		
 		return modelMap;
 	}
