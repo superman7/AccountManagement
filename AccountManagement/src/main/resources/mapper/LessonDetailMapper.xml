@@ -20,18 +20,6 @@
 			l.lesson = #{lesson, jdbcType=VARCHAR}
 	</select>
 	
-	<select id="selectOneRecord" resultType="com.digitalchina.xa.it.model.LessonDetailDomain">
-		SELECT
-			<include refid="BASE_COLUMN"/>
-		FROM
-			<include refid="BASE_TABLE"/> d, am_lessons l
-		WHERE
-			l.id = d.lessonId
-		AND
-			l.lesson = #{lesson, jdbcType=VARCHAR}
-		AND
-			d.itcode = #{itcode, jdbcType=VARCHAR}
-	</select>
 	<!-- FIXME 暂时修改课程学习重复记录itcode的bug -->
 	<select id="selectLessonAndItcodeRecord" resultType="java.lang.Integer">
 		SELECT
@@ -60,21 +48,21 @@
 		UPDATE 
 			<include refid="BASE_TABLE"/>
 		SET    
-			recentTime = #{recentTime, jdbcType=VARCHAR},chapter = #{chapter, jdbcType=VARCHAR}
+			recentTime = #{recentTime, jdbcType=VARCHAR},chapter = #{chapter, jdbcType=VARCHAR},backup1 = #{backup1, jdbcType=VARCHAR}
 		WHERE
 			lessonId = #{lessonId, jdbcType=INTEGER}
 		AND
 			itcode = #{itcode, jdbcType=VARCHAR}
 	</update>
 	
-	<select id="selectChapter" resultType="java.lang.String">
+	<select id="selectBackup1" resultType="java.lang.String">
 		SELECT
-			chapter
+			backup1
 		FROM
 			<include refid="BASE_TABLE"/>
 		WHERE
 			itcode = #{itcode, jdbcType=VARCHAR}
 		AND
-			lessonId = #{lessonId, jdbcType=INTEGER}
+			lessonId = #{lessonid, jdbcType=INTEGER}
 	</select>
 </mapper>

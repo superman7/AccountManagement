@@ -27,6 +27,7 @@ public class LessonsController {
 	@Autowired
 	private LessonDetailService lessonDetailService;
 	
+	//更新用户最新阅读的章节及最近阅读时间
 	@ResponseBody
 	@GetMapping("/updateChapter")
 	public Object updateChapter(
@@ -56,17 +57,28 @@ public class LessonsController {
 		String itcode = jsonObj.getString("itcode");
 		String chapter = jsonObj.getString("chapter");
 		String lessonId = jsonObj.getString("lessonId");
-		LessonDetailDomain ld = new LessonDetailDomain();
-		ld.setItcode(itcode);
-		ld.setChapter(chapter);
-		ld.setLessonId(Integer.parseInt(lessonId));
-		ld.setRecentTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-		lessonDetailService.updateChapterAndRecentTime(ld);
-		modelMap.put("success", true);
+		String backup1 = chapter.split("_")[0];
+		
+		String backup1_ = lessonDetailService.selectBackup1(itcode, Integer.parseInt(lessonId));
+		int res = Integer.parseInt(backup1) - Integer.parseInt(backup1_);
+		if( res <= 5 && res >=0) {
+			LessonDetailDomain ld = new LessonDetailDomain();
+			ld.setItcode(itcode);
+			ld.setChapter(chapter);
+			ld.setLessonId(Integer.parseInt(lessonId));
+			ld.setRecentTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			ld.setBackup1(backup1);
+			lessonDetailService.updateChapterAndRecentTime(ld);
+			modelMap.put("success", true);
+		} else {
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "skippingReading");
+		}
 		
 		return modelMap;
 	}
 	
+	//插入用户首次阅读的课程编号及itcode
 	@ResponseBody
 	@GetMapping("/insertItcode")
 	public Object insertItcode(
@@ -86,7 +98,7 @@ public class LessonsController {
 		try {
 			data = URLDecoder.decode(decrypt, "utf-8");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			e.printStackTrace(); 
 			modelMap.put("success", false);
 			modelMap.put("errMsg", "解密失败！非utf-8编码。");
 			return modelMap;
@@ -111,6 +123,7 @@ public class LessonsController {
 		return modelMap;
 	}
 	
+	//查询每一个科目的阅读人数
 	@ResponseBody
 	@GetMapping("/getCount")
 	public Object getCount(

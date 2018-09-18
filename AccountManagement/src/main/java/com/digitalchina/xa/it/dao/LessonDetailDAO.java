@@ -9,12 +9,10 @@ public interface LessonDetailDAO {
 	
 	int selectOrderCount(String lesson);
 	
-	LessonDetailDomain selectOneRecord(@Param("itcode")String itcode, @Param("lesson")String lesson);
-
 	//FIXME 暂时修改课程学习重复记录itcode的bug
 	Integer selectLessonAndItcodeRecord(@Param("itcode")String itcode, @Param("lessonid")Integer lessonid);
 	
 	int updateChapterAndRecentTime(LessonDetailDomain lessonDetailDomain);
 	
-	String selectChapter(@Param("itcode")String itcode, @Param("lessonid")Integer lessonid);
+	String selectBackup1(@Param("itcode")String itcode, @Param("lessonid")Integer lessonid);
 }
