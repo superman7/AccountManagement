@@ -33,6 +33,7 @@ public class WalletTransactionController {
 	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
 	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
 	
+	//查询用户的所有交易记录
 	@ResponseBody
 	@GetMapping("/transRecords")
 	public Map<String, Object> transRecords(

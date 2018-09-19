@@ -35,11 +35,6 @@ public class LessonDetailServiceImpl implements LessonDetailService {
 		return lessonDetailDAO.selectOrderCount(lesson);
 	}
 
-	@Override
-	public LessonDetailDomain selectOneRecord(String itcode, String lesson) {
-		return lessonDetailDAO.selectOneRecord(itcode, lesson);
-	}
-
 	//FIXME 暂时修改课程学习重复记录itcode的bug
 	@Override
 	public Integer selectLessonAndItcodeRecord(String itcode, Integer lessonid) {
@@ -66,7 +61,7 @@ public class LessonDetailServiceImpl implements LessonDetailService {
 	}
 
 	@Override
-	public String selectChapter(String itcode, Integer lessonid) {
-		return lessonDetailDAO.selectChapter(itcode, lessonid);
+	public String selectBackup1(String itcode, Integer lessonid) {
+		return lessonDetailDAO.selectBackup1(itcode, lessonid);
 	}
 }
