@@ -21,8 +21,10 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.admin.methods.response.PersonalUnlockAccount;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.Request;
 import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
+import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.core.methods.response.EthTransaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -87,7 +89,9 @@ public class Test {
 //		}
 //    }
 	public static void main(String[] args) {
+		Admin admin = Admin.build(new HttpService(ip));
 		Web3j web3j = Web3j.build(new HttpService(ip));
+		
 		String account = "0x746105fb3a6331ab23a05ace2cda662de4883e0c";
 		EthGetTransactionCount ethGetTransactionCount;
 		try {

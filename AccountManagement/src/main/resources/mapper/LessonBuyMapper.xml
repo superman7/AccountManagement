@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.LessonBuyDAO" >
+	<sql id="BASE_TABLE">
+		am_lessonBuy
+	</sql>
+	
+	<sql id="BASE_COLUMN">
+		id,lessonId,itcode,chapterNum,buyTime,cost,discount,type,backup1,backup2,backup3
+	</sql>
+	
+	<select id="selectUserPurchased" resultType="java.lang.String">
+		SELECT
+			chapterNum
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			lessonId = #{lessonId, jdbcType=INTEGER}
+		AND 
+			itcode = #{itcode, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectFreeChapter" resultType="java.lang.String">
+		SELECT
+			chapterNum
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			lessonId = #{lessonId, jdbcType=INTEGER}
+		AND 
+			discount = 0
+		AND
+			itcode = 'DIRECTORYKEY'
+	</select>
+	
+	<select id="selectCanUse" resultType="com.digitalchina.xa.it.model.LessonBuyDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			lessonId = #{lessonId, jdbcType=INTEGER}
+		AND 
+			itcode = #{itcode, jdbcType=VARCHAR}
+		OR
+			itcode = 'DIRECTORYKEY'
+	</select>
+	
+	<select id="selectCostAndDiscount" resultType="com.digitalchina.xa.it.model.LessonBuyDomain">
+		SELECT
+			cost,discount
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			lessonId = #{lessonId, jdbcType=INTEGER}
+		AND 
+			chapterNum = #{chapterNum, jdbcType=VARCHAR}
+		AND
+			itcode = 'DIRECTORYKEY'
+	</select>
+	
+	<insert id="insertBuyInfo" parameterType="com.digitalchina.xa.it.model.LessonBuyDomain">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				lessonId,itcode,chapterNum,buyTime,cost,discount,type
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{lessonId, jdbcType=INTEGER},#{itcode, jdbcType=VARCHAR},#{chapterNum, jdbcType=INTEGER},#{buyTime, jdbcType=VARCHAR},#{cost, jdbcType=DOUBLE},#{discount, jdbcType=DOUBLE},#{type, jdbcType=INTEGER}
+			</trim>
+	</insert>
+</mapper>

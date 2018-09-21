@@ -220,4 +220,9 @@ public class EthAccountServiceImpl implements EthAccountService {
 //      return result;
 //  }
 //
+
+	@Override
+	public String selectKeystoreByItcode(String itcode) {
+		return ethAccountDAO.selectKeystoreByItcode(itcode);
+	}
 }
