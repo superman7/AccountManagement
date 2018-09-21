@@ -3,6 +3,8 @@ package com.digitalchina.xa.it.dao;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.digitalchina.xa.it.model.EthAccountDomain;
 
 public interface EthAccountDAO {
@@ -15,6 +17,8 @@ public interface EthAccountDAO {
 	EthAccountDomain selectDefaultEthAccount(String itcode, String status);
 	
 	String selectKeystoreByAccount(EthAccountDomain ethAccountDomain);
+	
+	String selectKeystoreByItcode(@Param("itcode")String itcode);
 	
 	int insert(EthAccountDomain ethAccountDomain);
 	

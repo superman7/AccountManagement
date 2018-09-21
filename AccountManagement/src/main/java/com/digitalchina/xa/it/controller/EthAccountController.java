@@ -91,6 +91,14 @@ public class EthAccountController {
 //	}
 //	
 	
+	/** @api {get} /ethAccount/balanceQuery/:account 查询输入充值账户的余额
+	* @apiVersion 0.1.0 
+	* @apiGroup Wallet 
+	* @apiParam {String} account 账户地址,格式为"yyyy-MM-dd". @apiParam {String} accountkey 账户,神州区块链账户地址.
+	* @apiSuccess {String} do/did do,该账户今日未签到;did,该账户今日已签到.
+	* @apiSuccessExample Success-Response: HTTP/1.1 200 OK
+	* do */
+	
 //	查询输入充值账户的余额
 	@ResponseBody
 	@GetMapping("/balanceQuery")

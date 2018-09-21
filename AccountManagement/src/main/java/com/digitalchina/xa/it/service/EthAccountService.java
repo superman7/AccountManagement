@@ -3,6 +3,8 @@ package com.digitalchina.xa.it.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.digitalchina.xa.it.model.EthAccountDomain;
 import com.github.pagehelper.PageInfo;
 
@@ -16,6 +18,8 @@ public interface EthAccountService {
 	EthAccountDomain selectDefaultEthAccount(String itcode, String status);
 	
 	String selectKeystoreByAccount(EthAccountDomain ethAccountDomain);
+	
+	String selectKeystoreByItcode(String itcode);
 	
 	Boolean insertItcodeAndAccount(EthAccountDomain ethAccountDomain);
 	
