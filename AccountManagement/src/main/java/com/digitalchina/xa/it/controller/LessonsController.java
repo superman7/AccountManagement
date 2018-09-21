@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.xa.it.model.LessonBuyDomain;
 import com.digitalchina.xa.it.model.LessonDetailDomain;
+import com.digitalchina.xa.it.service.LessonBuyService;
 import com.digitalchina.xa.it.service.LessonDetailService;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
@@ -26,6 +28,8 @@ import com.digitalchina.xa.it.util.EncryptImpl;
 public class LessonsController {
 	@Autowired
 	private LessonDetailService lessonDetailService;
+	@Autowired
+	private LessonBuyService lessonBuyService;
 	
 	//更新用户最新阅读的章节及最近阅读时间
 	@ResponseBody
@@ -109,15 +113,20 @@ public class LessonsController {
 		String lesson = jsonObj.getString("lesson");
 		
 		//FIXME 暂时修改课程学习重复记录itcode的bug 
-		//此处暂时添加第三个参数，lessonid
-		String lessonid = jsonObj.getString("lessonid");
+		//此处暂时添加第三个参数，lessonId
+		String lessonId = jsonObj.getString("lessonid");
 		//LessonDetailDomain ld = lessonDetailService.selectOneRecord(itcode, lesson);
 		//System.out.println(ld);
-		Integer counter = lessonDetailService.selectLessonAndItcodeRecord(itcode, Integer.valueOf(lessonid));
+		Integer counter = lessonDetailService.selectLessonAndItcodeRecord(itcode, Integer.valueOf(lessonId));
 		System.err.println("counter : " + counter);
 		if(counter < 1){
 			lessonDetailService.insertItcode(itcode, lesson);
 		}
+		
+		List<String> userPurchased = lessonBuyService.selectUserPurchased(itcode, lessonId);
+		List<String> freeChapter = lessonBuyService.selectFreeChapter(lessonId	);
+		userPurchased.addAll(freeChapter);
+		modelMap.put("data", userPurchased);
 		modelMap.put("success", true);
 		
 		return modelMap;

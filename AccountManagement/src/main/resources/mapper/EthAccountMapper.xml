@@ -50,6 +50,16 @@
 		WHERE
 			account = #{account,jdbcType=VARCHAR}
 	</select>
+	<select id="selectKeystoreByItcode" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT
+			keystore
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode,jdbcType=VARCHAR}
+		AND
+			available = 3
+	</select>
   	
   	<insert id="insert" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
 		INSERT INTO
