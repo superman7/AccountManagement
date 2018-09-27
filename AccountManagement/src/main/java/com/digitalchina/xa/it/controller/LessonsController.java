@@ -1,8 +1,10 @@
 package com.digitalchina.xa.it.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.digitalchina.xa.it.model.LessonBuyDomain;
 import com.digitalchina.xa.it.model.LessonDetailDomain;
 import com.digitalchina.xa.it.service.LessonBuyService;
 import com.digitalchina.xa.it.service.LessonDetailService;
+import com.digitalchina.xa.it.service.LessonsService;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
 
@@ -30,6 +33,8 @@ public class LessonsController {
 	private LessonDetailService lessonDetailService;
 	@Autowired
 	private LessonBuyService lessonBuyService;
+	@Autowired
+	private LessonsService lessonsService;
 	
 	//更新用户最新阅读的章节及最近阅读时间
 	@ResponseBody
@@ -166,5 +171,21 @@ public class LessonsController {
 		modelMap.put("success", true);
 		
 		return modelMap;
+	}
+	
+	@ResponseBody
+	@GetMapping("/top10")
+	public String getTopTen() {
+		List<Map<String, Object>> dataList = lessonsService.selectTop10();
+		List<Map<String, Object>> returnList = new ArrayList<>();
+		for(int i = 0; i < dataList.size(); i++) {
+			Map<String, Object> map = new HashMap<>();
+			Double value = new BigDecimal((Double)dataList.get(i).get("balance")).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+			map.put("key", dataList.get(i).get("itcode"));
+			map.put("value", value);
+			returnList.add(map);
+		}
+		String data = JSON.toJSONString(returnList);
+		return data;
 	}
 }

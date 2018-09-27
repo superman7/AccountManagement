@@ -7,4 +7,33 @@
 	
 	<sql id="BASE_COLUMN">
 	</sql>
+	
+	<select id="selectChapterCount" resultType="java.lang.String">
+		SELECT
+			backup1
+		FROM
+			<include refid="BASE_TABLE"/>
+	</select>
+	
+	<!-- 学习排行榜前10，算法：计算每一科目占本科目总讲数比例，并求加权平均值，最后*100 -->
+	<select id="selectTop10" resultType="java.util.HashMap">
+		SELECT
+			t.itcode AS itcode ,
+			sum(t.lessonValue) * 100 AS balance
+		FROM (
+			SELECT 
+				lessonid, itcode, backup1/(SELECT backup1 FROM am_lessons WHERE id = lessonId)/(SELECT count(id) FROM am_lessons) AS lessonValue 
+			FROM 
+				am_lessondetail 
+			WHERE 
+				backup1 &lt;&gt; '00'
+			GROUP BY 
+				lessonId, itcode
+			) t
+		GROUP BY
+			t.itcode
+		ORDER BY
+			balance
+		DESC LIMIT 10;
+	</select>
 </mapper>
