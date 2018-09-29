@@ -12,7 +12,7 @@ public class PaidVoteDetailDomain {
 
     private String transactionHash;
     
-    private String beVoteItcode;
+    private String beVotedItcode;
     
     private Integer numberOfVotes;
     
@@ -25,12 +25,12 @@ public class PaidVoteDetailDomain {
     private String backup3;
 
     public PaidVoteDetailDomain(Integer topicId, String votedAddress, String beVotedAddress, String transactionHash,
-    		String beVoteItcode, Integer numberOfVotes, Integer transactionStatus, String backup1, String backup2, String backup3){
+    		String beVotedItcode, Integer numberOfVotes, Integer transactionStatus, String backup1, String backup2, String backup3){
     	this.topicId = topicId;
     	this.votedAddress = votedAddress;
     	this.beVotedAddress = beVotedAddress;
     	this.transactionHash = transactionHash;
-    	this.beVoteItcode = beVoteItcode;
+    	this.beVotedItcode = beVotedItcode;
     	this.numberOfVotes = numberOfVotes;
     	this.transactionStatus = transactionStatus;
     	this.backup1 = backup1;
@@ -38,12 +38,12 @@ public class PaidVoteDetailDomain {
     	this.backup3 = backup3;
     }
     
-    public PaidVoteDetailDomain(Integer topicId, String votedAddress, String beVotedAddress, String transactionHash, String beVoteItcode, Integer numberOfVotes, Integer transactionStatus){
+    public PaidVoteDetailDomain(Integer topicId, String votedAddress, String beVotedAddress, String transactionHash, String beVotedItcode, Integer numberOfVotes, Integer transactionStatus){
     	this.topicId = topicId;
     	this.votedAddress = votedAddress;
     	this.beVotedAddress = beVotedAddress;
     	this.transactionHash = transactionHash;
-    	this.beVoteItcode = beVoteItcode;
+    	this.beVotedItcode = beVotedItcode;
     	this.numberOfVotes = numberOfVotes;
     	this.transactionStatus = transactionStatus;
     }
@@ -88,12 +88,12 @@ public class PaidVoteDetailDomain {
 		this.transactionHash = transactionHash;
 	}
 
-	public String getBeVoteItcode() {
-		return beVoteItcode;
+	public String getBeVotedItcode() {
+		return beVotedItcode;
 	}
 
-	public void setBeVoteItcode(String beVoteItcode) {
-		this.beVoteItcode = beVoteItcode;
+	public void setBeVotedItcode(String beVotedItcode) {
+		this.beVotedItcode = beVotedItcode;
 	}
 
 	public Integer getNumberOfVotes() {

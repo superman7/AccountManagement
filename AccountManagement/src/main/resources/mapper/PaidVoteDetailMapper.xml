@@ -6,9 +6,76 @@
 	</sql>
 
 	<sql id="BASE_COLUMN">
-		id,topicId,votedAddress,beVotedAddress,transactionHash,beVoteItcode,numberOfVotes,transactionStatus,backup1,backup2,backup3
+		id,topicId,votedAddress,beVotedAddress,transactionHash,beVotedItcode,numberOfVotes,transactionStatus,backup1,backup2,backup3
 	</sql>
   	
+  	<insert id="insertPaidVoteDetail" parameterType="com.digitalchina.xa.it.model.PaidVoteDetailDomain">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				topicId,votedAddress,beVotedAddress,transactionHash,beVotedItcode,numberOfVotes,transactionStatus,backup1,backup2,backup3
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{topicId, jdbcType=INTEGER},#{votedAddress, jdbcType=VARCHAR},#{beVotedAddress, jdbcType=VARCHAR},
+				#{transactionHash, jdbcType=VARCHAR},#{beVotedItcode, jdbcType=VARCHAR},
+				#{numberOfVotes, jdbcType=INTEGER},#{transactionStatus, jdbcType=INTEGER},
+				#{backup1, jdbcType=VARCHAR},#{backup2, jdbcType=VARCHAR},#{backup3, jdbcType=VARCHAR}
+			</trim>
+	</insert>
+	
+	<select id="selectPaidVoteDetailByTopicId" resultType="com.digitalchina.xa.it.model.PaidVoteDetailDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			topicId = #{topicId, jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectPaidVoteDetailByVoteAddress" resultType="com.digitalchina.xa.it.model.PaidVoteDetailDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			voteAddree = #{voteAddress, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectPaidVoteDetailByBeVotedAddress" resultType="com.digitalchina.xa.it.model.PaidVoteDetailDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			beVotedAddress = #{beVotedAddress, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectTotalValueByBeVotedAddress" resultType="java.lang.Integer">
+		SELECT
+			SUM(numberOfVotes)
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			beVotedAddress = #{beVotedAddress, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateTransactionHash">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET
+			transactionHash = #{transactionHash, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=INTEGER}
+	</update>
+	
+	<select id="selectUnfinishedTransaction" resultType="java.lang.String">
+		SELECT
+			transactionHash
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			transactionStatus = 0
+	</select>
 	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>
