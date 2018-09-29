@@ -9,6 +9,38 @@
 		id,topicName,available,backup1,backup2,backup3
 	</sql>
   	
+  	<insert id="insertPaidVoteTopic">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			(topicName,available) VALUES (#{topicName, jdbcType=VARCHAR},#{available, jdbcType=INTEGER})
+	</insert>
+	
+	<select id="selectPaidVoteTopic" resultType="com.digitalchina.xa.it.model.PaidVoteTopicDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+	</select>
+  	
+  	  
+	<update id="updateAvailable">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			available = 0
+		WHERE
+			id = #{id, jdbcType=INGETER}
+	</update>
+	
+	<select id="selectPaidVoteTopicById">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		where
+			id = #{id, jdbcType=INGETER}
+	</select>
+	
 	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>
@@ -50,17 +82,6 @@
 		WHERE
 			account = #{account,jdbcType=VARCHAR}
 	</select>
-  	
-  	<insert id="insert" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
-		INSERT INTO
-			<include refid="BASE_TABLE"/>
-			<trim prefix="(" suffix=")" suffixOverrides=",">
-				itcode,account,alias,available,keystore,backup1
-			</trim>
-			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-				#{itcode, jdbcType=VARCHAR},#{account, jdbcType=VARCHAR},#{alias,jdbcType=VARCHAR},#{available,jdbcType=INTEGER},#{keystore,jdbcType=VARCHAR},#{backup1,jdbcType=VARCHAR}
-			</trim>
-	</insert>
 	
 	<insert id="insertItcodeAndAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
 		INSERT INTO
