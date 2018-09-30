@@ -1,14 +1,31 @@
 package com.digitalchina.xa.it.service.impl;
 
-import org.springframework.stereotype.Service;
-import org.web3j.protocol.Web3j;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.digitalchina.xa.it.dao.PaidVoteTopicDAO;
+import com.digitalchina.xa.it.model.PaidVoteTopicDomain;
 import com.digitalchina.xa.it.service.PaidVoteTopicService;
 
 @Service(value = "paidVoteTopicService")
 public class PaidVoteTopicServiceImpl implements PaidVoteTopicService{
-	private volatile static Web3j web3j;
-    private static String ip = "http://10.7.10.124:8545";
-    private static String[] ipArr = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
+    @Autowired
+    private PaidVoteTopicDAO paidVoteTopicDAO;
 
+	@Override
+	public int insertPaidVoteTopic(String topicName, Integer available) {
+		return paidVoteTopicDAO.insertPaidVoteTopic(topicName, available);
+	}
+
+	@Override
+	public List<PaidVoteTopicDomain> selectPaidVoteTopic() {
+		return paidVoteTopicDAO.selectPaidVoteTopic();
+	}
+
+	@Override
+	public void updateAvailable(Integer id) {
+		paidVoteTopicDAO.updateAvailable(id);
+	}
 }

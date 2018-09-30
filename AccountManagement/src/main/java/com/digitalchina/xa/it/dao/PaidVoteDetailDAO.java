@@ -1,6 +1,7 @@
 package com.digitalchina.xa.it.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -20,4 +21,6 @@ public interface PaidVoteDetailDAO {
 	void updateTransactionHash(@Param("id")Integer id, @Param("transactionHash")String transactionHash);
 	
 	List<String> selectUnfinishedTransaction();
+
+	List<Map<String, Object>> selectTop5(Integer topicId);
 }

@@ -14,6 +14,10 @@ public class PaidVoteTopicDomain {
     
     private String backup3;
 
+    public PaidVoteTopicDomain(){
+    	
+    }
+    
     public PaidVoteTopicDomain(String topicName, Integer available, String backup1, String backup2, String backup3){
     	this.topicName = topicName;
     	this.available = available;

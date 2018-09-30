@@ -6,20 +6,22 @@
 	</sql>
 
 	<sql id="BASE_COLUMN">
-		id,topicId,votedAddress,beVotedAddress,transactionHash,beVotedItcode,numberOfVotes,transactionStatus,backup1,backup2,backup3
+		id,topicId,voteAddress,beVotedAddress,transactionHash,beVotedItcode,numberOfVotes,transactionStatus,backup1,backup2,backup3
 	</sql>
   	
   	<insert id="insertPaidVoteDetail" parameterType="com.digitalchina.xa.it.model.PaidVoteDetailDomain">
+  		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            select @@IDENTITY as id
+        </selectKey>
 		INSERT INTO
 			<include refid="BASE_TABLE"/>
 			<trim prefix="(" suffix=")" suffixOverrides=",">
-				topicId,votedAddress,beVotedAddress,transactionHash,beVotedItcode,numberOfVotes,transactionStatus,backup1,backup2,backup3
+				topicId,voteAddress,beVotedAddress,transactionHash,beVotedItcode,numberOfVotes,transactionStatus
 			</trim>
 			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-				#{topicId, jdbcType=INTEGER},#{votedAddress, jdbcType=VARCHAR},#{beVotedAddress, jdbcType=VARCHAR},
+				#{topicId, jdbcType=INTEGER},#{voteAddress, jdbcType=VARCHAR},#{beVotedAddress, jdbcType=VARCHAR},
 				#{transactionHash, jdbcType=VARCHAR},#{beVotedItcode, jdbcType=VARCHAR},
-				#{numberOfVotes, jdbcType=INTEGER},#{transactionStatus, jdbcType=INTEGER},
-				#{backup1, jdbcType=VARCHAR},#{backup2, jdbcType=VARCHAR},#{backup3, jdbcType=VARCHAR}
+				#{numberOfVotes, jdbcType=INTEGER},#{transactionStatus, jdbcType=INTEGER}
 			</trim>
 	</insert>
 	
@@ -38,7 +40,7 @@
 		FROM
 			<include refid="BASE_TABLE"/>
 		WHERE
-			voteAddree = #{voteAddress, jdbcType=VARCHAR}
+			voteAddress = #{voteAddress, jdbcType=VARCHAR}
 	</select>
 	
 	<select id="selectPaidVoteDetailByBeVotedAddress" resultType="com.digitalchina.xa.it.model.PaidVoteDetailDomain">
@@ -75,6 +77,23 @@
 			<include refid="BASE_TABLE"/>
 		WHERE
 			transactionStatus = 0
+	</select>
+	
+	<select id="selectTop5" resultType="java.util.HashMap">
+		SELECT
+			beVotedItcode AS itcode ,
+			sum(numberOfVotes) AS balance
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			topicId = #{topicId, jdbcType=INTEGER}
+		AND 
+			transactionStatus = 1
+		GROUP BY
+			beVotedItcode
+		ORDER BY
+			balance
+		DESC LIMIT 5;
 	</select>
 	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
 		SELECT

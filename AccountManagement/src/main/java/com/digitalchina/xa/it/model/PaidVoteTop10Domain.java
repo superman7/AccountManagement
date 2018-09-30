@@ -20,6 +20,10 @@ public class PaidVoteTop10Domain {
     
     private String backup3;
 
+    public PaidVoteTop10Domain(){
+    	
+    }
+    
     public PaidVoteTop10Domain(Integer topicId, String beVotedAddress, String beVoteItcode, Integer numberOfVotes, 
     		Integer order, String backup1, String backup2, String backup3){
     	this.topicId = topicId;

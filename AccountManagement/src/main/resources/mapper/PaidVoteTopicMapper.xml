@@ -29,7 +29,7 @@
 		SET    
 			available = 0
 		WHERE
-			id = #{id, jdbcType=INGETER}
+			id = #{id, jdbcType=INTEGER}
 	</update>
 	
 	<select id="selectPaidVoteTopicById">
@@ -38,7 +38,7 @@
 		FROM
 			<include refid="BASE_TABLE"/>
 		where
-			id = #{id, jdbcType=INGETER}
+			id = #{id, jdbcType=INTEGER}
 	</select>
 	
 	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">

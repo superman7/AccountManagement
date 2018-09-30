@@ -6,7 +6,7 @@ public class PaidVoteDetailDomain {
 
 	private Integer topicId;
 	
-	private String votedAddress;
+	private String voteAddress;
 	
     private String beVotedAddress;
 
@@ -24,10 +24,14 @@ public class PaidVoteDetailDomain {
     
     private String backup3;
 
-    public PaidVoteDetailDomain(Integer topicId, String votedAddress, String beVotedAddress, String transactionHash,
+    public PaidVoteDetailDomain(){
+    	
+    }
+    
+    public PaidVoteDetailDomain(Integer topicId, String voteAddress, String beVotedAddress, String transactionHash,
     		String beVotedItcode, Integer numberOfVotes, Integer transactionStatus, String backup1, String backup2, String backup3){
     	this.topicId = topicId;
-    	this.votedAddress = votedAddress;
+    	this.voteAddress = voteAddress;
     	this.beVotedAddress = beVotedAddress;
     	this.transactionHash = transactionHash;
     	this.beVotedItcode = beVotedItcode;
@@ -38,9 +42,9 @@ public class PaidVoteDetailDomain {
     	this.backup3 = backup3;
     }
     
-    public PaidVoteDetailDomain(Integer topicId, String votedAddress, String beVotedAddress, String transactionHash, String beVotedItcode, Integer numberOfVotes, Integer transactionStatus){
+    public PaidVoteDetailDomain(Integer topicId, String voteAddress, String beVotedAddress, String transactionHash, String beVotedItcode, Integer numberOfVotes, Integer transactionStatus){
     	this.topicId = topicId;
-    	this.votedAddress = votedAddress;
+    	this.voteAddress = voteAddress;
     	this.beVotedAddress = beVotedAddress;
     	this.transactionHash = transactionHash;
     	this.beVotedItcode = beVotedItcode;
@@ -64,12 +68,12 @@ public class PaidVoteDetailDomain {
 		this.topicId = topicId;
 	}
 
-	public String getVotedAddress() {
-		return votedAddress;
+	public String getVoteAddress() {
+		return voteAddress;
 	}
 
-	public void setVotedAddress(String votedAddress) {
-		this.votedAddress = votedAddress;
+	public void setVoteAddress(String voteAddress) {
+		this.voteAddress = voteAddress;
 	}
 
 	public String getBeVotedAddress() {
