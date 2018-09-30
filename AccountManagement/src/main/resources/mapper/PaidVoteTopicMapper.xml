@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.PaidVoteTopicDAO" >
+	<sql id="BASE_TABLE">
+		t_paidvote_topic
+	</sql>
+
+	<sql id="BASE_COLUMN">
+		id,topicName,available,backup1,backup2,backup3
+	</sql>
+  	
+  	<insert id="insertPaidVoteTopic">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			(topicName,available) VALUES (#{topicName, jdbcType=VARCHAR},#{available, jdbcType=INTEGER})
+	</insert>
+	
+	<select id="selectPaidVoteTopic" resultType="com.digitalchina.xa.it.model.PaidVoteTopicDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+	</select>
+  	
+  	  
+	<update id="updateAvailable">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			available = 0
+		WHERE
+			id = #{id, jdbcType=INTEGER}
+	</update>
+	
+	<select id="selectPaidVoteTopicById">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		where
+			id = #{id, jdbcType=INTEGER}
+	</select>
+	
+	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+	</select>
+  
+	<select id="selectEthAccountByItcode" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode}
+	</select>
+  
+	<select id="selectEthAccountByAddress" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			account = #{account}
+	</select>
+  
+	<select id="selectDefaultEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{0} AND available = #{1}
+	</select>
+	<select id="selectKeystoreByAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain" resultType="java.lang.String">
+		SELECT
+			keystore
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			account = #{account,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertItcodeAndAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				itcode,account
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{itcode, jdbcType=VARCHAR},#{account, jdbcType=VARCHAR}
+			</trim>
+	</insert>
+  
+	<update id="updateAccountBalance" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			balance = #{balance, jdbcType=DOUBLE}
+		WHERE
+			account = #{account, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateDefaultBalance">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET
+			balance = #{2}
+		WHERE
+			itcode = #{0}
+		AND
+			available = #{1}
+	</update>
+	
+	<update id="updateKeystoreAndAlias" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET
+			keystore = #{keystore, jdbcType=VARCHAR},
+			alias = #{alias, jdbcType=VARCHAR},
+			available = 1
+		WHERE
+			account = #{account, jdbcType=VARCHAR}
+	</update> -->
+</mapper>
