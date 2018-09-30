@@ -23,4 +23,6 @@ public interface PaidVoteDetailDAO {
 	List<String> selectUnfinishedTransaction();
 
 	List<Map<String, Object>> selectTop5(Integer topicId);
+	
+	void updateTransactionStatus(@Param("transactionHash")String transactionHash);
 }

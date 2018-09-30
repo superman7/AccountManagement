@@ -93,8 +93,17 @@
 			beVotedItcode
 		ORDER BY
 			balance
-		DESC LIMIT 5;
+		DESC LIMIT 10;
 	</select>
+	
+	<update id="updateTransactionStatus">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET
+			transactionStatus = 1
+		WHERE
+			transactionHash = #{transactionHash, jdbcType=VARCHAR}
+	</update>
 	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>
