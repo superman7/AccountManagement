@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.InsertTestDAO" >
+	<sql id="BASE_TABLE">
+		test_InsertDataTest
+	</sql>
+	
+	<insert id="insertData">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				dataStr,timeStamp
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{dataStr, jdbcType=VARCHAR},#{timeStamp, jdbcType=VARCHAR}
+			</trim>
+	</insert>
+</mapper>
