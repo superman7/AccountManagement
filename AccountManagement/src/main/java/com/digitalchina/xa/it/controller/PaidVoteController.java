@@ -3,9 +3,7 @@ package com.digitalchina.xa.it.controller;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.digitalchina.xa.it.model.LessonDetailDomain;
 import com.digitalchina.xa.it.model.PaidVoteDetailDomain;
+import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.PaidVoteDetailService;
 import com.digitalchina.xa.it.service.PaidVoteTop10Service;
 import com.digitalchina.xa.it.service.PaidVoteTopicService;
@@ -36,6 +34,8 @@ public class PaidVoteController {
 	private PaidVoteTop10Service paidVoteTop10Service;
 	@Autowired
 	private PaidVoteTopicService paidVoteTopicService;
+	@Autowired
+	private EthAccountService ethAccountService;
 	
 	@ResponseBody
 	@GetMapping("/insertVoteDetail")
@@ -115,8 +115,13 @@ public class PaidVoteController {
 			Map<String, Object> map = new HashMap<>();
 			String voteAddress = dataList.get(i).getVoteAddress();
 			int numberOfVotes = dataList.get(i).getNumberOfVotes();
-			map.put("key", voteAddress);
-			map.put("value", String.valueOf(numberOfVotes));
+			String voteItcode = ethAccountService.selectEthAccountByAddress(voteAddress).getItcode();
+			map.put("voteItcode", voteItcode);
+			map.put("voteAddress", voteAddress);
+			map.put("beVotedItcode", dataList.get(i).getBeVotedItcode());
+			map.put("beVotedAdress", dataList.get(i).getBeVotedAddress());
+			map.put("numberOfVotes", String.valueOf(numberOfVotes));
+			map.put("transactionHash", dataList.get(i).getTransactionHash());
 			returnList.add(map);
 		}
 		modelMap.put("success", JSONObject.toJSON(returnList));
