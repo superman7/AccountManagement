@@ -16,6 +16,8 @@ public interface PaidVoteDetailDAO {
 	
 	List<PaidVoteDetailDomain> selectPaidVoteDetailByBeVotedAddress(@Param("beVotedAddress")String beVotedAddress);
 	
+	List<PaidVoteDetailDomain> selectPaidVoteDetailByBeVotedItcode(@Param("beVotedItcode")String beVotedItcode, @Param("topicId")Integer topicId);
+	
 	int selectTotalValueByBeVotedAddress(@Param("beVotedAddress")String beVotedAddress);
 	
 	void updateTransactionHash(@Param("id")Integer id, @Param("transactionHash")String transactionHash);
@@ -25,4 +27,5 @@ public interface PaidVoteDetailDAO {
 	List<Map<String, Object>> selectTop5(Integer topicId);
 	
 	void updateTransactionStatus(@Param("transactionHash")String transactionHash);
+	
 }

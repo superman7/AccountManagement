@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.model.LessonDetailDomain;
+import com.digitalchina.xa.it.model.PaidVoteDetailDomain;
 import com.digitalchina.xa.it.service.PaidVoteDetailService;
 import com.digitalchina.xa.it.service.PaidVoteTop10Service;
 import com.digitalchina.xa.it.service.PaidVoteTopicService;
@@ -97,5 +98,29 @@ public class PaidVoteController {
 		}
 		String data = JSON.toJSONString(returnList);
 		return data;
+	}
+	
+	@ResponseBody
+	@GetMapping("/getDetail")
+	public Map<String, Object> getDetail(@RequestParam(name = "itcode", required = true) String itcode, 
+			@RequestParam(name = "topicId", required = true) String topicId) {
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		List<Map<String, Object>> returnList = new ArrayList<>();
+		List<PaidVoteDetailDomain> dataList = paidVoteDetailService.selectPaidVoteDetailByBeVotedItcode(itcode, Integer.valueOf(topicId));
+		if(dataList.isEmpty()) {
+			modelMap.put("success", "dataNull");
+			return modelMap;
+		}
+		for(int i = 0; i < dataList.size(); i++) {
+			Map<String, Object> map = new HashMap<>();
+			String voteAddress = dataList.get(i).getVoteAddress();
+			int numberOfVotes = dataList.get(i).getNumberOfVotes();
+			map.put("key", voteAddress);
+			map.put("value", String.valueOf(numberOfVotes));
+			returnList.add(map);
+		}
+		modelMap.put("success", JSONObject.toJSON(returnList));
+		
+		return modelMap;
 	}
 }
