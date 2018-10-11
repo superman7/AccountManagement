@@ -137,4 +137,9 @@ public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
 	public List<Map<String, Object>> selectTop10(Integer topicId) {
 		return paidVoteDetailDAO.selectTop5(topicId);
 	}
+
+	@Override
+	public List<PaidVoteDetailDomain> selectPaidVoteDetailByBeVotedItcode(String beVotedItcode, Integer topicId) {
+		return paidVoteDetailDAO.selectPaidVoteDetailByBeVotedItcode(beVotedItcode, topicId);
+	}
 }
