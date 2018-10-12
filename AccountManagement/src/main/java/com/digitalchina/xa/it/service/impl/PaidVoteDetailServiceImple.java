@@ -36,7 +36,8 @@ public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
 	private volatile static Web3j web3j;
     private static String address = "0x941b8f05561e57f5b9d366c168b85baf900b037c";
     private static String[] ipArr = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
-    private static String tempFilePath = "c://";
+//    private static String tempFilePath = "c://";
+    private static String tempFilePath = "/eth/temp/";
 
     @Autowired
     private PaidVoteDetailDAO paidVoteDetailDAO;
