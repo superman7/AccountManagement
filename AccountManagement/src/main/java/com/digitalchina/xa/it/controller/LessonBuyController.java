@@ -79,7 +79,7 @@ public class LessonBuyController {
 		*/
 		String keystore = ethAccountService.selectKeystoreByItcode(itcode);
 		try {
-			Credentials credentials = lessonContractService.loadCredentials(keystore, "C:/temp/" + itcode + ".json", "mini0823");
+			Credentials credentials = lessonContractService.loadCredentials(keystore, "/eth/temp/" + itcode + ".json", "mini0823");
 			System.out.println("*********生成凭证*********");
 			lessonContractService.buyChapter(credentials, lessonId, BigInteger.valueOf((long) (cost*discount/10)*10000000000000000L));
 			System.out.println("*********调用购买合约**********");
