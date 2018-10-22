@@ -20,4 +20,6 @@ public interface TopicService {
     List<TopicDomain> selectTopicToday();
 
 	void updateTopicStatus(@Param(value="name") String topicName);
+	//根据投票数排序查询话题榜
+	PageInfo<TopicDomain> selectHotTopicByPopularityDesc(int pageNum, int pageSize);
 }

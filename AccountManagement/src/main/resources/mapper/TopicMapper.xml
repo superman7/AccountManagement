@@ -81,4 +81,12 @@
 	   WHERE  name = #{name, jdbcType=VARCHAR}
 	   AND available = 3
 	</update>
+	
+	<select id="selectHotTopicByPopularityDesc" resultType="com.digitalchina.xa.it.model.TopicDomain">
+      SELECT
+        <include refid="BASE_COLUMN"/>
+      FROM
+        <include refid="BASE_TABLE"/>
+      where available = 2 ORDER BY popularity DESC;
+  </select>
 </mapper>

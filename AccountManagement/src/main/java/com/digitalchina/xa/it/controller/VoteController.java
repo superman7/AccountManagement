@@ -156,6 +156,20 @@ public class VoteController {
 	}
 	
 	/**
+	 * @desc 查询所有投票主题
+	 * @return
+	 */
+	@ResponseBody
+	@GetMapping("/topic/hot")
+	public Object findHotTopic(
+	        @RequestParam(name = "pageNum", required = false, defaultValue = "1")
+	                int pageNum,
+	        @RequestParam(name = "pageSize", required = false, defaultValue = "10")
+	                int pageSize){
+	    return topicService.selectHotTopicByPopularityDesc(pageNum, pageSize);
+	}
+	
+	/**
 	 * @desc 根据ID查询投票主题
 	 * @return
 	 */

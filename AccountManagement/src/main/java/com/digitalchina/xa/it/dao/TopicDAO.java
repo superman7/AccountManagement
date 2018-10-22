@@ -22,4 +22,7 @@ public interface TopicDAO {
     int selectNextTopic();
 
 	void updateTopicStatus(String topicName);
+	
+	//根据投票数排序查询话题榜
+	List<TopicDomain> selectHotTopicByPopularityDesc();
 }

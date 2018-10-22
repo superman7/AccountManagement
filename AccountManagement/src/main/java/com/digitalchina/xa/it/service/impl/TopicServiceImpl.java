@@ -54,4 +54,13 @@ public class TopicServiceImpl implements TopicService {
 	public void updateTopicStatus(String topicName) {
 		topicDAO.updateTopicStatus(topicName);
 	}
+
+	@Override
+	public PageInfo<TopicDomain> selectHotTopicByPopularityDesc(int pageNum, int pageSize) {
+        //将参数传给这个方法就可以实现物理分页了，非常简单。
+        PageHelper.startPage(pageNum, pageSize);
+        List<TopicDomain> topicDomains = topicDAO.selectHotTopicByPopularityDesc();
+        PageInfo<TopicDomain> result = new PageInfo<TopicDomain>(topicDomains);
+        return result;
+    }
 }
