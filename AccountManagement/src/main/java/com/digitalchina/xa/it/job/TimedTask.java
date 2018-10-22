@@ -19,9 +19,14 @@ import org.web3j.protocol.http.HttpService;
 
 import com.digitalchina.xa.it.dao.EthAccountDAO;
 import com.digitalchina.xa.it.dao.PaidVoteDetailDAO;
+import com.digitalchina.xa.it.dao.TopicDAO;
 import com.digitalchina.xa.it.dao.WalletAccountDAO;
 import com.digitalchina.xa.it.dao.WalletTransactionDAO;
+import com.digitalchina.xa.it.model.TopicDomain;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
+import com.digitalchina.xa.it.service.TopicOptionService;
+import com.digitalchina.xa.it.service.TopicService;
+import com.digitalchina.xa.it.service.VoteService;
 import com.digitalchina.xa.it.service.WalletTransactionService;
 import com.digitalchina.xa.it.util.HttpRequest;
 
@@ -39,10 +44,36 @@ public class TimedTask {
 	private PaidVoteDetailDAO paidVoteDetailDAO;
 	
 	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
+	
+
+	@Autowired
+	private TopicService topicService;
+	@Autowired
+	private TopicOptionService topicOptionService;
+	@Autowired
+	private VoteService voteService;
+	@Autowired
+    private TopicDAO topicDAO;
+
+	@Transactional
+	@Scheduled(cron="55 59 23 * * ?")
+//	@Scheduled(cron="30 29 14 * * ?")
+	public void updateVoteTopic(){
+		System.out.println("执行定时任务");
+		List<TopicDomain> topicList = topicDAO.selectTopicToday();
+		if(topicList.size() == 0){
+			return;
+		}
+		TopicDomain topic = topicList.get(0);
+		System.out.println("topicid为：" + topic.getId());
+		topicDAO.updateAvailableBefore(topic.getId());
+		int nextTopicId = topicDAO.selectNextTopic();
+		topicDAO.updateAvailable(nextTopicId);
+	}
 
 	@Transactional
 	@Scheduled(cron="10,40 * * * * ?")
-	public void updateVoteTopic(){
+	public void updateTranscationStatus(){
 		Web3j web3j = Web3j.build(new HttpService(ip[new Random().nextInt(5)]));
 		List<WalletTransactionDomain> wtdList = walletTransactionDAO.selectHashAndAccounts();
 		if(wtdList == null) {
