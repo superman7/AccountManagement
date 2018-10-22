@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.SigninRewardDAO" >
+  <sql id="BASE_TABLE">
+    t_signinreward
+  </sql>
+
+  <sql id="BASE_COLUMN">
+    id,itcode,accountkey,type,signtime,rewards
+  </sql>
+
+  <insert id="insert" parameterType="com.digitalchina.xa.it.model.SigninRewardDomain">
+    INSERT INTO
+      <include refid="BASE_TABLE"/>
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      id,itcode,accountkey,type,signtime,rewards,
+    </trim>
+    <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+      #{id, jdbcType=INTEGER},#{itcode, jdbcType=VARCHAR},#{accountkey, jdbcType=VARCHAR},#{type, jdbcType=INTEGER},#{signtime, jdbcType=TIMESTAMP},#{rewards, jdbcType=INTEGER},
+    </trim>
+  </insert>
+
+	<select id="selectSigninStatus" parameterType="java.lang.String" resultType="com.digitalchina.xa.it.model.SigninRewardDomain">
+      SELECT
+        <include refid="BASE_COLUMN"/>
+      FROM
+        <include refid="BASE_TABLE"/>
+      WHERE TYPE=0
+		AND DATE_FORMAT(signtime,'%Y%m%d') &gt; (
+		  SELECT MAX(DATE_FORMAT(signtime,'%Y%m%d')) FROM 
+		  	<include refid="BASE_TABLE"/> 
+		  	WHERE TYPE=1 
+				AND DATE_FORMAT(signtime,'%Y%m%d')&lt;=DATE_ADD(NOW(), INTERVAL -1 DAY)
+				AND DATE_FORMAT(signtime,'%Y%m%d') NOT IN (
+			  		SELECT DATE_FORMAT(signtime,'%Y%m%d') FROM 
+			  			<include refid="BASE_TABLE"/> 
+			  			WHERE TYPE=0 AND itcode=#{itcode, jdbcType=VARCHAR}
+				)
+		  )
+		AND DATE_FORMAT(signtime,'%Y%m%d')&lt;=last_day(curdate())
+		AND DATE_FORMAT(signtime,'%Y%m%d')&gt;=DATE_ADD(curdate(),interval -day(curdate())+1 day)
+		AND itcode=#{itcode, jdbcType=VARCHAR}
+		ORDER BY signtime DESC
+  </select>
+  <select id="selectTodaySigninStatus" parameterType="java.lang.String" resultType="com.digitalchina.xa.it.model.SigninRewardDomain">
+      SELECT
+        <include refid="BASE_COLUMN"/>
+      FROM
+        <include refid="BASE_TABLE"/>
+      WHERE TYPE=0
+		AND DATE_FORMAT(signtime,'%Y%m%d') = DATE_FORMAT(NOW(),'%Y%m%d')
+		AND itcode=#{itcode, jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectTodaySigninCounter" resultType="com.digitalchina.xa.it.model.SigninRewardDomain">
+      SELECT
+        <include refid="BASE_COLUMN"/>
+      FROM
+        <include refid="BASE_TABLE"/>
+      WHERE TYPE=0
+		AND DATE_FORMAT(signtime,'%Y%m%d') = DATE_FORMAT(NOW(),'%Y%m%d')
+  </select>
+  <!-- <select id="selectVmsByItcode" parameterType="java.lang.String" resultType="com.digitalchina.xa.it.model.VirtualMachineDomain">
+      SELECT
+        <include refid="BASE_COLUMN"/>
+      FROM
+        <include refid="BASE_TABLE"/>
+      WHERE userItcode = #{userItcode, jdbcType=VARCHAR}
+  </select>
+  <select id="selectVmsBeforeNow" resultType="com.digitalchina.xa.it.model.VirtualMachineDomain">
+      SELECT
+        id,status,usableDate,userItcode,spare1,spare2,spare3
+      FROM
+        <include refid="BASE_TABLE"/>
+      WHERE
+      	usableDate &lt; NOW()
+  </select>
+  
+    <select id="selectVmStatusById"  parameterType="java.lang.Integer" resultType="java.lang.Integer">
+      SELECT
+        status
+      FROM
+        <include refid="BASE_TABLE"/>
+      where id = #{id, jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectVmUserItcodeById"  parameterType="java.lang.Integer" resultType="java.lang.String">
+      SELECT
+        userItcode
+      FROM
+        <include refid="BASE_TABLE"/>
+      where id = #{id, jdbcType=INTEGER}
+  </select>
+  
+	<update id="updateStatusBefore" parameterType="com.digitalchina.xa.it.model.VirtualMachineDomain">
+	   UPDATE 
+	   <include refid="BASE_TABLE"/>
+	   SET    status = 3, userItcode = #{userItcode, jdbcType=VARCHAR}
+	   WHERE  id = #{id, jdbcType=INTEGER}
+	   AND status = 1
+	</update>
+	<update id="updateStatusAfter" parameterType="com.digitalchina.xa.it.model.VirtualMachineDomain">
+	   UPDATE 
+	   <include refid="BASE_TABLE"/>
+	   SET    status = #{status, jdbcType=INTEGER}
+	   WHERE  id = #{id, jdbcType=INTEGER}
+	   AND status = 3
+	   AND userItcode = #{userItcode, jdbcType=VARCHAR}
+	</update> -->
+</mapper>
