@@ -15,6 +15,10 @@ public interface TopicService {
 	
     void updatePopularity(int id);
     
+    void updateReader(int id);
+    
+    void updatePriority(int id, int priority);
+    
     List<TopicDomain> findTopicByID(int id);
     
     List<TopicDomain> selectTopicToday();

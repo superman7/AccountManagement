@@ -2,6 +2,8 @@ package com.digitalchina.xa.it.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.digitalchina.xa.it.model.TopicDomain;
 
 public interface TopicDAO {
@@ -12,6 +14,10 @@ public interface TopicDAO {
 	List<TopicDomain> selectTopicByID(int id);
     
     void updatePopularity(int id);
+    
+    void updateReader(int id);
+    
+    void updatePriority(@Param("id")int id, @Param("priority")int priority);
     
     List<TopicDomain> selectTopicToday();
     

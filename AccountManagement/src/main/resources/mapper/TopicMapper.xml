@@ -6,7 +6,7 @@
   </sql>
 
   <sql id="BASE_COLUMN">
-    id,name,type,popularity,available
+    id,name,type,popularity,available,reader,priority,backup1,backup2,backup3
   </sql>
 
 	<insert id="insert" parameterType="com.digitalchina.xa.it.model.TopicDomain">
@@ -42,6 +42,20 @@
 	   UPDATE 
 	   <include refid="BASE_TABLE"/>
 	   SET    popularity = popularity+1
+	   WHERE  id = #{id, jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateReader" parameterType="com.digitalchina.xa.it.model.TopicDomain">
+	   UPDATE 
+	   <include refid="BASE_TABLE"/>
+	   SET    reader = reader + 1
+	   WHERE  id = #{id, jdbcType=INTEGER}
+	</update>
+	
+	<update id="updatePriority" parameterType="com.digitalchina.xa.it.model.TopicDomain">
+	   UPDATE 
+	   <include refid="BASE_TABLE"/>
+	   SET    priority = priority + #{priority, jdbcType=INTEGER}
 	   WHERE  id = #{id, jdbcType=INTEGER}
 	</update>
   

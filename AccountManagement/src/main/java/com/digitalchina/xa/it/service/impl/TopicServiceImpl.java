@@ -63,4 +63,16 @@ public class TopicServiceImpl implements TopicService {
         PageInfo<TopicDomain> result = new PageInfo<TopicDomain>(topicDomains);
         return result;
     }
+
+	@Override
+    @Transactional
+	public void updateReader(int id) {
+		topicDAO.updateReader(id);
+	}
+
+	@Override
+    @Transactional
+	public void updatePriority(int id, int priority) {
+		topicDAO.updatePriority(id, priority);
+	}
 }
