@@ -156,7 +156,7 @@ public class VoteController {
 	}
 	
 	/**
-	 * @desc 查询所有投票主题
+	 * @desc 根据热度查询所有投票主题
 	 * @return
 	 */
 	@ResponseBody
@@ -167,6 +167,34 @@ public class VoteController {
 	        @RequestParam(name = "pageSize", required = false, defaultValue = "10")
 	                int pageSize){
 	    return topicService.selectHotTopicByPopularityDesc(pageNum, pageSize);
+	}
+	
+	/**
+	 * @desc 根据话题时间查询所有投票主题
+	 * @return
+	 */
+	@ResponseBody
+	@GetMapping("/topic/new")
+	public Object findNewTopic(
+	        @RequestParam(name = "pageNum", required = false, defaultValue = "1")
+	                int pageNum,
+	        @RequestParam(name = "pageSize", required = false, defaultValue = "10")
+	                int pageSize){
+	    return topicService.selectNewTopicByPopularityDesc(pageNum, pageSize);
+	}
+	
+	/**
+	 * @desc 根据优先级查询所有投票主题
+	 * @return
+	 */
+	@ResponseBody
+	@GetMapping("/topic/priority")
+	public Object findPriorityTopic(
+	        @RequestParam(name = "pageNum", required = false, defaultValue = "1")
+	                int pageNum,
+	        @RequestParam(name = "pageSize", required = false, defaultValue = "10")
+	                int pageSize){
+	    return topicService.selectPriorityTopicByPopularityDesc(pageNum, pageSize);
 	}
 	
 	/**

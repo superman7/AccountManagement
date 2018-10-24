@@ -104,5 +104,25 @@
       where available = 2 
       
       ORDER BY popularity DESC
-  </select>
+  	</select>
+  	
+	<select id="selectNewTopicByPopularityDesc" resultType="com.digitalchina.xa.it.model.TopicDomain">
+      SELECT
+        <include refid="BASE_COLUMN"/>
+      FROM
+        <include refid="BASE_TABLE"/>
+      where available &lt;&gt; 3 
+      
+      ORDER BY id DESC
+  	</select>
+  	
+	<select id="selectPriorityTopicByPopularityDesc" resultType="com.digitalchina.xa.it.model.TopicDomain">
+      SELECT
+        <include refid="BASE_COLUMN"/>
+      FROM
+        <include refid="BASE_TABLE"/>
+      where available &lt;&gt; 3 
+      
+      ORDER BY priority DESC
+  	</select>
 </mapper>

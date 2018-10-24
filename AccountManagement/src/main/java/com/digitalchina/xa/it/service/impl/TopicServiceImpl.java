@@ -56,15 +56,6 @@ public class TopicServiceImpl implements TopicService {
 	}
 
 	@Override
-	public PageInfo<TopicDomain> selectHotTopicByPopularityDesc(int pageNum, int pageSize) {
-        //将参数传给这个方法就可以实现物理分页了，非常简单。
-        PageHelper.startPage(pageNum, pageSize);
-        List<TopicDomain> topicDomains = topicDAO.selectHotTopicByPopularityDesc();
-        PageInfo<TopicDomain> result = new PageInfo<TopicDomain>(topicDomains);
-        return result;
-    }
-
-	@Override
     @Transactional
 	public void updateReader(int id) {
 		topicDAO.updateReader(id);
@@ -75,4 +66,31 @@ public class TopicServiceImpl implements TopicService {
 	public void updatePriority(int id, int priority) {
 		topicDAO.updatePriority(id, priority);
 	}
+
+	@Override
+	public PageInfo<TopicDomain> selectHotTopicByPopularityDesc(int pageNum, int pageSize) {
+        //将参数传给这个方法就可以实现物理分页了，非常简单。
+        PageHelper.startPage(pageNum, pageSize);
+        List<TopicDomain> topicDomains = topicDAO.selectHotTopicByPopularityDesc();
+        PageInfo<TopicDomain> result = new PageInfo<TopicDomain>(topicDomains);
+        return result;
+    }
+	
+	@Override
+	public PageInfo<TopicDomain> selectNewTopicByPopularityDesc(int pageNum, int pageSize) {
+        //将参数传给这个方法就可以实现物理分页了，非常简单。
+        PageHelper.startPage(pageNum, pageSize);
+        List<TopicDomain> topicDomains = topicDAO.selectNewTopicByPopularityDesc();
+        PageInfo<TopicDomain> result = new PageInfo<TopicDomain>(topicDomains);
+        return result;
+    }
+
+	@Override
+	public PageInfo<TopicDomain> selectPriorityTopicByPopularityDesc(int pageNum, int pageSize) {
+        //将参数传给这个方法就可以实现物理分页了，非常简单。
+        PageHelper.startPage(pageNum, pageSize);
+        List<TopicDomain> topicDomains = topicDAO.selectPriorityTopicByPopularityDesc();
+        PageInfo<TopicDomain> result = new PageInfo<TopicDomain>(topicDomains);
+        return result;
+    }
 }

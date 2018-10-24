@@ -31,4 +31,10 @@ public interface TopicDAO {
 	
 	//根据投票数排序查询话题榜
 	List<TopicDomain> selectHotTopicByPopularityDesc();
+	
+	//根据话题提交时间排序查询话题榜
+	List<TopicDomain> selectNewTopicByPopularityDesc();
+	
+	//根据优先级排序查询话题榜
+	List<TopicDomain> selectPriorityTopicByPopularityDesc();
 }
