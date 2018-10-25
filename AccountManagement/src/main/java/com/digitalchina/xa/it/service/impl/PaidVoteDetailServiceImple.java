@@ -117,11 +117,14 @@ public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
 		
 		PaidVote contract = PaidVote.load(address, web3j, transactionManager, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 		
+		System.err.println("付费投票模块:构建交易管理成功！");
+		
 		try {
 			TransactionReceipt transactionReceipt = contract.buyChapter(new Address(toaccount), 
 					BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(Long.valueOf(turncount)))).send();
 			
 			String result = transactionReceipt.getTransactionHash();
+			System.out.println("付费投票模块:构建交易管理成功！Hash值为" + result);
 			paidVoteDetailDAO.updateTransactionHash(paidVoteDetailDomain.getId(), result);
 
 			web3j.shutdown();
