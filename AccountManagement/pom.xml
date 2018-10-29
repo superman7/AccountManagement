@@ -42,11 +42,6 @@
 	        <artifactId>sqljdbc</artifactId>
 	        <version>1.0</version>
 	    </dependency>
-       <!--  <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
-        </dependency> -->
         <dependency>
 		  	 <groupId>org.web3j</groupId>
 		     <artifactId>core</artifactId>
@@ -93,41 +88,6 @@
 		    <version>1.2.47</version>
 		</dependency>
 		
-		<!-- axis 1.4 jar start
-        <dependency>
-		    <groupId>org.apache.axis</groupId>
-		    <artifactId>axis</artifactId>
-		    <version>1.4.0.v201411182030</version>
-		</dependency>
-        <dependency>
-            <groupId>commons-discovery</groupId>
-            <artifactId>commons-discovery</artifactId>
-            <version>0.2.0.v201004190315</version>
-        </dependency>
-        
-		<dependency>
-		    <groupId>javax.xml.rpc</groupId>
-		    <artifactId>javax.xml.rpc-api</artifactId>
-		    <version>1.1.0.v201209140446</version>
-		</dependency>
-		
-		<dependency>
-		    <groupId>javax.xml.soap</groupId>
-		    <artifactId>javax.xml.soap-api</artifactId>
-		    <version>1.2.0.v201005080501</version>
-		</dependency>
-		<dependency>
-		    <groupId>javax.wsdl</groupId>
-		    <artifactId>javax.wsdl</artifactId>
-		    <version>1.6.2.v201012040545</version>
-		</dependency>
-
-		<dependency>
-		    <groupId>org.apache.commons.logging</groupId>
-		    <artifactId>org.apache.commons.logging</artifactId>
-		    <version>1.1.1.v201101211721</version>
-		</dependency>
-        axis 1.4 jar end -->
         <dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>
