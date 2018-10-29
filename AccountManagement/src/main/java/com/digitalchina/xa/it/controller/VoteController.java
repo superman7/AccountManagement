@@ -28,9 +28,6 @@ import com.digitalchina.xa.it.util.CxfUtils;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
 
-import cn.com.weaver.workflow.webservices.CreateTopicServicePortType;
-import cn.com.weaver.workflow.webservices.CreateTopicServicePortTypeProxy;
-
 @Controller
 @RequestMapping(value = "/vote")
 public class VoteController {
