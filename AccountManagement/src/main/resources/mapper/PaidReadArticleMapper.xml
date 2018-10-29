@@ -9,6 +9,35 @@
 		id,name,author,available,balance,freePart,price,content,backup1,backup2,backup3
 	</sql>
 	
+	<insert id="insertPaidReadArticle" parameterType="com.digitalchina.xa.it.model.PaidReadArticleDomain">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				name,author,available,balance,freePart,price,content
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{name, jdbcType=VARCHAR},#{author, jdbcType=INTEGER},#{available, jdbcType=INTEGER},
+				#{balance, jdbcType=INTEGER},#{freePart, jdbcType=INTEGER},#{price, jdbcType=INTEGER},
+				#{content, jdbcType=VARCHAR}
+			</trim>
+	</insert>
+	
+	<select id="selectPaidReadArticleByTime" resultType="com.digitalchina.xa.it.model.PaidReadArticleDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		GROUP BY id DESC;
+	</select>
+	
+	<select id="selectPaidReadArticleByHot" resultType="com.digitalchina.xa.it.model.PaidReadArticleDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		GROUP BY balance DESC;
+	</select>
+	
 	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>
@@ -50,17 +79,6 @@
 		WHERE
 			account = #{account,jdbcType=VARCHAR}
 	</select>
-	
-	<insert id="insertItcodeAndAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
-		INSERT INTO
-			<include refid="BASE_TABLE"/>
-			<trim prefix="(" suffix=")" suffixOverrides=",">
-				itcode,account
-			</trim>
-			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-				#{itcode, jdbcType=VARCHAR},#{account, jdbcType=VARCHAR}
-			</trim>
-	</insert>
   
 	<update id="updateAccountBalance" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
 		UPDATE 

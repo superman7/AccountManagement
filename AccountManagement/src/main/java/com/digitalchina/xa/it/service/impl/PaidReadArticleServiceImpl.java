@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
@@ -26,7 +27,11 @@ import org.web3j.tx.response.TransactionReceiptProcessor;
 
 import com.digitalchina.xa.it.dao.EthAccountDAO;
 import com.digitalchina.xa.it.dao.PaidReadArticleDAO;
+import com.digitalchina.xa.it.model.EthAccountDomain;
+import com.digitalchina.xa.it.model.PaidReadArticleDomain;
 import com.digitalchina.xa.it.service.PaidReadArticleService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 @Service(value = "paidReadArticleService")
 public class PaidReadArticleServiceImpl implements PaidReadArticleService{
@@ -41,4 +46,28 @@ public class PaidReadArticleServiceImpl implements PaidReadArticleService{
     
     @Autowired
     private EthAccountDAO ethAccountDAO;
+
+	@Override
+    @Transactional
+	public int insertPaidReadArticle(PaidReadArticleDomain paidReadArticleDomain) {
+		return paidReadArticleDAO.insertPaidReadArticle(paidReadArticleDomain);
+	}
+	
+	@Override
+	public PageInfo<PaidReadArticleDomain> selectPaidReadArticleByTime(int pageNum, int pageSize) {
+		//将参数传给这个方法就可以实现物理分页了，非常简单。
+        PageHelper.startPage(pageNum, pageSize);
+        List<PaidReadArticleDomain> paidReadArticleDomain = paidReadArticleDAO.selectPaidReadArticleByTime();
+        PageInfo<PaidReadArticleDomain> result = new PageInfo<PaidReadArticleDomain>(paidReadArticleDomain);
+        return result;
+	}
+
+	@Override
+	public PageInfo<PaidReadArticleDomain> selectPaidReadArticleByHot(int pageNum, int pageSize) {
+		//将参数传给这个方法就可以实现物理分页了，非常简单。
+        PageHelper.startPage(pageNum, pageSize);
+        List<PaidReadArticleDomain> paidReadArticleDomain = paidReadArticleDAO.selectPaidReadArticleByHot();
+        PageInfo<PaidReadArticleDomain> result = new PageInfo<PaidReadArticleDomain>(paidReadArticleDomain);
+        return result;
+	}
 }
