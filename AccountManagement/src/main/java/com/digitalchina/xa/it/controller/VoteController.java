@@ -39,6 +39,8 @@ public class VoteController {
 	private TopicOptionService topicOptionService;
 	@Autowired
 	private VoteService voteService;
+//	@Autowired
+//	private CreateTopicServicePortType ctspt;
 	
 	/**
 	 * @desc 添加投票主题及选项（管理员调用）
@@ -73,7 +75,7 @@ public class VoteController {
 		
 		//添加提交人的itcode
 		String itcode = obj.getString("itcode");
-
+		
 		CreateTopicServicePortType ctspt = new CreateTopicServicePortTypeProxy();
 		
 		String params = topicName + "--" + itcode + "--";

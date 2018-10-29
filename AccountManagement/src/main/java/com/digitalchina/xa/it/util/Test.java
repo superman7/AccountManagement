@@ -88,24 +88,27 @@ public class Test {
 //			e.printStackTrace();
 //		}
 //    }
+//	public static void main(String[] args) {
+//		Admin admin = Admin.build(new HttpService(ip));
+//		Web3j web3j = Web3j.build(new HttpService(ip));
+//		
+//		String account = "0x746105fb3a6331ab23a05ace2cda662de4883e0c";
+//		EthGetTransactionCount ethGetTransactionCount;
+//		try {
+//			ethGetTransactionCount = web3j.ethGetTransactionCount(account, DefaultBlockParameterName.LATEST).sendAsync().get();
+//			BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+//			System.out.println(nonce);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		} catch (ExecutionException e) {
+//			e.printStackTrace();
+//		}
+//		
+//	}
 	public static void main(String[] args) {
-		Admin admin = Admin.build(new HttpService(ip));
-		Web3j web3j = Web3j.build(new HttpService(ip));
-		
-		String account = "0x746105fb3a6331ab23a05ace2cda662de4883e0c";
-		EthGetTransactionCount ethGetTransactionCount;
-		try {
-			ethGetTransactionCount = web3j.ethGetTransactionCount(account, DefaultBlockParameterName.LATEST).sendAsync().get();
-			BigInteger nonce = ethGetTransactionCount.getTransactionCount();
-			System.out.println(nonce);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
-		
+		String aaa = CxfUtils.CallService("http://10.0.20.51/services/CreateTopicService?wsdl", "AutoTriggerTopic", "测试--fannl--op1##op2");
+		System.out.println(aaa);
 	}
-	
 //	public static void main(String[] args) {
 //    try{
 //		String tempFilePath = "C://temp/";
