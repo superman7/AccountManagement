@@ -24,6 +24,7 @@ import com.digitalchina.xa.it.model.VoteDomain;
 import com.digitalchina.xa.it.service.TopicOptionService;
 import com.digitalchina.xa.it.service.TopicService;
 import com.digitalchina.xa.it.service.VoteService;
+import com.digitalchina.xa.it.util.CxfUtils;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
 
@@ -39,8 +40,6 @@ public class VoteController {
 	private TopicOptionService topicOptionService;
 	@Autowired
 	private VoteService voteService;
-//	@Autowired
-//	private CreateTopicServicePortType ctspt;
 	
 	/**
 	 * @desc 添加投票主题及选项（管理员调用）
@@ -76,24 +75,18 @@ public class VoteController {
 		//添加提交人的itcode
 		String itcode = obj.getString("itcode");
 		
-		CreateTopicServicePortType ctspt = new CreateTopicServicePortTypeProxy();
-		
 		String params = topicName + "--" + itcode + "--";
 		
 		for(int i = 0; i < options.size(); i++){
 			params += (String) options.get(i) + "##";
 		}
 		params = params.substring(0, params.length() - 2);
-		try {
-			System.err.println(params);
-			String result = ctspt.autoTriggerTopic(params);
-			if(!result.contains("<flag>T</flag>")){
-				return 0;
-			}
-			System.err.println(result);
-		} catch (RemoteException e) {
-			e.printStackTrace();
+		System.err.println(params);
+		String result = CxfUtils.CallService("http://10.0.20.51/services/CreateTopicService?wsdl", "AutoTriggerTopic", params);
+		if(!result.contains("<flag>T</flag>")){
+			return 0;
 		}
+		System.err.println(result);
 		TopicDomain topic = new TopicDomain();
 		topic.setName(topicName);
 		topic.setType(itcode);
