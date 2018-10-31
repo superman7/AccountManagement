@@ -3,6 +3,7 @@ package com.digitalchina.xa.it.job;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -57,17 +58,26 @@ public class TimedTask {
 
 	@Transactional
 	@Scheduled(cron="55 59 23 * * ?")
-//	@Scheduled(cron="30 29 14 * * ?")
+//	@Scheduled(cron="15,45 * * * * ?")
 	public void updateVoteTopic(){
 		System.out.println("执行定时任务");
+		
+		Calendar localTime = Calendar.getInstance();
+		int z = localTime.get(Calendar.DATE);
+		
 		List<TopicDomain> topicList = topicDAO.selectTopicToday();
 		if(topicList.size() == 0){
 			return;
 		}
 		TopicDomain topic = topicList.get(0);
-		System.out.println("topicid为：" + topic.getId());
 		topicDAO.updateAvailableBefore(topic.getId());
-		int nextTopicId = topicDAO.selectNextTopic();
+		int nextTopicId;
+		if(z == 1){
+			nextTopicId = topicDAO.selectNextTopicStock();
+		}else{
+			nextTopicId = topicDAO.selectNextTopic();
+		}
+		System.out.println("新topicid为：" + nextTopicId);
 		topicDAO.updateAvailable(nextTopicId);
 	}
 

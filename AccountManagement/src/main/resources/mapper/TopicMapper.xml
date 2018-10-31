@@ -68,10 +68,18 @@
   </select>
   	<select id="selectNextTopic" resultType="Integer">
       SELECT
-        MIN(id)
+        id
       FROM
         <include refid="BASE_TABLE"/>
-      where available = 0
+      where available = 0 AND type &lt;&gt; 'stockmarket' ORDER BY RAND() LIMIT 1;
+	</select>
+	
+	<select id="selectNextTopicStock" resultType="Integer">
+      SELECT
+        id
+      FROM
+        <include refid="BASE_TABLE"/>
+      where available = 0 AND type = 'stockmarket' LIMIT 1;
 	</select>
 	
   	<update id="updateAvailable" parameterType="com.digitalchina.xa.it.model.TopicDomain">

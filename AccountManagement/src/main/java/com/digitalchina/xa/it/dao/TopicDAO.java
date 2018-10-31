@@ -27,6 +27,8 @@ public interface TopicDAO {
     
     int selectNextTopic();
 
+	int selectNextTopicStock();
+
 	void updateTopicStatus(String topicName);
 	
 	//根据投票数排序查询话题榜
