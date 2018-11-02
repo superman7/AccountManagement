@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.xa.it.model.PaidReadArticleDomain;
 import com.digitalchina.xa.it.model.PaidVoteDetailDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.PaidReadArticleService;
@@ -41,8 +42,8 @@ public class PaidReadController {
 	private EthAccountService ethAccountService;
 	
 	@ResponseBody
-	@GetMapping("/insertVoteDetail")
-	public Object voteToSomebody(
+	@GetMapping("/insertArticle")
+	public Object insertArticle(
 	        @RequestParam(name = "param", required = true) String jsonValue){
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		Encrypt encrypt = new EncryptImpl();
@@ -66,69 +67,32 @@ public class PaidReadController {
 		}
     	System.err.println("解密后参数为：" + data);
     	JSONObject jsonObj = JSONObject.parseObject(data);
-    	String toaccount = jsonObj.getString("toaccount");
-    	String fromaccount = jsonObj.getString("fromaccount");
-    	String toitcode = jsonObj.getString("toitcode");
-    	String fromitcode = jsonObj.getString("fromitcode");
-    	String turncount = jsonObj.getString("turncount");
-    	String remark = jsonObj.getString("remark");
-    	Integer topicId = jsonObj.getInteger("topicId");
-		
-    	paidVoteDetailService.voteToSomebody(toaccount, fromaccount, toitcode, fromitcode, turncount, remark, topicId);
-//		if( res <= 5 && res >=0) {
-//			modelMap.put("success", true);
-//		} else {
-//			modelMap.put("success", false);
-//			modelMap.put("errMsg", "skippingReading");
-//		}
+    	String articleName = jsonObj.getString("articleName");
+    	String itcode = jsonObj.getString("itcode");
+    	String articleContent = jsonObj.getString("articleContent");
+    	
+    	Integer articleFreePart = Integer.valueOf(jsonObj.getString("articleFreePart"));
+    	Integer articlePrice = Integer.valueOf(jsonObj.getString("articlePrice"));
+    	Integer authorNum = 1;
+    	
+    	
+    	PaidReadArticleDomain paidReadArticleDomain = new PaidReadArticleDomain(articleName, authorNum, articleContent, 1, 30, articleFreePart, articlePrice);
+		int result = paidReadArticleService.insertPaidReadArticle(paidReadArticleDomain);
+		if(result > 0) {
+			modelMap.put("success", true);
+		} else {
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "insert failed");
+		}
 		
 		return modelMap;
 	}
 	
 	@ResponseBody
-	@GetMapping("/top5")
-	public String getTop5(@RequestParam(name = "topicId", required = true) Integer topicId) {
-		List<Map<String, Object>> dataList = paidVoteDetailService.selectTop10(topicId);
-		List<Map<String, Object>> returnList = new ArrayList<>();
-		for(int i = 0; i < dataList.size(); i++) {
-			Map<String, Object> map = new HashMap<>();
-			Integer value = ((BigDecimal) dataList.get(i).get("balance")).intValue();
-			//new BigDecimal((Double)dataList.get(i).get("balance"))
-			
-			map.put("key", dataList.get(i).get("itcode"));
-			map.put("value", value);
-			returnList.add(map);
-		}
-		String data = JSON.toJSONString(returnList);
-		return data;
-	}
-	
-	@ResponseBody
-	@GetMapping("/getDetail")
-	public Map<String, Object> getDetail(@RequestParam(name = "itcode", required = true) String itcode, 
-			@RequestParam(name = "topicId", required = true) String topicId) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		List<Map<String, Object>> returnList = new ArrayList<>();
-		List<PaidVoteDetailDomain> dataList = paidVoteDetailService.selectPaidVoteDetailByBeVotedItcode(itcode, Integer.valueOf(topicId));
-		if(dataList.isEmpty()) {
-			modelMap.put("success", "dataNull");
-			return modelMap;
-		}
-		for(int i = 0; i < dataList.size(); i++) {
-			Map<String, Object> map = new HashMap<>();
-			String voteAddress = dataList.get(i).getVoteAddress();
-			int numberOfVotes = dataList.get(i).getNumberOfVotes();
-			String voteItcode = ethAccountService.selectEthAccountByAddress(voteAddress).getItcode();
-			map.put("voteItcode", voteItcode);
-			map.put("voteAddress", voteAddress);
-			map.put("beVotedItcode", dataList.get(i).getBeVotedItcode());
-			map.put("beVotedAdress", dataList.get(i).getBeVotedAddress());
-			map.put("numberOfVotes", String.valueOf(numberOfVotes));
-			map.put("transactionHash", dataList.get(i).getTransactionHash());
-			returnList.add(map);
-		}
-		modelMap.put("success", JSONObject.toJSON(returnList));
-		
-		return modelMap;
+	@GetMapping("/selectArticle")
+	public List<PaidReadArticleDomain> selectArticle(@RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
+            @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize){
+		List<PaidReadArticleDomain> result = paidReadArticleService.selectPaidReadArticleByTime(pageNum, pageSize);
+				return result;
 	}
 }

@@ -27,7 +27,7 @@
 			<include refid="BASE_COLUMN"/>
 		FROM
 			<include refid="BASE_TABLE"/>
-		GROUP BY id DESC;
+		ORDER BY id DESC;
 	</select>
 	
 	<select id="selectPaidReadArticleByHot" resultType="com.digitalchina.xa.it.model.PaidReadArticleDomain">
@@ -35,7 +35,7 @@
 			<include refid="BASE_COLUMN"/>
 		FROM
 			<include refid="BASE_TABLE"/>
-		GROUP BY balance DESC;
+		ORDER BY balance DESC;
 	</select>
 	
 	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">

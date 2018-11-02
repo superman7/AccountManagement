@@ -27,6 +27,7 @@ import org.web3j.tx.response.TransactionReceiptProcessor;
 import com.digitalchina.xa.it.dao.EthAccountDAO;
 import com.digitalchina.xa.it.dao.PaidReadAuthorDAO;
 import com.digitalchina.xa.it.model.EthAccountDomain;
+import com.digitalchina.xa.it.model.PaidReadAuthorDomain;
 import com.digitalchina.xa.it.service.PaidReadAuthorService;
 
 @Service(value = "paidReadAuthorService")
@@ -42,5 +43,20 @@ public class PaidReadAuthorServiceImpl implements PaidReadAuthorService{
     
     @Autowired
     private EthAccountDAO ethAccountDAO;
+
+	@Override
+	public boolean selectAuthorIfSaved(String itcode) {
+		boolean result = false;
+		int counter = paidReadAuthorDAO.selectAuthorIfSaved(itcode);
+		if(counter > 0){
+			result = true;
+		}
+		return result;
+	}
+
+	@Override
+	public int insertPaidReadAuthor(PaidReadAuthorDomain paidReadAuthorDomain) {
+		return paidReadAuthorDAO.insertPaidReadAuthor(paidReadAuthorDomain);
+	}
     
 }

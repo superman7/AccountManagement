@@ -41,7 +41,15 @@ public class PaidReadArticleDomain {
     	this.backup2 = backup2;
     	this.backup3 = backup3;
     }
-    
+    public PaidReadArticleDomain(String name, Integer author, String content, Integer available, Integer balance, Integer freePart, Integer price){
+    	this.name = name;
+    	this.author = author;
+    	this.available = available;
+    	this.balance = balance;
+    	this.freePart = freePart;
+    	this.price = price;
+    	this.content = content;
+    }
 	public Integer getId() {
 		return id;
 	}
