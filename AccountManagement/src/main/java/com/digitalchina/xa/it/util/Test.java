@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.concurrent.ExecutionException;
 
@@ -105,10 +107,25 @@ public class Test {
 //		}
 //		
 //	}
+	//测试webservice
+//	public static void main(String[] args) {
+//		String aaa = CxfUtils.CallService("http://10.0.20.51/services/CreateTopicService?wsdl", "AutoTriggerTopic", "测试--fannl--op1##op2");
+//		System.out.println(aaa);
+//	}
+	
 	public static void main(String[] args) {
-		String aaa = CxfUtils.CallService("http://10.0.20.51/services/CreateTopicService?wsdl", "AutoTriggerTopic", "测试--fannl--op1##op2");
-		System.out.println(aaa);
+		String aaa = "%7B\"itcode\"%3A\"fannl\"%2C\"articleName\"%3A\"哎哎哎\"%2C\"articleContent\"%3A\"<p><i><mark+class%3D%5C\"marker-yellow%5C\"><strong><u>给这个div添加个边框！%40￥%23%25￥……%26amp%3B%26amp%3B（）%26amp%3B……%40%23%25￥！%40%23%26amp%3B**“”“”：；；：<%2Fu><%2Fstrong><%2Fmark><%2Fi><%2Fp>\"%2C\"articleFreePart\"%3A\"1\"%2C\"articlePrice\"%3A\"1\"%7D";
+		String s = "";
+		try {
+			s = URLEncoder.encode(aaa,"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String result = HttpRequest.sendPost("http://10.7.10.186:8082/paidRead/insertArticle", "param=" + s);
+		System.out.println(result);
 	}
+	
 //	public static void main(String[] args) {
 //    try{
 //		String tempFilePath = "C://temp/";

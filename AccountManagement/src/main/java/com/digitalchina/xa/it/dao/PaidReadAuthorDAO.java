@@ -8,7 +8,9 @@ import com.digitalchina.xa.it.model.PaidReadAuthorDomain;
 
 public interface PaidReadAuthorDAO {
 	
-	int selectAuthorIfSaved(@Param(value = "itcode") String itcode);
+	Integer selectAuthorIfSaved(@Param(value = "itcode") String itcode);
 	
-	int insertPaidReadAuthor(PaidReadAuthorDomain paidReadAuthorDomain);
+	Integer insertPaidReadAuthor(PaidReadAuthorDomain paidReadAuthorDomain);
+	
+	Integer selectAuthorByItcode(@Param(value = "itcode") String itcode);
 }

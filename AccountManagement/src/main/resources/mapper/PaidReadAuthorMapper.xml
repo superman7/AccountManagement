@@ -8,7 +8,36 @@
 	<sql id="BASE_COLUMN">
 		id,itcode,nickname,backup1,backup2,backup3
 	</sql>
+	<select id="selectAuthorIfSaved" resultType="java.lang.Integer">
+		SELECT
+			count(id)
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode, jdbcType=VARCHAR}
+	</select>
+	<insert id="insertPaidReadAuthor" parameterType="com.digitalchina.xa.it.model.PaidReadAuthorDomain">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            select @@IDENTITY as id
+        </selectKey>
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				itcode
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{itcode, jdbcType=VARCHAR}
+			</trim>
+	</insert>
 	
+	<select id="selectAuthorByItcode" resultType="java.lang.Integer">
+		SELECT
+			id
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode, jdbcType=VARCHAR}
+	</select>
 	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>

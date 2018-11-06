@@ -11,6 +11,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -42,23 +43,13 @@ public class PaidReadController {
 	private EthAccountService ethAccountService;
 	
 	@ResponseBody
-	@GetMapping("/insertArticle")
+	@PostMapping("/insertArticle")
 	public Object insertArticle(
 	        @RequestParam(name = "param", required = true) String jsonValue){
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
-			return modelMap;
-		}
     	String data = null;
 		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
+			data = URLDecoder.decode(jsonValue, "utf-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			modelMap.put("success", false);
@@ -70,13 +61,14 @@ public class PaidReadController {
     	String articleName = jsonObj.getString("articleName");
     	String itcode = jsonObj.getString("itcode");
     	String articleContent = jsonObj.getString("articleContent");
-    	
+
+    	Integer articleAuthor = paidReadAuthorService.selectAuthorIfSaved(itcode);
     	Integer articleFreePart = Integer.valueOf(jsonObj.getString("articleFreePart"));
     	Integer articlePrice = Integer.valueOf(jsonObj.getString("articlePrice"));
-    	Integer authorNum = 1;
+    	Integer articleBalance = Integer.valueOf(jsonObj.getString("articleBalance"));
     	
+    	PaidReadArticleDomain paidReadArticleDomain = new PaidReadArticleDomain(articleName, articleAuthor, articleContent, 1, articleBalance, articleFreePart, articlePrice);
     	
-    	PaidReadArticleDomain paidReadArticleDomain = new PaidReadArticleDomain(articleName, authorNum, articleContent, 1, 30, articleFreePart, articlePrice);
 		int result = paidReadArticleService.insertPaidReadArticle(paidReadArticleDomain);
 		if(result > 0) {
 			modelMap.put("success", true);

@@ -45,18 +45,14 @@ public class PaidReadAuthorServiceImpl implements PaidReadAuthorService{
     private EthAccountDAO ethAccountDAO;
 
 	@Override
-	public boolean selectAuthorIfSaved(String itcode) {
-		boolean result = false;
-		int counter = paidReadAuthorDAO.selectAuthorIfSaved(itcode);
+	public Integer selectAuthorIfSaved(String itcode) {
+		Integer counter = paidReadAuthorDAO.selectAuthorIfSaved(itcode);
 		if(counter > 0){
-			result = true;
+			return paidReadAuthorDAO.selectAuthorByItcode(itcode);
+		}else{
+			PaidReadAuthorDomain prad = new PaidReadAuthorDomain();
+			prad.setItcode(itcode);
+			return paidReadAuthorDAO.insertPaidReadAuthor(prad);
 		}
-		return result;
 	}
-
-	@Override
-	public int insertPaidReadAuthor(PaidReadAuthorDomain paidReadAuthorDomain) {
-		return paidReadAuthorDAO.insertPaidReadAuthor(paidReadAuthorDomain);
-	}
-    
 }
