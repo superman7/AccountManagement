@@ -88,7 +88,7 @@ public class LessonBuyController {
 		System.out.println("*******记录购买信息********");
 		
 		//向kafka集群发送扣费信息
-		String url = "http://10.7.10.186:8083/lessonBuy/processDeduction";
+		String url = "http://10.7.10.124:8083/lessonBuy/processDeduction";
 		String postParam = "itcode=" + itcode + "&transactionDetailId=" + transactionDetailId + "&turnBalance=" + turnBalance;
 		HttpRequest.sendPost(url, postParam);
 		
