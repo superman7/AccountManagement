@@ -60,6 +60,9 @@
 	</select>
 	
 	<insert id="insertBuyInfo" parameterType="com.digitalchina.xa.it.model.LessonBuyDomain">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            select @@IDENTITY as id
+        </selectKey>
 		INSERT INTO
 			<include refid="BASE_TABLE"/>
 			<trim prefix="(" suffix=")" suffixOverrides=",">

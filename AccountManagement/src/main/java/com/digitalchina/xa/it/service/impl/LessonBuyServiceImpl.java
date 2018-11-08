@@ -35,12 +35,12 @@ public class LessonBuyServiceImpl implements LessonBuyService {
 	}
 
 	@Override
-	public Boolean insertBuyInfo(LessonBuyDomain lessonBuyDomain) {
+	public Integer insertBuyInfo(LessonBuyDomain lessonBuyDomain) {
 		if(lessonBuyDomain != null) {
 			try {
-				int effectedNumber = lessonBuyDAO.insertBuyInfo(lessonBuyDomain);
+				Integer effectedNumber = lessonBuyDAO.insertBuyInfo(lessonBuyDomain);
 				if(effectedNumber > 0) {
-					return true;
+					return lessonBuyDomain.getId();
 				} else {
 					throw new RuntimeException("插入购买信息失败");
 				}

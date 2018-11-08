@@ -11,5 +11,5 @@ public interface LessonBuyService {
 	List<String> selectFreeChapter(@Param("itcode")String lessonId);
 	List<LessonBuyDomain> selectCanUse(@Param("itcode")String itcode, @Param("lessonId")String lessonId);
 	LessonBuyDomain selectCostAndDiscount(@Param("chapterNum")String chapterNum, @Param("lessonId")String lessonId);
-	Boolean insertBuyInfo(LessonBuyDomain lessonBuyDomain);
+	Integer insertBuyInfo(LessonBuyDomain lessonBuyDomain);
 }

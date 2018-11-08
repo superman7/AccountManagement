@@ -52,7 +52,8 @@ public class PaidReadAuthorServiceImpl implements PaidReadAuthorService{
 		}else{
 			PaidReadAuthorDomain prad = new PaidReadAuthorDomain();
 			prad.setItcode(itcode);
-			return paidReadAuthorDAO.insertPaidReadAuthor(prad);
+			paidReadAuthorDAO.insertPaidReadAuthor(prad);
+			return prad.getId();
 		}
 	}
 }

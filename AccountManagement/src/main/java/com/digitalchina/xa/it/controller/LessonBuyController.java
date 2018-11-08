@@ -29,6 +29,7 @@ import com.digitalchina.xa.it.service.LessonContractService;
 import com.digitalchina.xa.it.service.LessonDetailService;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
+import com.digitalchina.xa.it.util.HttpRequest;
 
 @Controller
 @RequestMapping(value = "/lessonBuy")
@@ -64,7 +65,7 @@ public class LessonBuyController {
 			modelMap.put("errMsg", "解密失败！非utf-8编码。");
 			return modelMap;
 		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
+    	System.err.println("解密的JSON为:" + data);
     	JSONObject jsonObj = JSONObject.parseObject(data);
 		String itcode = jsonObj.getString("itcode");
 		String chapterNum = jsonObj.getString("chapterNum");
@@ -74,23 +75,6 @@ public class LessonBuyController {
 		Double cost = lbd.getCost();
 		Double discount = lbd.getDiscount();
 		
-		Web3j web3j = lessonContractService.build();
-		/*String keystore = "{\"address\":\"8a950e851344715a51036567ca1b44aab3f15110\",\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"9e3577ad90bb39f8ba61d8d46b4ce00ad27c386c3a23106d71c37834ebba8417\",\"cipherparams\":{\"iv\":\"9ec6b6059588cbbac7be3b150644159b\"},\"kdf\":\"scrypt\",\"kdfparams\":{\"dklen\":32,\"n\":262144,\"p\":1,\"r\":8,\"salt\":\"43252a8cfcc59d0d63089de5b21a53e3681dc366e22d6fc6f85ae6040e03c971\"},\"mac\":\"2c9b998de00e7b10121a5715110659f92bb4676633676655a2ab6603ec2d3796\"},\"id\":\"67fa3f2a-dec5-4fef-ac43-d722c435b039\",\"version\":3}";
-		*/
-		String keystore = ethAccountService.selectKeystoreByItcode(itcode);
-		try {
-			Credentials credentials = lessonContractService.loadCredentials(keystore, "/eth/temp/" + itcode + ".json", "mini0823");
-			System.out.println("*********生成凭证*********");
-			lessonContractService.buyChapter(credentials, lessonId, BigInteger.valueOf((long) (cost*discount/10)*10000000000000000L));
-			System.out.println("*********调用购买合约**********");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (CipherException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
 		LessonBuyDomain lb = new LessonBuyDomain();
 		lb.setLessonId(Integer.valueOf(lessonId));
 		lb.setChapterNum(Integer.valueOf(chapterNum));
@@ -99,8 +83,15 @@ public class LessonBuyController {
 		lb.setDiscount(discount);
 		lb.setBuyTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		lb.setType(1);
-		lessonBuyService.insertBuyInfo(lb);
+		Integer transactionDetailId = lessonBuyService.insertBuyInfo(lb);
+		BigInteger turnBalance = BigInteger.valueOf((long) (cost*discount/10)*10000000000000000L);
 		System.out.println("*******记录购买信息********");
+		
+		//向kafka集群发送扣费信息
+		String url = "http://10.7.10.186:8083/lessonBuy/processDeduction";
+		String postParam = "itcode=" + itcode + "&transactionDetailId=" + transactionDetailId + "&turnBalance=" + turnBalance;
+		HttpRequest.sendPost(url, postParam);
+		
 		modelMap.put("success", true);		
 		return modelMap;
 	}
