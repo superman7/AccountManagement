@@ -71,4 +71,14 @@ public class PaidReadArticleServiceImpl implements PaidReadArticleService{
         PageInfo<PaidReadArticleDomain> result = new PageInfo<PaidReadArticleDomain>(paidReadArticleDomain);
         return result;
 	}
+
+	@Override
+	public List<PaidReadArticleDomain> selectMyArticles(String id) {
+		return paidReadArticleDAO.selectMyArticles(id);
+	}
+
+	@Override
+	public String selectArticleContent(Integer id) {
+		return paidReadArticleDAO.selectArticleContent(id);
+	}
 }

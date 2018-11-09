@@ -13,4 +13,8 @@ public interface PaidReadArticleDAO {
 	List<PaidReadArticleDomain> selectPaidReadArticleByTime();
 	
 	List<PaidReadArticleDomain> selectPaidReadArticleByHot();
+	
+	List<PaidReadArticleDomain> selectMyArticles(@Param("id")String id);
+	
+	String selectArticleContent(@Param("id")Integer id);
 }
