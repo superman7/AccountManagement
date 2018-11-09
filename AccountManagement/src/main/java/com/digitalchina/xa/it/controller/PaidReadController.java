@@ -87,4 +87,31 @@ public class PaidReadController {
 		List<PaidReadArticleDomain> result = paidReadArticleService.selectPaidReadArticleByTime(pageNum, pageSize);
 				return result;
 	}
+	
+	@ResponseBody
+	@GetMapping("/queryMine")
+	public Map<String, Object> queryMine(@RequestParam(name = "itcode", required = false) String itcode){
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		int authorId = paidReadAuthorService.selectAuthorIfSaved(itcode);
+		List<PaidReadArticleDomain> dataList = paidReadArticleService.selectMyArticles(String.valueOf(authorId));
+		modelMap.put("success", true);
+		modelMap.put("data", JSONObject.toJSON(dataList));
+		return modelMap;
+	}
+	
+	@ResponseBody
+	@GetMapping("/selectContent")
+	public Map<String, Object> selectContent(@RequestParam(name = "id", required = false) String id){
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		String content = paidReadArticleService.selectArticleContent(Integer.parseInt(id));
+		System.out.println(content);
+		if(content != null) {
+			modelMap.put("success", true);
+			modelMap.put("content", content);
+		} else {
+			modelMap.put("success", false);
+			modelMap.put("errMsg", "noArticle");
+		}
+		return modelMap;
+	}
 }

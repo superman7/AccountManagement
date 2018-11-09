@@ -38,6 +38,24 @@
 		ORDER BY balance DESC;
 	</select>
 	
+	<select id="selectMyArticles" resultType="com.digitalchina.xa.it.model.PaidReadArticleDomain">
+		SELECT
+			id,name,available,balance,freePart,price
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			author = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectArticleContent" resultType="java.lang.String">
+		SELECT
+			content
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			id = #{id,jdbcType=VARCHAR}
+	</select>
+	
 	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>
