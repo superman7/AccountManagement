@@ -13,9 +13,11 @@ public interface PaidReadArticleService {
 	//分页查询所有的付费阅读文章-按时间顺序排序
 	List<PaidReadArticleDomain> selectPaidReadArticleByTime(int pageNum, int pageSize);
 	//分页查询所有的付费阅读文章-按当前价值排序
-	PageInfo<PaidReadArticleDomain> selectPaidReadArticleByHot(int pageNum, int pageSize);
+	List<PaidReadArticleDomain> selectPaidReadArticleByHot(int pageNum, int pageSize);
 	//根据itcode查询该用户上传的所有文章
 	List<PaidReadArticleDomain> selectMyArticles(String id);
 	//根据文章id查询该文章的内容（content字段）
 	String selectArticleContent(@Param("id")Integer id);
+	//更新某文章的阅读量
+	Boolean updateReadingCapacity(@Param("id")Integer id);
 }

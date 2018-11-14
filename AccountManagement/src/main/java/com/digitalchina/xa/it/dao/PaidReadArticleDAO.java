@@ -17,4 +17,6 @@ public interface PaidReadArticleDAO {
 	List<PaidReadArticleDomain> selectMyArticles(@Param("id")String id);
 	
 	String selectArticleContent(@Param("id")Integer id);
+	
+	int updateReadingCapacity(@Param("id")Integer id);
 }
