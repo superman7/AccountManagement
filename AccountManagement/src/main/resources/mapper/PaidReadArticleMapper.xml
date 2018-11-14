@@ -24,7 +24,7 @@
 	
 	<select id="selectPaidReadArticleByTime" resultType="com.digitalchina.xa.it.model.PaidReadArticleDomain">
 		SELECT
-			<include refid="BASE_COLUMN"/>
+			id,name,author,available,balance,freePart,price
 		FROM
 			<include refid="BASE_TABLE"/>
 		ORDER BY id DESC;
@@ -32,7 +32,7 @@
 	
 	<select id="selectPaidReadArticleByHot" resultType="com.digitalchina.xa.it.model.PaidReadArticleDomain">
 		SELECT
-			<include refid="BASE_COLUMN"/>
+			id,name,author,available,balance,freePart,price
 		FROM
 			<include refid="BASE_TABLE"/>
 		ORDER BY balance DESC;
@@ -55,6 +55,16 @@
 		WHERE
 			id = #{id,jdbcType=VARCHAR}
 	</select>
+	
+	
+	<update id="updateReadingCapacity" parameterType="java.lang.Integer">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			available = available + 1
+		WHERE
+			id = #{id, jdbcType=INTEGER}
+	</update>
 	
 	<!-- <select id="selectEthAccount" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
 		SELECT

@@ -64,12 +64,13 @@ public class PaidReadArticleServiceImpl implements PaidReadArticleService{
 	}
 
 	@Override
-	public PageInfo<PaidReadArticleDomain> selectPaidReadArticleByHot(int pageNum, int pageSize) {
+	//public PageInfo<PaidReadArticleDomain> selectPaidReadArticleByHot(int pageNum, int pageSize) {
+	public List<PaidReadArticleDomain> selectPaidReadArticleByHot(int pageNum, int pageSize) {
 		//将参数传给这个方法就可以实现物理分页了，非常简单。
-        PageHelper.startPage(pageNum, pageSize);
+        //PageHelper.startPage(pageNum, pageSize);
         List<PaidReadArticleDomain> paidReadArticleDomain = paidReadArticleDAO.selectPaidReadArticleByHot();
-        PageInfo<PaidReadArticleDomain> result = new PageInfo<PaidReadArticleDomain>(paidReadArticleDomain);
-        return result;
+        //PageInfo<PaidReadArticleDomain> result = new PageInfo<PaidReadArticleDomain>(paidReadArticleDomain);
+        return paidReadArticleDomain;
 	}
 
 	@Override
@@ -80,5 +81,23 @@ public class PaidReadArticleServiceImpl implements PaidReadArticleService{
 	@Override
 	public String selectArticleContent(Integer id) {
 		return paidReadArticleDAO.selectArticleContent(id);
+	}
+
+	@Override
+	public Boolean updateReadingCapacity(Integer id) {
+		if(id != null && id != 0) {
+			try {
+				int effectedNumber = paidReadArticleDAO.updateReadingCapacity(id);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					throw new RuntimeException("更新["+ id + "]阅读量失败");
+				}
+			} catch(Exception e) {
+				throw new RuntimeException("更新阅读量失败 " + e.getMessage());
+			}
+		} else {
+			throw new RuntimeException("更新阅读量id不能为空");
+		}
 	}
 }

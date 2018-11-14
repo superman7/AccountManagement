@@ -89,6 +89,14 @@ public class PaidReadController {
 	}
 	
 	@ResponseBody
+	@GetMapping("/selectArticleByHot")
+	public List<PaidReadArticleDomain> selectArticleByHot(@RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
+            @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize){
+		List<PaidReadArticleDomain> result = paidReadArticleService.selectPaidReadArticleByHot(pageNum, pageSize);
+				return result;
+	}
+	
+	@ResponseBody
 	@GetMapping("/queryMine")
 	public Map<String, Object> queryMine(@RequestParam(name = "itcode", required = false) String itcode){
 		Map<String, Object> modelMap = new HashMap<String, Object>();
@@ -104,7 +112,7 @@ public class PaidReadController {
 	public Map<String, Object> selectContent(@RequestParam(name = "id", required = false) String id){
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		String content = paidReadArticleService.selectArticleContent(Integer.parseInt(id));
-		System.out.println(content);
+		paidReadArticleService.updateReadingCapacity(Integer.parseInt(id));
 		if(content != null) {
 			modelMap.put("success", true);
 			modelMap.put("content", content);
