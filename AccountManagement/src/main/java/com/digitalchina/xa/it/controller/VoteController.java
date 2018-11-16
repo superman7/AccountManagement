@@ -80,23 +80,22 @@ public class VoteController {
 		}
 		params = params.substring(0, params.length() - 2);
 		System.err.println(params);
-		/*String result = CxfUtils.CallService("http://10.0.20.51/services/CreateTopicService?wsdl", "AutoTriggerTopic", params);
+		String result = CxfUtils.CallService("http://10.0.20.51/services/CreateTopicService?wsdl", "AutoTriggerTopic", params);
 		if(!result.contains("<flag>T</flag>")){
 			return 0;
 		}
-		System.err.println(result);*/
+		System.err.println(result);
 		TopicDomain topic = new TopicDomain();
 		topic.setName(topicName);
 		topic.setPriority(Integer.valueOf(priority));
 		topic.setType(itcode);
 		//待审批设置为3
-		topic.setAvailable(0);
+		topic.setAvailable(3);
 		int insertCounter = topicService.addTopic(topic);
 		int topicId = 0;
 		if(insertCounter > 0){
 			topicId = topic.getId();
 		}
-		System.out.println("***" + topicId + "***");
 		for(int i = 0; i < options.size(); i++){
 			TopicOptionDomain tod = new TopicOptionDomain();
 			tod.setTopicid(topicId);
