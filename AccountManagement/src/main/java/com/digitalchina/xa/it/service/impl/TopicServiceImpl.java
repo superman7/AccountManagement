@@ -93,4 +93,9 @@ public class TopicServiceImpl implements TopicService {
         PageInfo<TopicDomain> result = new PageInfo<TopicDomain>(topicDomains);
         return result;
     }
+
+	@Override
+	public List<TopicDomain> selectPersonalityAsc() {
+		return topicDAO.selectPersonalityAsc();
+	}
 }

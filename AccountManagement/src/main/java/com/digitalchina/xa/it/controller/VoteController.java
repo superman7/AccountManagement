@@ -67,6 +67,7 @@ public class VoteController {
     	
 		JSONObject obj = JSON.parseObject(data);
 		String topicName = obj.getString("topic");
+		String priority = obj.getString("priority");
 		JSONArray options = (JSONArray) obj.get("options");
 		
 		//添加提交人的itcode
@@ -86,6 +87,7 @@ public class VoteController {
 		System.err.println(result);
 		TopicDomain topic = new TopicDomain();
 		topic.setName(topicName);
+		topic.setPriority(Integer.valueOf(priority));
 		topic.setType(itcode);
 		//待审批设置为3
 		topic.setAvailable(3);
@@ -94,7 +96,6 @@ public class VoteController {
 		if(insertCounter > 0){
 			topicId = topic.getId();
 		}
-		
 		for(int i = 0; i < options.size(); i++){
 			TopicOptionDomain tod = new TopicOptionDomain();
 			tod.setTopicid(topicId);

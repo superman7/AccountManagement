@@ -30,4 +30,6 @@ public interface TopicService {
 	PageInfo<TopicDomain> selectNewTopicByPopularityDesc(int pageNum, int pageSize);
 	//根据优先级数排序查询话题榜
 	PageInfo<TopicDomain> selectPriorityTopicByPopularityDesc(int pageNum, int pageSize);
+	//查询性格测试话题
+	List<TopicDomain> selectPersonalityAsc();
 }
