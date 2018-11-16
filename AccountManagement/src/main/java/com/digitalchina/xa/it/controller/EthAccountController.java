@@ -639,9 +639,12 @@ public class EthAccountController {
 	@GetMapping("/newNounAccount")
 	public String newNounAccount(@RequestParam(name = "param", required = true) String param) {
 		System.out.println("为" + param + "创建账户。");
+		List<String> mnemonicList = new ArrayList<String>();
+		mnemonicList.add(param);
+		System.err.println(mnemonicService.merkleTreeRoot(mnemonicList));
 		ECKeyPair ecKeyPair= ECKeyPair.create(getSHA2HexValue(param));
 		String address = "0x" + Keys.getAddress(ecKeyPair);
-		
+		System.err.println(address);
 		EthAccountDomain ethAccountDomain = new EthAccountDomain();
 		ethAccountDomain.setItcode("noun");
 		ethAccountDomain.setAccount(address);
@@ -650,14 +653,17 @@ public class EthAccountController {
 		ethAccountDomain.setBackup1(param);
 		//生成WalletFile(keystore)，更新数据库，根据address存入keystore和alias Customer Service & Support Software
 		try {
-			WalletFile walletFile = Wallet.createLight("getapps", ecKeyPair);
+			String pwd = mnemonicService.merkleTreeRoot(mnemonicList).substring(0, 10);
+			WalletFile walletFile = Wallet.createLight(pwd, ecKeyPair);
 			String keystore = ((JSONObject) JSONObject.toJSON(walletFile)).toJSONString();
+			System.err.println("pwd:" + pwd);
+			System.err.println("keystore:" + keystore);
 			ethAccountDomain.setKeystore(keystore);
 //			System.out.println(keystore);
 		} catch (CipherException e) {
 			e.printStackTrace();
 		}
-		ethAccountService.insert(ethAccountDomain);
+//		ethAccountService.insert(ethAccountDomain);
 		return "success";
 	}
 	
