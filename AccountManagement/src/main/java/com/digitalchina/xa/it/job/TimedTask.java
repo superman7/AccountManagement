@@ -65,6 +65,7 @@ public class TimedTask {
 		Calendar localTime = Calendar.getInstance();
 		int z = localTime.get(Calendar.DATE);
 		
+		List<TopicDomain> perList = topicDAO.selectPersonalityAsc();
 		List<TopicDomain> topicList = topicDAO.selectTopicToday();
 		if(topicList.size() == 0){
 			return;
@@ -75,7 +76,11 @@ public class TimedTask {
 		if(z == 1){
 			nextTopicId = topicDAO.selectNextTopicStock();
 		}else{
-			nextTopicId = topicDAO.selectNextTopic();
+			if(perList.size() != 0) {
+				nextTopicId = perList.get(0).getId();
+			} else {
+				nextTopicId = topicDAO.selectNextTopic();
+			}
 		}
 		System.out.println("新topicid为：" + nextTopicId);
 		topicDAO.updateAvailable(nextTopicId);

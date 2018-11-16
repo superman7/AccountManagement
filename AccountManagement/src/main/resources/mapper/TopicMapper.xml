@@ -16,10 +16,10 @@
 		INSERT INTO
 			<include refid="BASE_TABLE"/>
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			name,type,available,
+			name,type,available,priority
 		</trim>
 		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-			#{name, jdbcType=VARCHAR},#{type, jdbcType=VARCHAR},#{available, jdbcType=INTEGER}
+			#{name, jdbcType=VARCHAR},#{type, jdbcType=VARCHAR},#{available, jdbcType=INTEGER},#{priority, jdbcType=INTEGER}
 		</trim>
 	</insert>
 	
@@ -36,6 +36,18 @@
 	    FROM
 	      <include refid="BASE_TABLE"/>
 	     where id = #{id, jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectPersonalityAsc" resultType="com.digitalchina.xa.it.model.TopicDomain">
+	    SELECT
+	      <include refid="BASE_COLUMN"/>
+	    FROM
+	      <include refid="BASE_TABLE"/>
+	    WHERE
+	    	type = 'personality'
+	    AND
+	    	available = 0
+	    ORDER BY id ASC
 	</select>
   
 	<update id="updatePopularity" parameterType="com.digitalchina.xa.it.model.TopicDomain">
