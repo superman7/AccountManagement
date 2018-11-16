@@ -39,4 +39,7 @@ public interface TopicDAO {
 	
 	//根据优先级排序查询话题榜
 	List<TopicDomain> selectPriorityTopicByPopularityDesc();
+	
+	//查询性格测试话题
+	List<TopicDomain> selectPersonalityAsc();
 }
