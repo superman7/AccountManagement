@@ -45,13 +45,16 @@ import org.web3j.utils.Numeric;
 
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.contract.Transfer;
+import com.digitalchina.xa.it.dao.KeywordToAccountDAO;
 import com.digitalchina.xa.it.model.EthAccountDomain;
+import com.digitalchina.xa.it.model.KeywordToAccountDomain;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.MnemonicService;
 import com.digitalchina.xa.it.service.WalletTransactionService;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
+import com.digitalchina.xa.it.util.CreatAddressUtils;
 
 import scala.util.Random;
 
@@ -65,6 +68,9 @@ public class EthAccountController {
 	private MnemonicService mnemonicService;
 	@Autowired
 	private WalletTransactionService walletTransactionService;
+	
+	@Autowired
+	private KeywordToAccountDAO keywordToAccountDAO;
 	
 	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
 
@@ -638,32 +644,11 @@ public class EthAccountController {
 	@ResponseBody
 	@GetMapping("/newNounAccount")
 	public String newNounAccount(@RequestParam(name = "param", required = true) String param) {
-		System.out.println("为" + param + "创建账户。");
-		List<String> mnemonicList = new ArrayList<String>();
-		mnemonicList.add(param);
-		System.err.println(mnemonicService.merkleTreeRoot(mnemonicList));
-		ECKeyPair ecKeyPair= ECKeyPair.create(getSHA2HexValue(param));
-		String address = "0x" + Keys.getAddress(ecKeyPair);
-		System.err.println(address);
-		EthAccountDomain ethAccountDomain = new EthAccountDomain();
-		ethAccountDomain.setItcode("noun");
-		ethAccountDomain.setAccount(address);
-		ethAccountDomain.setAlias(param);
-		ethAccountDomain.setAvailable(6);
-		ethAccountDomain.setBackup1(param);
-		//生成WalletFile(keystore)，更新数据库，根据address存入keystore和alias Customer Service & Support Software
-		try {
-			String pwd = mnemonicService.merkleTreeRoot(mnemonicList).substring(0, 10);
-			WalletFile walletFile = Wallet.createLight(pwd, ecKeyPair);
-			String keystore = ((JSONObject) JSONObject.toJSON(walletFile)).toJSONString();
-			System.err.println("pwd:" + pwd);
-			System.err.println("keystore:" + keystore);
-			ethAccountDomain.setKeystore(keystore);
-//			System.out.println(keystore);
-		} catch (CipherException e) {
-			e.printStackTrace();
+		String[] mnemonicList = param.split(",");
+		for(String temp : mnemonicList){
+			String account = CreatAddressUtils.creatAddressUtils(temp);
+			keywordToAccountDAO.insertKeyword(new KeywordToAccountDomain(temp, account));
 		}
-//		ethAccountService.insert(ethAccountDomain);
 		return "success";
 	}
 	
