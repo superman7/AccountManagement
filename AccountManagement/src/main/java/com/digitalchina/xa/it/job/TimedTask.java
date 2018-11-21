@@ -2,8 +2,9 @@ package com.digitalchina.xa.it.job;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -18,20 +19,20 @@ import org.web3j.protocol.core.methods.response.EthTransaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 
-import com.digitalchina.xa.it.dao.EthAccountDAO;
+import com.digitalchina.xa.it.dao.CashBackDAO;
 import com.digitalchina.xa.it.dao.PaidVoteDetailDAO;
 import com.digitalchina.xa.it.dao.TopicDAO;
+import com.digitalchina.xa.it.dao.VirtualMachineDAO;
 import com.digitalchina.xa.it.dao.WalletAccountDAO;
 import com.digitalchina.xa.it.dao.WalletTransactionDAO;
 import com.digitalchina.xa.it.model.TopicDomain;
+import com.digitalchina.xa.it.model.VirtualMachineDomain;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
 import com.digitalchina.xa.it.service.TopicOptionService;
 import com.digitalchina.xa.it.service.TopicService;
 import com.digitalchina.xa.it.service.VoteService;
-import com.digitalchina.xa.it.service.WalletTransactionService;
 import com.digitalchina.xa.it.util.HttpRequest;
 
-import rx.Subscription;
 import scala.util.Random;
 
 @Component
@@ -43,6 +44,10 @@ public class TimedTask {
 	
 	@Autowired
 	private PaidVoteDetailDAO paidVoteDetailDAO;
+	@Autowired
+	private CashBackDAO cashBackDAO;
+	@Autowired
+	private VirtualMachineDAO virtualMachineDAO;
 	
 	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
 	
@@ -195,5 +200,36 @@ public class TimedTask {
 			}
 		}
 	}
-
+	
+	//每天10:00返还前一天购买虚拟机神州币
+	@Transactional
+	@Scheduled(cron="5 * * * * ?")
+	public void backToUser(){
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date date=new Date();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.DAY_OF_MONTH, -1);
+		date = calendar.getTime();
+		String startTime = sdf.format(date) + " 00:00:00";
+		String endTime = sdf.format(date) + " 23:59:59";
+		
+		System.out.println(startTime + "***" + endTime);
+		
+		System.err.println("开始查询返现用户...");
+		String url = "http://10.7.10.87:8083/cashBack/processDeduction";
+		List<VirtualMachineDomain> cashBackUsers = virtualMachineDAO.selectCashBackUsers(startTime, endTime);
+		for(int index = 0; index < cashBackUsers.size(); index++) {
+			String itcode = cashBackUsers.get(index).getUserItcode();
+			System.out.println(itcode);
+			String cashValue =  cashBackUsers.get(index).getSpare2();
+			Integer flag = cashBackDAO.selectLimitFlagByItcode(itcode);
+			System.out.println("flag=" + flag);
+			if(flag == null) {
+				String postParam = "itcode=" + itcode + "&turnBalance=" + cashValue.substring(0, cashValue.indexOf("神"));
+				HttpRequest.sendPost(url, postParam);
+				System.out.println(postParam);
+			}
+		}
+	}
 }

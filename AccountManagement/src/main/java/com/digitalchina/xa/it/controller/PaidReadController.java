@@ -122,4 +122,14 @@ public class PaidReadController {
 		}
 		return modelMap;
 	}
+	
+	@ResponseBody
+	@GetMapping("/withdraw")
+	public Map<String, Object> withdrawFromArticle(@RequestParam(name = "id", required = false) String id,
+			@RequestParam(name = "itcode", required = false) String itcode){
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		System.out.println(id + "---" + itcode);
+		//TODO 提现
+		return modelMap;
+	}
 }
