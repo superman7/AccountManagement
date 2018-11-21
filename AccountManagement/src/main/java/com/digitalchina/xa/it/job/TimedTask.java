@@ -229,7 +229,9 @@ public class TimedTask {
 			Integer flag = cashBackDAO.selectLimitFlagByItcode(itcode);
 			System.out.println("flag=" + flag);
 			if(flag == null) {
-				String postParam = "itcode=" + itcode + "&turnBalance=" + cashValue.substring(0, cashValue.indexOf("神"));
+				//最高返现额暂定300SZB
+				Integer turnBalance = Integer.valueOf(cashValue.substring(0, cashValue.indexOf("神"))) > 300 ? 300 : Integer.valueOf(cashValue.substring(0, cashValue.indexOf("神")));
+				String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance.toString();
 				HttpRequest.sendPost(url, postParam);
 				System.out.println(postParam);
 			}
