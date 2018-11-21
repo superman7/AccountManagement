@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.CashBackDAO" >
+	<sql id="BASE_TABLE">
+		vm_cashback_details
+	</sql>
+
+	<sql id="BASE_COLUMN">
+		id,itcode,account,cashBackValue,limitFlag,backup1,backup2,backup3
+	</sql>
+  	
+	<select id="selectLimitFlagByItcode" resultType="java.lang.Integer" parameterType="java.lang.String">
+		SELECT
+			limitFlag
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode,jdbcType=VARCHAR}
+	</select>
+</mapper>
