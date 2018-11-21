@@ -54,6 +54,7 @@ import com.digitalchina.xa.it.service.MnemonicService;
 import com.digitalchina.xa.it.service.WalletTransactionService;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
+import com.digitalchina.xa.it.util.GetPwdAndKeyStoreUtils;
 import com.digitalchina.xa.it.util.CreatAddressUtils;
 
 import scala.util.Random;
@@ -651,7 +652,13 @@ public class EthAccountController {
 		}
 		return "success";
 	}
-	
+	//FIXME
+	@ResponseBody
+	@GetMapping("/newNounAccountKeystore")
+	public String newNounAccountKeystore(@RequestParam(name = "param", required = true) String param) {
+		Map<String, String> result = GetPwdAndKeyStoreUtils.getPwdAndKeyStoreUtils(param);
+		return result.get("address") + "***" + result.get("keystore") + "***" + result.get("pwd");
+	}
 //	检测地址名是否重复
 	@ResponseBody
 	@GetMapping("/checkUp")

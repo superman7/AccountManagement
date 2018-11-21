@@ -67,6 +67,7 @@ public class TimedTask {
 		
 		List<TopicDomain> perList = topicDAO.selectPersonalityAsc();
 		List<TopicDomain> topicList = topicDAO.selectTopicToday();
+		List<TopicDomain> newsList = topicDAO.selectNewsAsc();
 		if(topicList.size() == 0){
 			return;
 		}
@@ -76,7 +77,9 @@ public class TimedTask {
 		if(z == 1){
 			nextTopicId = topicDAO.selectNextTopicStock();
 		}else{
-			if(perList.size() != 0) {
+			if(newsList.size() != 0){
+				nextTopicId = newsList.get(0).getId();
+			}else if(perList.size() != 0) {
 				nextTopicId = perList.get(0).getId();
 			} else {
 				nextTopicId = topicDAO.selectNextTopic();

@@ -98,4 +98,9 @@ public class TopicServiceImpl implements TopicService {
 	public List<TopicDomain> selectPersonalityAsc() {
 		return topicDAO.selectPersonalityAsc();
 	}
+
+	@Override
+	public List<TopicDomain> selectNewsAsc() {
+		return topicDAO.selectNewsAsc();
+	}
 }

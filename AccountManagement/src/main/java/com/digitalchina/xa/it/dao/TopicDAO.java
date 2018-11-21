@@ -42,4 +42,6 @@ public interface TopicDAO {
 	
 	//查询性格测试话题
 	List<TopicDomain> selectPersonalityAsc();
+	//查询热门话题
+	List<TopicDomain> selectNewsAsc();
 }
