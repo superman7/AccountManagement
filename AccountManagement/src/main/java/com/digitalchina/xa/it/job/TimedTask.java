@@ -204,9 +204,9 @@ public class TimedTask {
 		}
 	}
 	
-	//每天10:00返还前一天购买虚拟机神州币
+	//每天7:30:30返还前一天购买虚拟机神州币
 	@Transactional
-	@Scheduled(cron="5 * * * * ?")
+	@Scheduled(cron="30 30 07 * * ?")
 	public void backToUser(){
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date date=new Date();
@@ -220,7 +220,7 @@ public class TimedTask {
 		System.out.println(startTime + "***" + endTime);
 		
 		System.err.println("开始查询返现用户...");
-		String url = "http://10.7.10.87:8083/cashBack/processDeduction";
+		String url = "http://10.7.10.124:8083/cashBack/processDeduction";
 		List<VirtualMachineDomain> cashBackUsers = virtualMachineDAO.selectCashBackUsers(startTime, endTime);
 		for(int index = 0; index < cashBackUsers.size(); index++) {
 			String itcode = cashBackUsers.get(index).getUserItcode();
