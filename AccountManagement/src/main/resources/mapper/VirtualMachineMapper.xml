@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.VirtualMachineDAO" >
+  <sql id="BASE_TABLE">
+    t_virtualMachine
+  </sql>
+
+  <sql id="BASE_COLUMN">
+    id,ip,user,password,status,usableDate,userItcode,spare1,spare2,spare3,applystatus,transactionHash,resourceid,taskid,remark,vmname,editdate,hasnet
+  </sql>
+
+	<select id="selectCashBackUsers" resultType="com.digitalchina.xa.it.model.VirtualMachineDomain">
+		SELECT
+			userItcode,spare2
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			status = 2
+		AND
+			usableDate BETWEEN #{startTime,jdbcType=VARCHAR} AND #{endTime,jdbcType=VARCHAR}
+	</select>
+</mapper>
