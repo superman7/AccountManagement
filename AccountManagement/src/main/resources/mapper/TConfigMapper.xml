@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.TConfigDAO" >
+	<sql id="BASE_TABLE">
+		t_config
+	</sql>
+
+	<sql id="BASE_COLUMN">
+		cfg_id,cfg_key,cfg_value,cfg_extra,cfg_type,cfg_status
+	</sql>
+  	
+	<select id="selectIpArr" resultType="java.lang.String">
+		SELECT
+			cfg_value
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			cfg_extra = 'EthNodes'
+		AND
+			cfg_status = 1
+	</select>
+</mapper>
