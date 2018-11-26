@@ -19,6 +19,7 @@ import com.digitalchina.xa.it.model.UserDomain;
 import com.digitalchina.xa.it.service.LuckycashService;
 import com.digitalchina.xa.it.service.SigninRewardService;
 import com.digitalchina.xa.it.service.UserService;
+import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
 
@@ -30,58 +31,31 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 	@Autowired
 	private LuckycashService luckycashService;
 	
-//    private volatile static Web3j web3j;
-//    private static String ip = "";
-//    private static final String rootPath = "/eth/datadir/keystore/";
-//    private static final String address = "0x16a9de544cbf62d8b55852a66fb7e7740803d78a";
-//    private static String[] ipArr = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
-    
     @Autowired
     private SigninRewardDAO srDao;
 
 	@Override
 	public Map<String, Object> addLuckyNumber(String param) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		//FIXME 封装为统一的静态方法调用
-		System.out.println(param);
-		Encrypt encrypt = new EncryptImpl();
-		String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(param);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
-			return modelMap;
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(param);
+		
+		if((boolean) modelMap.get("success")){
+			//获取前端发送的密语，密语密码，地址名和交易密码
+			JSONObject allInfoSentenceJson = JSONObject.parseObject((String) modelMap.get("data"));
+			String luckyNum = allInfoSentenceJson.getString("luckyNum");
+			String luckyGuys = allInfoSentenceJson.getString("luckyGuys");
+			String luckyGuysCount = allInfoSentenceJson.getString("luckyGuysCount");
+			
+			LuckycashDomain luckycashDomain = new LuckycashDomain();
+			luckycashDomain.setAvailable(0);
+			luckycashDomain.setLuckyNum(luckyNum);
+			luckycashDomain.setLuckyGuys(luckyGuys);
+			luckycashDomain.setLuckyGuysCount(Integer.valueOf(luckyGuysCount));
+			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
+			luckycashDomain.setAvailableTime(nousedate);
+			luckycashService.insert(luckycashDomain);
+			
+			modelMap.remove("data");
 		}
-		String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-		modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-		System.err.println("红包详情的JSON为:" + data);
-		
-		//获取前端发送的密语，密语密码，地址名和交易密码
-		JSONObject allInfoSentenceJson = JSONObject.parseObject(data);
-		String luckyNum = allInfoSentenceJson.getString("luckyNum");
-		String luckyGuys = allInfoSentenceJson.getString("luckyGuys");
-		String luckyGuysCount = allInfoSentenceJson.getString("luckyGuysCount");
-		
-		LuckycashDomain luckycashDomain = new LuckycashDomain();
-		luckycashDomain.setAvailable(0);
-		luckycashDomain.setLuckyNum(luckyNum);
-		luckycashDomain.setLuckyGuys(luckyGuys);
-		luckycashDomain.setLuckyGuysCount(Integer.valueOf(luckyGuysCount));
-		Timestamp nousedate = new Timestamp(System.currentTimeMillis());
-		luckycashDomain.setAvailableTime(nousedate);
-		luckycashService.insert(luckycashDomain);
-		
-		modelMap.put("success", true);
-		
 		return modelMap;
 	}
 
@@ -230,5 +204,29 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 			return "{\"status\":1,\"value\":" + rewards + "}";
 		}
 	    return "{\"status\":0,\"value\":0}";
+	}
+
+	@Override
+	public String chargeToContract(String value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String signinReward(String itcode, int reward) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String voteReward(String itcode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void attendanceReward(String employeeNumber) {
+		// TODO Auto-generated method stub
+		
 	}
 }

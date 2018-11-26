@@ -1,52 +1,32 @@
-package com.digitalchina.xa.it.controller;
-
-import java.util.Map;
+package com.digitalchina.xa.it.fanwei.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.digitalchina.xa.it.service.SigninRewardService;
+import com.dcone.eth.service.QiandaoContractService;
+import com.dcone.eth.service.TurnCountService;
 
-@Controller
-@RequestMapping(value = "/signinReward")
-public class SigninRewardController {
+/**
+ * 签到合约的控制层
+ * 
+ * @author fannl
+ *
+ */
+
+@RestController
+@Scope("prototype")
+public class SigninContractController {
 	@Autowired
-	private SigninRewardService srService;
+	private TurnCountService turnCountService;
 	
-	@ResponseBody
-	@GetMapping("/saveRandom")
-	public Object saveSigninStatusRandom(
-			@RequestParam(name = "itcode", required = true) String itcode){
-		return srService.saveSigninInfo(itcode);
-	}
-	@ResponseBody
-	@GetMapping("/saveConstant")
-	public Object saveSigninStatusConstant(
-			@RequestParam(name = "itcode", required = true) String itcode){
-		return srService.saveSigninInfoConstant(itcode);
-	}
-	@ResponseBody
-	@GetMapping("/signinStatus")
-	public Object signinStatus(
-			@RequestParam(name = "itcode", required = true) String itcode){
-		return srService.checkSigninStatus(itcode);
-	}
+	@Autowired
+	private QiandaoContractService qiandaoContractService;
 	
-	@ResponseBody
-	@GetMapping("/addLuckyNumber")
-	public Map<String, Object> addLuckyNumber(
-			@RequestParam(name = "param", required = true) String param){
-		return srService.addLuckyNumber(param);
-	}
-	
-	//NEWCODE START-泛微签到模块的奖励代码-START
 	/**
-	 * @api {get} /signinReward/chargeToContract/:value 签到合约充值
+	 * @api {get} /eth/chargeToContract/:value 签到合约充值
 	 * @apiVersion 0.0.1
 	 *
 	 * @apiName ChargeToSignInContract
@@ -64,14 +44,14 @@ public class SigninRewardController {
 	 *     HTTP/1.1 200 OK
 	 *     error
 	 */
-	@RequestMapping("/chargeToContract/{value}")
+	@RequestMapping("/eth/chargeToContract/{value}")
 	public String chargeToContract(@PathVariable String value) {
-		String result = srService.chargeToContract(value);
+		String result = qiandaoContractService.chargeToContract(value);
 		return result;
 	}
 	
 	/**
-	 * @api {get} /signinReward/signinReward/:itcode/:reward 发放签到奖励
+	 * @api {get} /eth/signinReward/:itcode/:reward 发放签到奖励
 	 * @apiVersion 0.0.1
 	 *
 	 * @apiName SignInReward
@@ -95,14 +75,14 @@ public class SigninRewardController {
 	 *     HTTP/1.1 200 OK
 	 *     error.
 	 */
-	@RequestMapping("/signinReward/{itcode}/{reward}")
+	@RequestMapping("/eth/signinReward/{itcode}/{reward}")
 	public String signinReward(@PathVariable String itcode, @PathVariable int reward) {
-		String result = srService.signinReward(itcode, reward);
+		String result = qiandaoContractService.signinReward(itcode, reward);
 		return result;
 	}
 	
 	/**
-	 * @api {get} /signinReward/voteReward/:itcode 发放投票奖励
+	 * @api {get} /eth/voteReward/:itcode 发放投票奖励
 	 * @apiVersion 0.0.1
 	 *
 	 * @apiName VoteReward
@@ -125,14 +105,14 @@ public class SigninRewardController {
 	 *     HTTP/1.1 200 OK
 	 *     error.
 	 */
-	@RequestMapping("/voteReward/{itcode}")
+	@RequestMapping("/eth/voteReward/{itcode}")
 	public String voteReward(@PathVariable String itcode) {
-		String result = srService.voteReward(itcode);
+		String result = qiandaoContractService.voteReward(itcode);
 		return result;
 	}
 	
 	/**
-	 * @api {get} /signinReward/attendanceReward/:employeeNumber 发放考勤奖励
+	 * @api {get} /eth/attendanceReward/:employeeNumber 发放考勤奖励
 	 * @apiVersion 0.0.1
 	 *
 	 * @apiName AttendanceReward
@@ -143,9 +123,8 @@ public class SigninRewardController {
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
 	 */
-	@RequestMapping("/attendanceReward/{employeeNumber}")
+	@RequestMapping("/eth/attendanceReward/{employeeNumber}")
 	public void attendanceReward(@PathVariable String employeeNumber) {
-		srService.attendanceReward(employeeNumber);
+		qiandaoContractService.attendanceReward(employeeNumber);
 	}
-	//NEWCODE END-泛微签到模块的奖励代码-END
 }
