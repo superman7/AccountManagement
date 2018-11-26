@@ -448,30 +448,11 @@ public class EthAccountController {
 	@Transactional
 	public Map<String, Object> accountList(
             @RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	
-		JSONObject mnemonicJson = JSONObject.parseObject(data);
+		JSONObject mnemonicJson = JSONObject.parseObject((String) modelMap.get("data"));
 		String itcode = mnemonicJson.getString("itcode");
 		ethAccountService.refreshBalance(itcode);
 		modelMap.put("success", true);
@@ -486,30 +467,12 @@ public class EthAccountController {
 	@GetMapping("/newAddress")
 	public Map<String, Object> newAddress(
             @RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
 		//获取前端发送的数据，包括密语，密语密码和itcode
-		JSONObject mnemonicJson = JSONObject.parseObject(data);
+		JSONObject mnemonicJson = JSONObject.parseObject((String) modelMap.get("data"));
 		String mnemonic = mnemonicJson.getString("mnemonic");
 		String mnePassword = mnemonicJson.getString("mnePassword");
 		String itcode = mnemonicJson.getString("itcode");
@@ -529,7 +492,6 @@ public class EthAccountController {
 			ethAccountDomain.setAccount(address);
 			ethAccountService.insertItcodeAndAccount(ethAccountDomain);
 			
-			modelMap.put("success", true);
 			modelMap.put("address", address);
 			modelMap.put("mnemonic", mnemonic);
 			modelMap.put("mnePassword", mnePassword);
@@ -541,31 +503,12 @@ public class EthAccountController {
 	@ResponseBody
 	@GetMapping("/newAccount")
 	public Map<String, Object> newAccount(@RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	
 		//获取前端发送的密语，密语密码，地址名和交易密码
-		JSONObject allInfoSentenceJson = JSONObject.parseObject(data);
+		JSONObject allInfoSentenceJson = JSONObject.parseObject((String) modelMap.get("data"));
 		String mnemonic = allInfoSentenceJson.getString("mnemonic");
 		String mnePassword = allInfoSentenceJson.getString("mnePassword");
 		String alias = allInfoSentenceJson.getString("alias");
@@ -582,8 +525,6 @@ public class EthAccountController {
 		} catch (CipherException e) {
 			e.printStackTrace();
 		}
-		
-		modelMap.put("success", true);
 		
 		return modelMap;
 	}
@@ -609,30 +550,11 @@ public class EthAccountController {
 	@ResponseBody
 	@GetMapping("/checkUp")
 	public Map<String, Object> checkUp(@RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	
-		JSONObject aliasInfoJson = JSONObject.parseObject(data);
+		JSONObject aliasInfoJson = JSONObject.parseObject((String) modelMap.get("data"));
 		String itcode = aliasInfoJson.getString("itcode");
 		String alias = aliasInfoJson.getString("alias");
 		
