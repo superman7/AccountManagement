@@ -1,6 +1,7 @@
 package com.digitalchina.xa.it.service.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -9,10 +10,18 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.web3j.crypto.Credentials;
+import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.Contract;
+import org.web3j.tx.ManagedTransaction;
 
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.xa.it.contract.Qiandao;
 import com.digitalchina.xa.it.dao.SigninRewardDAO;
+import com.digitalchina.xa.it.fanwei.service.QiandaoContractService;
 import com.digitalchina.xa.it.model.LuckycashDomain;
 import com.digitalchina.xa.it.model.SigninRewardDomain;
 import com.digitalchina.xa.it.model.UserDomain;
@@ -208,8 +217,41 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 
 	@Override
 	public String chargeToContract(String value) {
-		// TODO Auto-generated method stub
-		return null;
+		Integer index = (int)(Math.random()*5);
+    	ip = ipArr[index];
+		System.err.println("为签到合约充值的以太坊链接ip为"+ip);
+		if(web3j==null){
+            synchronized (QiandaoContractService.class){
+                if(web3j==null){
+                    web3j =Web3j.build(new HttpService(ip));
+                }
+            }
+        }
+		long chargeValueLong;
+		try {
+			chargeValueLong = Long.parseLong(value);
+		} catch (NumberFormatException e) {
+			chargeValueLong = 1;
+		}
+		String walletfile = rootPath + "UTC--2018-02-05T15-28-30.373580131Z--8c735de7b8c388347b7443b492740a9c80df20a6";
+		
+		Credentials credentials;
+		try {
+			credentials = WalletUtils.loadCredentials("mini0823", walletfile);
+			
+			Qiandao contract = Qiandao.load(address, web3j, credentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+			
+			BigInteger charge = BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(chargeValueLong));
+			
+			TransactionReceipt transactionReceipt = contract.chargeToContract(charge).send();
+			
+			String result = transactionReceipt.getTransactionHash();
+			
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
 	}
 
 	@Override
