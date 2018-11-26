@@ -51,10 +51,12 @@ import com.digitalchina.xa.it.model.KeywordToAccountDomain;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.MnemonicService;
+import com.digitalchina.xa.it.service.TConfigService;
 import com.digitalchina.xa.it.service.WalletTransactionService;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
 import com.digitalchina.xa.it.util.GetPwdAndKeyStoreUtils;
+import com.digitalchina.xa.it.util.TConfigUtils;
 import com.digitalchina.xa.it.util.CreatAddressUtils;
 
 import scala.util.Random;
@@ -69,12 +71,12 @@ public class EthAccountController {
 	private MnemonicService mnemonicService;
 	@Autowired
 	private WalletTransactionService walletTransactionService;
+	@Autowired
+	private TConfigService tconfigService;
 	
 	@Autowired
 	private KeywordToAccountDAO keywordToAccountDAO;
 	
-	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
-
 	private static String keystoreName = "keystore.json";
 	private static final BigInteger tax = BigInteger.valueOf(5000000000000000L);
 	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
@@ -112,7 +114,7 @@ public class EthAccountController {
 	public Map<String, Object> balanceQuery(
 			@RequestParam(name = "param", required = true) String jsonValue) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		Web3j web3j = Web3j.build(new HttpService(ip[new Random().nextInt(5)]));
+		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
 		Encrypt encrypt = new EncryptImpl();
     	String decrypt = null;
 		try {
@@ -186,8 +188,9 @@ public class EthAccountController {
 		
 		try {
 			List<Web3j> web3jList = new ArrayList<>();
-			for(int i = 0; i < ip.length; i++) {
-				web3jList.add(Web3j.build(new HttpService(ip[i])));
+			String[] ipArr = TConfigUtils.selectIpArr();
+			for(int i = 0; i < ipArr.length; i++) {
+				web3jList.add(Web3j.build(new HttpService(ipArr[i])));
 			}
 			File keystoreFile = keystoreToFile(keystore, account + ".json");
 			System.out.println("开始解锁。。。");
@@ -335,8 +338,9 @@ public class EthAccountController {
 		System.out.println(keystore);
 		try {
 			List<Web3j> web3jList = new ArrayList<>();
-			for(int i = 0; i < ip.length; i++) {
-				web3jList.add(Web3j.build(new HttpService(ip[i])));
+			String[] ipArr = TConfigUtils.selectIpArr();
+			for(int i = 0; i < ipArr.length; i++) {
+				web3jList.add(Web3j.build(new HttpService(ipArr[i])));
 			}
 			File keystoreFile = keystoreToFile(keystore, defaultAcc + ".json");//
 			Credentials credentials = WalletUtils.loadCredentials("mini0823", keystoreFile);
@@ -431,8 +435,9 @@ public class EthAccountController {
 		System.out.println(keystore);
 		try {
 			List<Web3j> web3jList = new ArrayList<>();
-			for(int i = 0; i < ip.length; i++) {
-				web3jList.add(Web3j.build(new HttpService(ip[i])));
+			String[] ipArr = TConfigUtils.selectIpArr();
+			for(int i = 0; i < ipArr.length; i++) {
+				web3jList.add(Web3j.build(new HttpService(ipArr[i])));
 			}
 			File keystoreFile = keystoreToFile(keystore, account + ".json");
 			System.out.println("开始解锁。。。");

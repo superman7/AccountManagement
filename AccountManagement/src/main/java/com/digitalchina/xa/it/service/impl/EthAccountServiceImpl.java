@@ -16,6 +16,7 @@ import org.web3j.protocol.http.HttpService;
 import com.digitalchina.xa.it.dao.EthAccountDAO;
 import com.digitalchina.xa.it.model.EthAccountDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
+import com.digitalchina.xa.it.util.TConfigUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -27,7 +28,6 @@ public class EthAccountServiceImpl implements EthAccountService {
 
 	private volatile static Web3j web3j;
     private static String ip = "http://10.7.10.124:8545";
-    private static String[] ipArr = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
     
     @Autowired
     private EthAccountDAO ethAccountDAO;//这里会报错，但是并不会影响
@@ -171,8 +171,7 @@ public class EthAccountServiceImpl implements EthAccountService {
 	@Override
 	public void refreshBalance(String itcode) {
 		List<EthAccountDomain> ethAccountDomains = ethAccountDAO.selectEthAccountByItcode(itcode);
-		Integer index = (int)(Math.random()*5);
-    	ip = ipArr[index];
+    	ip = TConfigUtils.selectIp();
 		for(int i = 0; i < ethAccountDomains.size(); i++){
 			if(web3j==null){
 	            synchronized (EthAccountService.class){

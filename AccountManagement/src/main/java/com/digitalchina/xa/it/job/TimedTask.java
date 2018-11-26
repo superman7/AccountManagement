@@ -28,10 +28,12 @@ import com.digitalchina.xa.it.dao.WalletTransactionDAO;
 import com.digitalchina.xa.it.model.TopicDomain;
 import com.digitalchina.xa.it.model.VirtualMachineDomain;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
+import com.digitalchina.xa.it.service.TConfigService;
 import com.digitalchina.xa.it.service.TopicOptionService;
 import com.digitalchina.xa.it.service.TopicService;
 import com.digitalchina.xa.it.service.VoteService;
 import com.digitalchina.xa.it.util.HttpRequest;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 import scala.util.Random;
 
@@ -49,9 +51,6 @@ public class TimedTask {
 	@Autowired
 	private VirtualMachineDAO virtualMachineDAO;
 	
-	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
-	
-
 	@Autowired
 	private TopicService topicService;
 	@Autowired
@@ -97,7 +96,7 @@ public class TimedTask {
 	@Transactional
 	@Scheduled(cron="10,40 * * * * ?")
 	public void updateTranscationStatus(){
-		Web3j web3j = Web3j.build(new HttpService(ip[new Random().nextInt(5)]));
+		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
 		List<WalletTransactionDomain> wtdList = walletTransactionDAO.selectHashAndAccounts();
 		if(wtdList == null) {
 			web3j.shutdown();
@@ -167,8 +166,7 @@ public class TimedTask {
 
 	@Scheduled(fixedRate=15000)
 	public void updateTurnResultStatusJob(){
-		Integer index = (int)(Math.random()*5);
-    	String ipAddress = ip[index];
+    	String ipAddress = TConfigUtils.selectIp();
 		System.err.println("更新交易状态时以太坊链接的ip为"+ipAddress);
 		
 		Admin admin = Admin.build(new HttpService(ipAddress));
