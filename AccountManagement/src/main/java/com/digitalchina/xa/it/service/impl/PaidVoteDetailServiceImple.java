@@ -30,12 +30,12 @@ import com.digitalchina.xa.it.dao.PaidVoteDetailDAO;
 import com.digitalchina.xa.it.model.EthAccountDomain;
 import com.digitalchina.xa.it.model.PaidVoteDetailDomain;
 import com.digitalchina.xa.it.service.PaidVoteDetailService;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Service(value = "paidVoteDetailService")
 public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
 	private volatile static Web3j web3j;
     private static String address = "0x941b8f05561e57f5b9d366c168b85baf900b037c";
-    private static String[] ipArr = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
 //    private static String tempFilePath = "c://";
     private static String tempFilePath = "/eth/temp/";
 
@@ -66,8 +66,7 @@ public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
 		
 		//FIXME 这里添加扣费逻辑
 
-		Integer index = (int)(Math.random()*5);
-    	String ip = ipArr[index];
+    	String ip = TConfigUtils.selectIp();
 		if(web3j==null){
             synchronized (PaidVoteDetailService.class){
                 if(web3j==null){
