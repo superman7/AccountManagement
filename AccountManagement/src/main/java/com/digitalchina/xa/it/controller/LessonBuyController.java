@@ -71,6 +71,8 @@ public class LessonBuyController {
 		BigInteger turnBalance = BigInteger.valueOf((long) (cost*discount/10)*10000000000000000L);
 		System.out.println("*******记录购买信息********");
 		
+		//余额判断
+		
 		//向kafka集群发送扣费信息
 		String url = "http://10.7.10.124:8083/lessonBuy/processDeduction";
 		String postParam = "itcode=" + itcode + "&transactionDetailId=" + transactionDetailId + "&turnBalance=" + turnBalance;

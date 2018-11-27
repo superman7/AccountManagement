@@ -1,8 +1,6 @@
 package com.digitalchina.xa.it.controller;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,8 +21,6 @@ import com.digitalchina.xa.it.service.PaidVoteDetailService;
 import com.digitalchina.xa.it.service.PaidVoteTop10Service;
 import com.digitalchina.xa.it.service.PaidVoteTopicService;
 import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
-import com.digitalchina.xa.it.util.Encrypt;
-import com.digitalchina.xa.it.util.EncryptImpl;
 
 @Controller
 @RequestMapping(value = "/paidVotes")

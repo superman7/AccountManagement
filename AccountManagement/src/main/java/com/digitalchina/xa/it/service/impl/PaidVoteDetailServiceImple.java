@@ -1,8 +1,5 @@
 package com.digitalchina.xa.it.service.impl;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
@@ -10,29 +7,14 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.web3j.abi.datatypes.Address;
-import org.web3j.crypto.CipherException;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.Contract;
-import org.web3j.tx.ManagedTransaction;
-import org.web3j.tx.RawTransactionManager;
-import org.web3j.tx.TransactionManager;
-import org.web3j.tx.response.NoOpProcessor;
-import org.web3j.tx.response.TransactionReceiptProcessor;
 
-import com.digitalchina.xa.it.contract.PaidVote;
 import com.digitalchina.xa.it.dao.EthAccountDAO;
 import com.digitalchina.xa.it.dao.PaidVoteDetailDAO;
-import com.digitalchina.xa.it.model.EthAccountDomain;
 import com.digitalchina.xa.it.model.PaidVoteDetailDomain;
 import com.digitalchina.xa.it.service.PaidVoteDetailService;
 import com.digitalchina.xa.it.util.HttpRequest;
-import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Service(value = "paidVoteDetailService")
 public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
