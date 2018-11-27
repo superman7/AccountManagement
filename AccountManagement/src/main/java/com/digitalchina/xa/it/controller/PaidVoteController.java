@@ -22,6 +22,7 @@ import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.PaidVoteDetailService;
 import com.digitalchina.xa.it.service.PaidVoteTop10Service;
 import com.digitalchina.xa.it.service.PaidVoteTopicService;
+import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
 
@@ -41,28 +42,11 @@ public class PaidVoteController {
 	@GetMapping("/insertVoteDetail")
 	public Object voteToSomebody(
 	        @RequestParam(name = "param", required = true) String jsonValue){
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密后参数为：" + data);
-    	JSONObject jsonObj = JSONObject.parseObject(data);
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
     	String toaccount = jsonObj.getString("toaccount");
     	String fromaccount = jsonObj.getString("fromaccount");
     	String toitcode = jsonObj.getString("toitcode");
@@ -71,13 +55,18 @@ public class PaidVoteController {
     	String remark = jsonObj.getString("remark");
     	Integer topicId = jsonObj.getInteger("topicId");
 		
-    	paidVoteDetailService.voteToSomebody(toaccount, fromaccount, toitcode, fromitcode, turncount, remark, topicId);
+    	String returnStr = paidVoteDetailService.voteToSomebody(toaccount, fromaccount, toitcode, fromitcode, turncount, remark, topicId);
 //		if( res <= 5 && res >=0) {
 //			modelMap.put("success", true);
 //		} else {
 //			modelMap.put("success", false);
 //			modelMap.put("errMsg", "skippingReading");
 //		}
+    	
+    	if(returnStr == "notEnough") {
+    		modelMap.put("success", false);
+    		modelMap.put("errMsg", "notEnough");
+    	}
 		
 		return modelMap;
 	}
