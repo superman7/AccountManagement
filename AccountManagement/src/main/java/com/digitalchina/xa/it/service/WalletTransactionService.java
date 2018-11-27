@@ -12,7 +12,7 @@ public interface WalletTransactionService {
 	
 	List<WalletTransactionDomain> selectRecordsByItcode(String itcode);
 	
-	Boolean insertBaseInfo(WalletTransactionDomain walletTransactionDomain);
+	Integer insertBaseInfo(WalletTransactionDomain walletTransactionDomain);
 	
 	Boolean updateByTransactionHash(WalletTransactionDomain walletTransactionDomain);
 }

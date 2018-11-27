@@ -22,23 +22,19 @@ public class WalletTransactionServiceImpl implements WalletTransactionService{
 
 	@Override
 	@Transactional
-	public Boolean insertBaseInfo(WalletTransactionDomain walletTransactionDomain) {
+	public Integer insertBaseInfo(WalletTransactionDomain walletTransactionDomain) {
 		if(walletTransactionDomain == null) {
 			throw new RuntimeException("walletAccountDomain为null");
 		}
-		if(walletTransactionDomain.getTransactionHash() != null && walletTransactionDomain.getTransactionHash() != "") {
-			try {
-				int effectedNumber = walletTransactionDAO.insertBaseInfo(walletTransactionDomain);
-				if(effectedNumber > 0) {
-					return true;
-				} else {
-					throw new RuntimeException("插入信息失败");
-				}
-			} catch(Exception e) {
-				throw new RuntimeException("插入信息失败 " + e.getMessage());
+		try {
+			int effectedNumber = walletTransactionDAO.insertBaseInfo(walletTransactionDomain);
+			if(effectedNumber > 0) {
+				return walletTransactionDomain.getId();
+			} else {
+				throw new RuntimeException("插入信息失败");
 			}
-		} else {
-			throw new RuntimeException("插入用户TransactionHash不能为空");
+		} catch(Exception e) {
+			throw new RuntimeException("插入信息失败 " + e.getMessage());
 		}
 	}
 

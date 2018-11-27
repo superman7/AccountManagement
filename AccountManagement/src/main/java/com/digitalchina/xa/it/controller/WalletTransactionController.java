@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.WalletTransactionService;
+import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
 
@@ -37,32 +38,15 @@ public class WalletTransactionController {
 	@GetMapping("/transRecords")
 	public Map<String, Object> transRecords(
 			@RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	String itcode = JSONObject.parseObject(data).getString("itcode");
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+    	String itcode = jsonObj.getString("itcode");
 		List<WalletTransactionDomain> wtdList = walletTransactionService.selectRecordsByItcode(itcode);
 		
 		if(wtdList != null) {
-			modelMap.put("success", true);
 			modelMap.put("records", wtdList);
 		} else {
 			modelMap.put("success", false);
