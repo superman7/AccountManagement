@@ -39,4 +39,13 @@
 		WHERE
 			cfg_value= #{cfgValue, jdbcType=VARCHAR}
 	</update>
+	
+	<select id="selectEthNodesInfo" resultType="com.digitalchina.xa.it.model.TConfigDomain">
+		SELECT
+			cfg_value,cfg_status
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			cfg_extra = 'EthNodes'
+	</select>
 </mapper>
