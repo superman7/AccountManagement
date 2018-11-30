@@ -1,30 +1,43 @@
 package com.digitalchina.xa.it.util;
 
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 
 import com.digitalchina.xa.it.service.TConfigService;
 
 import scala.util.Random;
 
+@Configuration
 public class TConfigUtils {
 	@Autowired
-	public static TConfigService tconfigService;
+	private TConfigService tconfigService;
+	
+	private static TConfigService newtconfigService;
+	
+	@PostConstruct
+	public void init() {
+		newtconfigService = tconfigService;
+	}
 	
 	public static String selectIp() {
-		String[] ipArr = (String[]) tconfigService.selectIpArr().toArray();
-		return ipArr[new Random().nextInt(5)];
+		List<String> ipArr =  newtconfigService.selectIpArr();
+		return ipArr.get(new Random().nextInt(5));
 	}
 	
 	public static String[] selectIpArr() {
-		return (String[]) tconfigService.selectIpArr().toArray();
+		return (String[]) newtconfigService.selectIpArr().toArray();
 	}
 	
 	public static String selectValueByKey(String cfgKey) {
-		return tconfigService.selectValueByKey(cfgKey);
+		return newtconfigService.selectValueByKey(cfgKey);
 	}
 	
 	public static Boolean selectIpArr(String cfgValue, Integer cfgStatus) {
-		return tconfigService.UpdateEthNodesStatus(cfgValue, cfgStatus);
+		return newtconfigService.UpdateEthNodesStatus(cfgValue, cfgStatus);
 	}
 }
 
