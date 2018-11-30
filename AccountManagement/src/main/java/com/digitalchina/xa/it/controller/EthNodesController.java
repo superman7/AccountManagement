@@ -23,9 +23,10 @@ public class EthNodesController {
 	
 	@ResponseBody
 	@GetMapping("/statusCheck")
-	public Map<String, Object> queryMine(@RequestParam(name = "itcode", required = false) String itcode){
+	public Map<String, Object> statusCheck(){
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		List<TConfigDomain> dataList = tconfigService.selectEthNodesInfo();
+		System.out.println(dataList.get(0));
 		System.out.println(JSONObject.toJSON(dataList));
 		modelMap.put("success", true);
 		modelMap.put("data", JSONObject.toJSON(dataList));

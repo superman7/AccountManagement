@@ -42,7 +42,7 @@
 	
 	<select id="selectEthNodesInfo" resultType="com.digitalchina.xa.it.model.TConfigDomain">
 		SELECT
-			cfg_value, cfg_status
+			cfg_value,cfg_status
 		FROM
 			<include refid="BASE_TABLE"/>
 		WHERE

@@ -1,6 +1,7 @@
 package com.digitalchina.xa.it.model;
 
 public class TConfigDomain {
+		
 	    private int cfgId;
 
 		private String cfgKey;
