@@ -19,4 +19,24 @@
 		AND
 			cfg_status = 1
 	</select>
+	
+	<select id="selectValueByKey" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT
+			cfg_value
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			cfg_key = #{cfgKey, jdbcType=VARCHAR}
+		AND
+			cfg_status = 1
+	</select>
+	
+	<update id="UpdateEthNodesStatus" parameterType="java.lang.String">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			cfg_status = #{cfgStatus, jdbcType=INTEGER}
+		WHERE
+			cfg_value= #{cfgValue, jdbcType=VARCHAR}
+	</update>
 </mapper>

@@ -21,6 +21,7 @@ import org.web3j.protocol.http.HttpService;
 
 import com.digitalchina.xa.it.dao.CashBackDAO;
 import com.digitalchina.xa.it.dao.PaidVoteDetailDAO;
+import com.digitalchina.xa.it.dao.TConfigDAO;
 import com.digitalchina.xa.it.dao.TopicDAO;
 import com.digitalchina.xa.it.dao.VirtualMachineDAO;
 import com.digitalchina.xa.it.dao.WalletAccountDAO;
@@ -50,6 +51,8 @@ public class TimedTask {
 	private CashBackDAO cashBackDAO;
 	@Autowired
 	private VirtualMachineDAO virtualMachineDAO;
+	@Autowired
+	private TConfigDAO tconfigDAO;
 	
 	@Autowired
 	private TopicService topicService;
@@ -218,7 +221,7 @@ public class TimedTask {
 		System.out.println(startTime + "***" + endTime);
 		
 		System.err.println("开始查询返现用户...");
-		String url = "http://10.7.10.124:8083/cashBack/processDeduction";
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/cashBack/processDeduction";
 		List<VirtualMachineDomain> cashBackUsers = virtualMachineDAO.selectCashBackUsers(startTime, endTime);
 		for(int index = 0; index < cashBackUsers.size(); index++) {
 			String itcode = cashBackUsers.get(index).getUserItcode();
@@ -232,6 +235,26 @@ public class TimedTask {
 				String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance.toString();
 				HttpRequest.sendPost(url, postParam);
 				System.out.println(postParam);
+			}
+		}
+	}
+	
+	//检查区块链节点工作状态是否正常
+	@Transactional
+	@Scheduled(cron="30 30 07 * * ?")
+	public void checkEthNodes(){
+		String textAddress = "0x8a950e851344715a51036567ca1b44aab3f15110";
+		String[] ipArr = TConfigUtils.selectIpArr();
+		for(int index = 0; index < ipArr.length; index++) {
+			Web3j web3j =Web3j.build(new HttpService(ipArr[index]));
+			try {
+				web3j.ethGetBalance(textAddress,DefaultBlockParameterName.LATEST).send().getBalance();
+				tconfigDAO.UpdateEthNodesStatus(ipArr[index], 1);
+	        } catch (IOException e) {
+	        	if(e.getMessage().contains("Failed to connect to")) {
+	        		System.out.println(e.getMessage());
+	        		tconfigDAO.UpdateEthNodesStatus(ipArr[index], 0);
+	        	}
 			}
 		}
 	}

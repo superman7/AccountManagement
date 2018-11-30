@@ -18,5 +18,13 @@ public class TConfigUtils {
 	public static String[] selectIpArr() {
 		return (String[]) tconfigService.selectIpArr().toArray();
 	}
+	
+	public static String selectValueByKey(String cfgKey) {
+		return tconfigService.selectValueByKey(cfgKey);
+	}
+	
+	public static Boolean selectIpArr(String cfgValue, Integer cfgStatus) {
+		return tconfigService.UpdateEthNodesStatus(cfgValue, cfgStatus);
+	}
 }
 
