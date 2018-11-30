@@ -269,7 +269,7 @@ public class EthAccountController {
 		Integer transactionDetailId = walletTransactionService.insertBaseInfo(wtd);
 		
 		//向kafka发送交易请求，参数为：account，itcode，金额，transactionDetailId
-		String url = "http://10.7.10.124:8083/ethAccount/withdrawConfirm";
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/ethAccount/withdrawConfirm";
 		String postParam = "itcode=" + itcode + "account" + account + "&transactionDetailId=" + transactionDetailId + "&turnBalance=" + moneyBigDecimal;
 		HttpRequest.sendPost(url, postParam);
 		

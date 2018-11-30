@@ -29,6 +29,8 @@ import com.digitalchina.xa.it.service.PaidVoteTop10Service;
 import com.digitalchina.xa.it.service.PaidVoteTopicService;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
+import com.digitalchina.xa.it.util.HttpRequest;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Controller
 @RequestMapping(value = "/paidRead")
@@ -128,8 +130,13 @@ public class PaidReadController {
 	public Map<String, Object> withdrawFromArticle(@RequestParam(name = "id", required = false) String id,
 			@RequestParam(name = "itcode", required = false) String itcode){
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(id + "---" + itcode);
-		//TODO 提现
+		
+		//余额判断
+		
+		//向kafka集群发送扣费信息
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lessonBuy/processDeduction";
+//		String postParam = "itcode=" + itcode + "&transactionDetailId=" + transactionDetailId + "&turnBalance=" + turnBalance;
+//		HttpRequest.sendPost(url, postParam);
 		return modelMap;
 	}
 }

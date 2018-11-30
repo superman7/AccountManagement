@@ -31,6 +31,7 @@ import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
 import com.digitalchina.xa.it.util.HttpRequest;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Controller
 @RequestMapping(value = "/lessonBuy")
@@ -74,7 +75,7 @@ public class LessonBuyController {
 		//余额判断
 		
 		//向kafka集群发送扣费信息
-		String url = "http://10.7.10.124:8083/lessonBuy/processDeduction";
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lessonBuy/processDeduction";
 		String postParam = "itcode=" + itcode + "&transactionDetailId=" + transactionDetailId + "&turnBalance=" + turnBalance;
 		HttpRequest.sendPost(url, postParam);
 		

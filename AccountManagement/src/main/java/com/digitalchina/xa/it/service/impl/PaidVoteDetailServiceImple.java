@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.http.HttpService;
 
 import com.digitalchina.xa.it.dao.EthAccountDAO;
 import com.digitalchina.xa.it.dao.PaidVoteDetailDAO;
 import com.digitalchina.xa.it.model.PaidVoteDetailDomain;
 import com.digitalchina.xa.it.service.PaidVoteDetailService;
 import com.digitalchina.xa.it.util.HttpRequest;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Service(value = "paidVoteDetailService")
 public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
@@ -49,6 +51,14 @@ public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
 		System.err.println(transactionDetailId);
 		
 		try {
+			String ip = TConfigUtils.selectIp();
+			if(web3j==null){
+		        synchronized (PaidVoteDetailService.class){
+		            if(web3j==null){
+		                web3j =Web3j.build(new HttpService(ip));
+		            }
+		        }
+		    }
 			//FIXME 判断余额是否足够投票
 			BigInteger balance = web3j.ethGetBalance(fromaccount,DefaultBlockParameterName.LATEST).send().getBalance().divide(BigInteger.valueOf(10000000000000000L));
 			if(Double.valueOf(turncount) > Double.valueOf(balance.toString()) - 1) {
@@ -60,7 +70,7 @@ public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
 		}
 		
 		//向kafka发送交易请求，参数为：account，itcode，金额，transactionDetailId
-		String url = "http://10.7.10.124:8083/paidVotes/insertVoteDetail";
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/paidVotes/insertVoteDetail";
 		String postParam = "itcode=" + fromitcode + "account" + toaccount + "&transactionDetailId=" + transactionDetailId 
 				+ "&turnBalance=" + BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(Long.valueOf(turncount)));
 		HttpRequest.sendPost(url, postParam);
