@@ -24,14 +24,6 @@ public interface SigninRewardService {
 	
 	//NEWCODE START-泛微签到模块的奖励代码-START
 	/**
-	 * 给合约账户充值
-	 */
-	String chargeToContract(String value);
-	/**
-	 * 根据itcode 和 金额 发放签到奖励
-	 */
-	String signinReward(String itcode, int reward);
-	/**
 	 * 参与每日投票获得奖励
 	 */
 	String voteReward(String itcode);

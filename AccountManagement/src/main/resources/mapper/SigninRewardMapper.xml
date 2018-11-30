@@ -6,17 +6,20 @@
   </sql>
 
   <sql id="BASE_COLUMN">
-    id,itcode,accountkey,type,signtime,rewards
+    id,itcode,accountkey,type,signtime,rewards,transactionhash,backup1,backup2,backup3
   </sql>
 
   <insert id="insert" parameterType="com.digitalchina.xa.it.model.SigninRewardDomain">
+  		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            select @@IDENTITY as id
+        </selectKey>
     INSERT INTO
       <include refid="BASE_TABLE"/>
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      id,itcode,accountkey,type,signtime,rewards,
+      itcode,accountkey,type,signtime,rewards,
     </trim>
     <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-      #{id, jdbcType=INTEGER},#{itcode, jdbcType=VARCHAR},#{accountkey, jdbcType=VARCHAR},#{type, jdbcType=INTEGER},#{signtime, jdbcType=TIMESTAMP},#{rewards, jdbcType=INTEGER},
+      #{itcode, jdbcType=VARCHAR},#{accountkey, jdbcType=VARCHAR},#{type, jdbcType=INTEGER},#{signtime, jdbcType=TIMESTAMP},#{rewards, jdbcType=INTEGER},
     </trim>
   </insert>
 

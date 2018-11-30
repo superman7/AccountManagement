@@ -10,6 +10,11 @@ public class SigninRewardDomain {
 	//1:日期字典 0:用户数据
 	private Integer type;
 	private Integer rewards;
+	private String transactionhash;
+	private String backup1;
+	private String backup2;
+	private String backup3;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -45,5 +50,29 @@ public class SigninRewardDomain {
 	}
 	public void setRewards(Integer rewards) {
 		this.rewards = rewards;
+	}
+	public String getTransactionhash() {
+		return transactionhash;
+	}
+	public void setTransactionhash(String transactionhash) {
+		this.transactionhash = transactionhash;
+	}
+	public String getBackup1() {
+		return backup1;
+	}
+	public void setBackup1(String backup1) {
+		this.backup1 = backup1;
+	}
+	public String getBackup2() {
+		return backup2;
+	}
+	public void setBackup2(String backup2) {
+		this.backup2 = backup2;
+	}
+	public String getBackup3() {
+		return backup3;
+	}
+	public void setBackup3(String backup3) {
+		this.backup3 = backup3;
 	}
 }
