@@ -31,6 +31,7 @@ import com.digitalchina.xa.it.service.UserService;
 import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Service(value = "signinRewardService")
 public class SigninRewardServiceImpl implements SigninRewardService{
@@ -217,16 +218,7 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 
 	@Override
 	public String chargeToContract(String value) {
-		Integer index = (int)(Math.random()*5);
-    	ip = ipArr[index];
-		System.err.println("为签到合约充值的以太坊链接ip为"+ip);
-		if(web3j==null){
-            synchronized (QiandaoContractService.class){
-                if(web3j==null){
-                    web3j =Web3j.build(new HttpService(ip));
-                }
-            }
-        }
+		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
 		long chargeValueLong;
 		try {
 			chargeValueLong = Long.parseLong(value);
