@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.digitalchina.xa.it.service.SigninRewardService;
+import com.digitalchina.xa.it.util.HttpRequest;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Controller
 @RequestMapping(value = "/signinReward")
@@ -53,21 +55,16 @@ public class SigninRewardController {
 	 * @apiGroup SignIn
 	 *
 	 * @apiParam {Integer} value 充值金额,正整数.
-	 *
-	 * @apiSuccess {String} hashcode 充值交易的hash值.
-	 * @apiSuccessExample Success-Response:
-	 *     HTTP/1.1 200 OK
-	 *     0x2f58a9a88392d9f5fcdfef155b1a361969d1e5ebf8862f5973be69146bb11348
-	 *     
-	 * @apiError ChargeFailed 充值失败
-	 * @apiErrorExample ChargeFailed-Response:
-	 *     HTTP/1.1 200 OK
-	 *     error
+	 * 
 	 */
-	@RequestMapping("/chargeToContract/{value}")
-	public String chargeToContract(@PathVariable String value) {
-		String result = srService.chargeToContract(value);
-		return result;
+	@ResponseBody
+	@GetMapping("/chargeToContract/{value}")
+	public void chargeToContract(@PathVariable String value) {
+		//向kafka集群发送充值信息
+		String ip = TConfigUtils.selectValueByKey("kafka_address");
+		String url = ip + "/signin/chargeToContract";
+		String postParam = "value=" + value;
+		HttpRequest.sendGet(url, postParam);
 	}
 	
 	/**
@@ -95,10 +92,14 @@ public class SigninRewardController {
 	 *     HTTP/1.1 200 OK
 	 *     error.
 	 */
-	@RequestMapping("/signinReward/{itcode}/{reward}")
-	public String signinReward(@PathVariable String itcode, @PathVariable int reward) {
-		String result = srService.signinReward(itcode, reward);
-		return result;
+	@ResponseBody
+	@GetMapping("/signinReward/{itcode}/{reward}/{transactionDetailId}")
+	public void signinReward(@PathVariable String itcode, @PathVariable int reward, @PathVariable String transactionDetailId) {
+		//向kafka集群发送充值信息
+		String ip = TConfigUtils.selectValueByKey("kafka_address");
+		String url = ip + "/signin/signinReward";
+		String postParam = "itcode=" + itcode + "&reward=" + reward + "&transactionDetailId=" + transactionDetailId;
+		HttpRequest.sendGet(url, postParam);
 	}
 	
 	/**
@@ -125,27 +126,18 @@ public class SigninRewardController {
 	 *     HTTP/1.1 200 OK
 	 *     error.
 	 */
-	@RequestMapping("/voteReward/{itcode}")
-	public String voteReward(@PathVariable String itcode) {
-		String result = srService.voteReward(itcode);
-		return result;
-	}
-	
-	/**
-	 * @api {get} /signinReward/attendanceReward/:employeeNumber 发放考勤奖励
-	 * @apiVersion 0.0.1
-	 *
-	 * @apiName AttendanceReward
-	 * @apiGroup AdditionalReward
-	 *
-	 * @apiParam {String} employeeNumber 奖励用户的员工编号,多员工编号以","分隔,例如"XXX,XXX,XXX".
-	 *
-	 * @apiSuccessExample Success-Response:
-	 *     HTTP/1.1 200 OK
-	 */
-	@RequestMapping("/attendanceReward/{employeeNumber}")
-	public void attendanceReward(@PathVariable String employeeNumber) {
-		srService.attendanceReward(employeeNumber);
+	@ResponseBody
+	@GetMapping("/voteReward/{itcode}/{reward}/{transactionDetailId}")
+	public void voteReward(@PathVariable String itcode) {
+		String voteRewardResult = srService.voteReward(itcode);
+		if(!voteRewardResult.equals("error")){
+			String[] voteRewardResultList = voteRewardResult.split(",");
+			//向kafka集群发送充值信息
+			String ip = TConfigUtils.selectValueByKey("kafka_address");
+			String url = ip + "/signin/voteReward";
+			String postParam = "itcode=" + itcode + "&reward=" + voteRewardResultList[0] + "&transactionDetailId=" + voteRewardResultList[1];
+			HttpRequest.sendGet(url, postParam);
+		}
 	}
 	//NEWCODE END-泛微签到模块的奖励代码-END
 }

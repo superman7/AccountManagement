@@ -29,6 +29,7 @@ import com.digitalchina.xa.it.dao.WalletTransactionDAO;
 import com.digitalchina.xa.it.model.TopicDomain;
 import com.digitalchina.xa.it.model.VirtualMachineDomain;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
+import com.digitalchina.xa.it.service.SigninRewardService;
 import com.digitalchina.xa.it.service.TConfigService;
 import com.digitalchina.xa.it.service.TopicOptionService;
 import com.digitalchina.xa.it.service.TopicService;
@@ -62,6 +63,9 @@ public class TimedTask {
 	private VoteService voteService;
 	@Autowired
     private TopicDAO topicDAO;
+	
+	@Autowired
+	private SigninRewardService srService;
 
 	@Transactional
 	@Scheduled(cron="55 59 23 * * ?")
@@ -163,7 +167,9 @@ public class TimedTask {
 		result = result.substring(0, result.length() - 1 );
 		System.err.println(result);
 		//FIXME 发送get请求，http://10.0.5.217:8080/eth/attendanceReward/result
-		HttpRequest.sendGet("http://10.0.5.217:8080/eth/attendanceReward/" + result, "");
+//		HttpRequest.sendGet("http://10.0.5.217:8080/eth/attendanceReward/" + result, "");
+
+		srService.attendanceReward(result);
 	}
 	
 
