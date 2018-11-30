@@ -1,14 +1,18 @@
 package com.digitalchina.xa.it.service.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
@@ -31,6 +35,7 @@ import com.digitalchina.xa.it.service.UserService;
 import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
+import com.digitalchina.xa.it.util.HttpRequest;
 import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Service(value = "signinRewardService")
@@ -43,7 +48,12 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 	
     @Autowired
     private SigninRewardDAO srDao;
+    
+    @Autowired
+   	private JdbcTemplate jdbc;
 
+    private Integer voteRewardValue = Integer.valueOf(TConfigUtils.selectValueByKey("vote_reward_value"));
+    private Integer attendanceRewardValue = Integer.valueOf(TConfigUtils.selectValueByKey("attendance_reward_value"));
 	@Override
 	public Map<String, Object> addLuckyNumber(String param) {
 		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(param);
@@ -154,7 +164,7 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 			sr.setSigntime(nousedate);
 			sr.setRewards(Integer.valueOf(rewards));
 			this.addSigninReward(sr);
-			return "{\"status\":1,\"value\":" + rewards + ",\"lucky\":\"" + luckyNum + "\"}";
+			return "{\"status\":1,\"value\":" + rewards + ",\"lucky\":\"" + luckyNum + ",\"transactionDetailId\":\"" + sr.getId() + "\"}";
 		}
 //		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //		SigninRewardDomain sr = new SigninRewardDomain();
@@ -217,50 +227,49 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 	}
 
 	@Override
-	public String chargeToContract(String value) {
-		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
-		long chargeValueLong;
-		try {
-			chargeValueLong = Long.parseLong(value);
-		} catch (NumberFormatException e) {
-			chargeValueLong = 1;
-		}
-		String walletfile = rootPath + "UTC--2018-02-05T15-28-30.373580131Z--8c735de7b8c388347b7443b492740a9c80df20a6";
-		
-		Credentials credentials;
-		try {
-			credentials = WalletUtils.loadCredentials("mini0823", walletfile);
-			
-			Qiandao contract = Qiandao.load(address, web3j, credentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-			
-			BigInteger charge = BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(chargeValueLong));
-			
-			TransactionReceipt transactionReceipt = contract.chargeToContract(charge).send();
-			
-			String result = transactionReceipt.getTransactionHash();
-			
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "error";
-		}
-	}
-
-	@Override
-	public String signinReward(String itcode, int reward) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String voteReward(String itcode) {
-		// TODO Auto-generated method stub
-		return null;
+		List<UserDomain> userList = userService.findUserByItcode(itcode);
+		if(userList.size() > 0){
+			SigninRewardDomain sr = new SigninRewardDomain();
+			sr.setItcode(itcode);
+			sr.setAccountkey(userList.get(0).getAccount());
+			sr.setType(0);
+			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
+			
+			sr.setSigntime(nousedate);
+			sr.setRewards(voteRewardValue);
+			this.addSigninReward(sr);
+			return voteRewardValue.toString() + "," + sr.getId().toString();
+		}
+		return "error";
 	}
 
 	@Override
 	public void attendanceReward(String employeeNumber) {
-		// TODO Auto-generated method stub
+		String sql = "SELECT * FROM am_person a LEFT JOIN am_ethaccount b on a.ITCODE=b.itcode WHERE b.available='3' and a.EMPLOYEENUMBER in "+ "(" + employeeNumber + ")";
+        List<Map<String,Object>> list = jdbc.queryForList(sql);
+        
+		//向kafka集群发送充值信息
+		String ip = TConfigUtils.selectValueByKey("kafka_address");
+		String url = ip + "/signin/attendanceReward";
 		
+        for(int i = 0; i < list.size(); i++) {
+        	String itcode = list.get(i).get("itcode").toString();
+        	List<UserDomain> userList = userService.findUserByItcode(itcode);
+    		if(userList.size() > 0){
+    			SigninRewardDomain sr = new SigninRewardDomain();
+    			sr.setItcode(itcode);
+    			sr.setAccountkey(userList.get(0).getAccount());
+    			sr.setType(0);
+    			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
+    			
+    			sr.setSigntime(nousedate);
+    			sr.setRewards(attendanceRewardValue);
+    			this.addSigninReward(sr);
+    			String transactionDetailId = sr.getId().toString();
+    			String postParam = "itcode=" + itcode + "&reward=" + attendanceRewardValue.toString() + "&transactionDetailId=" + transactionDetailId;
+    			HttpRequest.sendGet(url, postParam);
+    		}
+        }
 	}
 }
