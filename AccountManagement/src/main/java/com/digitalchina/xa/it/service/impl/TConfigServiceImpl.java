@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.digitalchina.xa.it.dao.TConfigDAO;
 import com.digitalchina.xa.it.model.EthAccountDomain;
+import com.digitalchina.xa.it.model.TConfigDomain;
 import com.digitalchina.xa.it.service.TConfigService;
 
 @Service(value = "tConfigService")
@@ -40,5 +41,10 @@ public class TConfigServiceImpl implements TConfigService {
 	@Override
 	public String selectValueByKey(String cfgKey) {
 		return tConfigDAO.selectValueByKey(cfgKey);
+	}
+
+	@Override
+	public List<TConfigDomain> selectEthNodesInfo() {
+		return tConfigDAO.selectEthNodesInfo();
 	}
 }
