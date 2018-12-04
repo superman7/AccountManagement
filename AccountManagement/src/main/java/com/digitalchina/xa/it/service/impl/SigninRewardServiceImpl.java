@@ -1,31 +1,15 @@
 package com.digitalchina.xa.it.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URLDecoder;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.Contract;
-import org.web3j.tx.ManagedTransaction;
 
 import com.alibaba.fastjson.JSONObject;
-import com.digitalchina.xa.it.contract.Qiandao;
 import com.digitalchina.xa.it.dao.SigninRewardDAO;
-import com.digitalchina.xa.it.fanwei.service.QiandaoContractService;
 import com.digitalchina.xa.it.model.LuckycashDomain;
 import com.digitalchina.xa.it.model.SigninRewardDomain;
 import com.digitalchina.xa.it.model.UserDomain;
@@ -33,8 +17,6 @@ import com.digitalchina.xa.it.service.LuckycashService;
 import com.digitalchina.xa.it.service.SigninRewardService;
 import com.digitalchina.xa.it.service.UserService;
 import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
-import com.digitalchina.xa.it.util.Encrypt;
-import com.digitalchina.xa.it.util.EncryptImpl;
 import com.digitalchina.xa.it.util.HttpRequest;
 import com.digitalchina.xa.it.util.TConfigUtils;
 

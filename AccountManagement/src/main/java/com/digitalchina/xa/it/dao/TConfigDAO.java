@@ -14,4 +14,6 @@ public interface TConfigDAO {
 	String selectValueByKey(@Param("cfgKey")String cfgKey);
 	
 	List<TConfigDomain> selectEthNodesInfo();
+	
+	List<TConfigDomain> selectContractInfo();
 }

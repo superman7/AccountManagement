@@ -48,4 +48,15 @@
 		WHERE
 			cfg_extra = 'EthNodes'
 	</select>
+	
+	<select id="selectContractInfo" resultType="com.digitalchina.xa.it.model.TConfigDomain">
+		SELECT
+			cfg_key,cfg_value
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			cfg_extra = 'ContractAddress'
+		AND
+			cfg_status = 1
+	</select>
 </mapper>
