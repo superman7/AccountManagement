@@ -1,4 +1,4 @@
-package com.digitalchina.xa.it.controller;
+/*package com.digitalchina.xa.it.controller;
 
 import java.util.Map;
 
@@ -47,7 +47,7 @@ public class SigninRewardController {
 	}
 	
 	//NEWCODE START-泛微签到模块的奖励代码-START
-	/**
+	*//**
 	 * @api {get} /signinReward/chargeToContract/:value 签到合约充值
 	 * @apiVersion 0.0.1
 	 *
@@ -56,7 +56,7 @@ public class SigninRewardController {
 	 *
 	 * @apiParam {Integer} value 充值金额,正整数.
 	 * 
-	 */
+	 *//*
 	@ResponseBody
 	@GetMapping("/chargeToContract/{value}")
 	public void chargeToContract(@PathVariable String value) {
@@ -67,7 +67,7 @@ public class SigninRewardController {
 		HttpRequest.sendGet(url, postParam);
 	}
 	
-	/**
+	*//**
 	 * @api {get} /signinReward/signinReward/:itcode/:reward 发放签到奖励
 	 * @apiVersion 0.0.1
 	 *
@@ -91,7 +91,7 @@ public class SigninRewardController {
 	 * @apiErrorExample TransactionException-Response:
 	 *     HTTP/1.1 200 OK
 	 *     error.
-	 */
+	 *//*
 	@ResponseBody
 	@GetMapping("/signinReward/{itcode}/{reward}/{transactionDetailId}")
 	public void signinReward(@PathVariable String itcode, @PathVariable int reward, @PathVariable String transactionDetailId) {
@@ -102,7 +102,7 @@ public class SigninRewardController {
 		HttpRequest.sendGet(url, postParam);
 	}
 	
-	/**
+	*//**
 	 * @api {get} /signinReward/voteReward/:itcode 发放投票奖励
 	 * @apiVersion 0.0.1
 	 *
@@ -125,7 +125,7 @@ public class SigninRewardController {
 	 * @apiErrorExample TransactionException-Response:
 	 *     HTTP/1.1 200 OK
 	 *     error.
-	 */
+	 *//*
 	@ResponseBody
 	@GetMapping("/voteReward/{itcode}/{reward}/{transactionDetailId}")
 	public void voteReward(@PathVariable String itcode) {
@@ -141,3 +141,4 @@ public class SigninRewardController {
 	}
 	//NEWCODE END-泛微签到模块的奖励代码-END
 }
+*/
