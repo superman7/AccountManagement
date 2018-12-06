@@ -9,7 +9,7 @@ import com.digitalchina.xa.it.model.TConfigDomain;
 public interface TConfigDAO {
 	List<String> selectIpArr();
 	
-	int UpdateEthNodesStatus(@Param("cfgValue")String cfgValue, @Param("cfgStatus")Integer cfgStatus);
+	int UpdateEthNodesStatus(@Param("cfgValue")String cfgValue, @Param("cfgStatus")Boolean cfgStatus);
 	
 	String selectValueByKey(@Param("cfgKey")String cfgKey);
 	

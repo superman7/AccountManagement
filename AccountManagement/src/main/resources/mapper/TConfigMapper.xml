@@ -31,11 +31,11 @@
 			cfg_status = 1
 	</select>
 	
-	<update id="UpdateEthNodesStatus" parameterType="java.lang.String">
+	<update id="UpdateEthNodesStatus">
 		UPDATE 
 			<include refid="BASE_TABLE"/>
 		SET    
-			cfg_status = #{cfgStatus, jdbcType=INTEGER}
+			cfg_status = #{cfgStatus, jdbcType=BIT}
 		WHERE
 			cfg_value= #{cfgValue, jdbcType=VARCHAR}
 	</update>
