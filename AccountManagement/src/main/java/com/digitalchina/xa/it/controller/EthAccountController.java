@@ -154,9 +154,9 @@ public class EthAccountController {
 		
 		try {
 			List<Web3j> web3jList = new ArrayList<>();
-			String[] ipArr = TConfigUtils.selectIpArr();
-			for(int i = 0; i < ipArr.length; i++) {
-				web3jList.add(Web3j.build(new HttpService(ipArr[i])));
+			List<String> ipArr = TConfigUtils.selectIpArr();
+			for(int i = 0; i < ipArr.size(); i++) {
+				web3jList.add(Web3j.build(new HttpService(ipArr.get(i))));
 			}
 			File keystoreFile = keystoreToFile(keystore, account + ".json");
 			System.out.println("开始解锁。。。");
@@ -376,9 +376,9 @@ public class EthAccountController {
 		System.out.println(keystore);
 		try {
 			List<Web3j> web3jList = new ArrayList<>();
-			String[] ipArr = TConfigUtils.selectIpArr();
-			for(int i = 0; i < ipArr.length; i++) {
-				web3jList.add(Web3j.build(new HttpService(ipArr[i])));
+			List<String> ipArr = TConfigUtils.selectIpArr();
+			for(int i = 0; i < ipArr.size(); i++) {
+				web3jList.add(Web3j.build(new HttpService(ipArr.get(i))));
 			}
 			File keystoreFile = keystoreToFile(keystore, account + ".json");
 			System.out.println("开始解锁。。。");
