@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.TPaidlotteryDetailsDAO" >
+	<sql id="BASE_TABLE">
+		t_paidlottery_details
+	</sql>
+
+	<sql id="BASE_COLUMN">
+		id,lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReword,buyTime,backup1,backup2,backup3,backup4
+	</sql>
+</mapper>
