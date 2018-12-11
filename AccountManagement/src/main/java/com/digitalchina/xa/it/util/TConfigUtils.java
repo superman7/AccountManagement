@@ -35,9 +35,5 @@ public class TConfigUtils {
 	public static String selectValueByKey(String cfgKey) {
 		return newtconfigService.selectValueByKey(cfgKey);
 	}
-	
-	public static Boolean selectIpArr(String cfgValue, Integer cfgStatus) {
-		return newtconfigService.UpdateEthNodesStatus(cfgValue, cfgStatus);
-	}
 }
 

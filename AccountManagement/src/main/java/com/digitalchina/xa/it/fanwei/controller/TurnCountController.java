@@ -1,4 +1,4 @@
-package com.digitalchina.xa.it.fanwei.controller;
+/*package com.digitalchina.xa.it.fanwei.controller;
 
 import java.util.List;
 
@@ -12,12 +12,12 @@ import com.dcone.eth.domain.TurnCountBean;
 import com.dcone.eth.service.TurnCountService;
 
 
-/**
+*//**
  * 转账业务的控制层
  * 
  * @author xueleic
  *
- */
+ *//*
 @RestController
 @Scope("prototype")
 public class TurnCountController {
@@ -25,7 +25,7 @@ public class TurnCountController {
 	@Autowired
 	private TurnCountService turnCountService;
 	
-	/**
+	*//**
 	 * @api {get} /eth/findAll/:account 查询所有明细
 	 * @apiVersion 0.0.1
 	 *
@@ -76,14 +76,14 @@ public class TurnCountController {
 	 *         }
 	 *     ]
 	 *     
-	 */
+	 *//*
 	@RequestMapping("/eth/findAll/{account}")
 	public List<TurnCountBean> findAll(@PathVariable String account){
 		List<TurnCountBean> list = turnCountService.findAll(account,account);
 		return list;
 	}
 	
-	/**
+	*//**
 	 * @api {get} /eth/findByFromcount/:fromcount 查询支出明细
 	 * @apiVersion 0.0.1
 	 *
@@ -121,14 +121,14 @@ public class TurnCountController {
 	 *         }
 	 *     ]
 	 *     
-	 */
+	 *//*
 	@RequestMapping("/eth/findByFromcount/{fromcount}")
 	public List<TurnCountBean> findByFromcount(@PathVariable String fromcount){
 		List<TurnCountBean> list = turnCountService.findByFromcount(fromcount);
 		return list;
 	}
 	
-	/**
+	*//**
 	 * @api {get} /eth/findByTocount/:toaccount 查询收入明细
 	 * @apiVersion 0.0.1
 	 *
@@ -166,14 +166,14 @@ public class TurnCountController {
 	 *         }
 	 *     ]
 	 *     
-	 */
+	 *//*
 	@RequestMapping("/eth/findByTocount/{tocount}")
 	public List<TurnCountBean> findByTocount(@PathVariable String tocount){
 		List<TurnCountBean> list = turnCountService.findByTocount(tocount);
 		return list;
 	}
 
-	/**
+	*//**
 	 * @api {get} /eth/updateTurnhash/:fromcount/:turnhash/:turndate 更新转账hash
 	 * @apiVersion 0.0.1
 	 *
@@ -187,13 +187,13 @@ public class TurnCountController {
 	 * @apiSuccessExample Success-Response:
 	 *     HTTP/1.1 200 OK
 	 *     
-	 */
+	 *//*
 	@RequestMapping("/eth/updateTurnhash/{fromcount}/{turnhash}/{turndate}")
 	public void updateTurnhash(@PathVariable String fromcount, @PathVariable String turnhash, @PathVariable String turndate){
 		turnCountService.updateTurnhash(fromcount, turnhash, turndate);
 	}
 	
-	/**
+	*//**
 	 * @api {get} /eth/findByTocount/:account 获取账户余额
 	 * @apiVersion 0.0.1
 	 *
@@ -207,14 +207,14 @@ public class TurnCountController {
 	 *     HTTP/1.1 200 OK
 	 *     43.25
 	 *     
-	 */
+	 *//*
 	 @RequestMapping("/eth/getBalance/{account}")
 	 public  String getBalance(@PathVariable String account) {
 		 String balance = turnCountService.getBalance(account);
 		 return balance;
 	 }
 	 
-	 /**
+	 *//**
 	 * @api {get} /eth/transition/:msg 转账交易
 	 * @apiVersion 0.0.1
 	 *
@@ -232,14 +232,14 @@ public class TurnCountController {
 	 * @apiErrorExample TransactionException-Response:
 	 *     HTTP/1.1 200 OK
 	 *     error.
-	 */
+	 *//*
 	 @RequestMapping("/eth/transition/{msg}")
 	 public  String transition(@PathVariable String msg){
 		 String hash = turnCountService.transition(msg);
 		 return hash;
 	 }
 	 
- 	 /**
+ 	 *//**
 	  * @api {get} /eth/transition/counter/:itcode 查询交易笔数
 	  * @apiVersion 0.0.1
 	  *
@@ -253,14 +253,14 @@ public class TurnCountController {
 	  *     HTTP/1.1 200 OK
 	  *     13
 	  *     
-	  */
+	  *//*
 	 @RequestMapping("/eth/transition/counter/{itcode}")
 	 public String todayTransfer(@PathVariable String itcode){
 		 Integer result = turnCountService.selectUserTransferCounter(itcode);
 		 return result.toString();
 	 }
 	 
-	 /**
+	 *//**
 	  * @api {get} /eth/transition/counter/:itcode 查询交易笔数
 	  * @apiVersion 0.0.1
 	  *
@@ -274,10 +274,11 @@ public class TurnCountController {
 	  *     HTTP/1.1 200 OK
 	  *     13
 	  *     
-	  */
+	  *//*
 	 @RequestMapping("/eth/attendance/top10")
 	 public String attendanceTop10(){
 		 String result = turnCountService.selectAttendanceTop10();
 		 return result;
 	 }
 }
+*/
