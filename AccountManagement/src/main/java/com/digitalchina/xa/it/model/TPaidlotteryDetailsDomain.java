@@ -31,6 +31,18 @@ public class TPaidlotteryDetailsDomain {
 	    
 	    private Integer backup4;
 	    
+	    public TPaidlotteryDetailsDomain(Integer lotteryId, String itcode, String account, String hashcode, String ticket, Integer result, String winTicket, String winReword, DateTime buyTime) {
+	    	this.lotteryId = lotteryId;
+	    	this.itcode = itcode;
+	    	this.account = account;
+	    	this.hashcode = hashcode;
+	    	this.ticket = ticket;
+	    	this.result = result;
+	    	this.winTicket = winTicket;
+	    	this.winReword = winReword;
+	    	this.buyTime = buyTime;
+	    }
+	    
 		public Integer getId() {
 			return id;
 		}

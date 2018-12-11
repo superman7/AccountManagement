@@ -1,13 +1,10 @@
 package com.digitalchina.xa.it.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,19 +13,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.digitalchina.xa.it.model.LessonBuyDomain;
-import com.digitalchina.xa.it.util.Encrypt;
-import com.digitalchina.xa.it.util.EncryptImpl;
+import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
+import com.digitalchina.xa.it.service.TPaidlotteryDetailsService;
+import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 import com.digitalchina.xa.it.util.HttpRequest;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Controller
 @RequestMapping(value = "/paidLottery")
 public class PaidLotteryController {
 	
+	@Autowired
+	private TPaidlotteryDetailsService tPaidlotteryDetailsService;
+	
 	@ResponseBody
 	@PostMapping("/insertLotteryInfo")
 	public Map<String, Object> insertLotteryInfo(
 	        @RequestParam(name = "param", required = true) String jsonValue){
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+		
+		
 		return null;
 	}
 	
@@ -40,7 +48,25 @@ public class PaidLotteryController {
 		 * 1.插入detail信息
 		 * 2.调用kafka进行合约交易
 		 */
-		return null;
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+		Integer lotteryId = Integer.valueOf(jsonObj.getString("lotteryId"));
+		String itcode = jsonObj.getString("itcode");
+		
+		//向t_paidlottery_details表中插入信息， 参数为lotteryId, itcode, result(0), buyTime
+		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new DateTime(new Date().getTime()));
+		int transactionId = tPaidlotteryDetailsService.insertLotteryBaseInfo(tpdd);
+		
+		//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "";
+		String postParam = "itcode=" + itcode + "&turnBalance=" + null + "&transactionId=" + transactionId;
+		HttpRequest.sendPost(url, postParam);
+		
+		modelMap.put("", "");
+		return modelMap;
 	}
 	@ResponseBody
 	@PostMapping("/kafkaUpdateDetails")
@@ -51,6 +77,10 @@ public class PaidLotteryController {
 		 * 2.更新奖票字段
 		 * 3.判断开奖及更新info
 		 */
+		
+		//接收hashcode与transactionId，lotteryId
+		
+		//更新hashcode，service层计算ticket，判断开奖条件，若不开，则更新id=transactionId的ticket字段；若开，则比对lotteryId，更新此次参与者的result，winTicket，winReword字段。
 		return null;
 	}
 	@ResponseBody
