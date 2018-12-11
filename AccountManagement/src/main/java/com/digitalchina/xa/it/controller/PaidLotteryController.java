@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
-import com.digitalchina.xa.it.service.TPaidlotteryDetailsService;
+import com.digitalchina.xa.it.service.TPaidlotteryService;
 import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 import com.digitalchina.xa.it.util.HttpRequest;
 import com.digitalchina.xa.it.util.TConfigUtils;
@@ -24,7 +24,7 @@ import com.digitalchina.xa.it.util.TConfigUtils;
 public class PaidLotteryController {
 	
 	@Autowired
-	private TPaidlotteryDetailsService tPaidlotteryDetailsService;
+	private TPaidlotteryService tPaidlotteryService;
 	
 	@ResponseBody
 	@PostMapping("/insertLotteryInfo")
@@ -58,7 +58,7 @@ public class PaidLotteryController {
 		
 		//向t_paidlottery_details表中插入信息， 参数为lotteryId, itcode, result(0), buyTime
 		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new DateTime(new Date().getTime()));
-		int transactionId = tPaidlotteryDetailsService.insertLotteryBaseInfo(tpdd);
+		int transactionId = tPaidlotteryService.insertLotteryBaseInfo(tpdd);
 		
 		//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
 		String url = TConfigUtils.selectValueByKey("kafka_address") + "";
@@ -78,9 +78,10 @@ public class PaidLotteryController {
 		 * 3.判断开奖及更新info
 		 */
 		
-		//接收hashcode与transactionId，lotteryId
+		//接收hashcode与transactionId
 		
 		//更新hashcode，service层计算ticket，判断开奖条件，若不开，则更新id=transactionId的ticket字段；若开，则比对lotteryId，更新此次参与者的result，winTicket，winReword字段。
+		
 		return null;
 	}
 	@ResponseBody
