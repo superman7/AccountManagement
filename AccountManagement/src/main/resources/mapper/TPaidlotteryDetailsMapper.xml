@@ -8,4 +8,17 @@
 	<sql id="BASE_COLUMN">
 		id,lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReword,buyTime,backup1,backup2,backup3,backup4
 	</sql>
+	
+	<select id="generateWinTicket" resultType="java.lang.String">
+		SELECT 
+			ticket 
+		FROM 
+			<include refid="BASE_TABLE"/> 
+		WHERE 
+			lotteryId = #{lotteryId, jdbcType=INTEGER} 
+			AND backup3 = 1 
+		ORDER BY 
+			ticket 
+		DESC LIMIT #{winCount, jdbcType=INTEGER}; 
+	</select>
 </mapper>

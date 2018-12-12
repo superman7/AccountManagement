@@ -1,5 +1,8 @@
 package com.digitalchina.xa.it.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +11,7 @@ import com.digitalchina.xa.it.dao.TPaidlotteryInfoDAO;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 import com.digitalchina.xa.it.service.TPaidlotteryService;
+import com.digitalchina.xa.it.util.MerkleTrees;
 
 @Service(value = "TPaidlotteryDetailsService")
 public class TPaidlotteryServiceImpl implements TPaidlotteryService {
@@ -42,5 +46,29 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		}
 		
 		return 0;
+	}
+
+	@Override
+	public String generateTicket(int lotteryId, String itcode, String hashcode) {
+		List<String> tempTxList = new ArrayList<String>();
+		tempTxList.add(String.valueOf(lotteryId));
+		tempTxList.add(itcode);
+		tempTxList.add(hashcode);
+		MerkleTrees merkleTrees = new MerkleTrees(tempTxList);
+	    merkleTrees.merkle_tree();
+	    
+	    String merkleTreesRoot = merkleTrees.getRoot();
+	    String ticket = "";
+	    
+	    for (int i = merkleTreesRoot.length(); i > 0; i = i - 2) {
+	    	ticket = ticket + merkleTreesRoot.subSequence(i-1, i);        
+	    }
+	    
+		return ticket;
+	}
+
+	@Override
+	public List<String> generateWinTicket(int lotteryId, int winCount) {
+		return tPaidlotteryDetailsDAO.generateWinTicket(lotteryId, winCount);
 	}
 }

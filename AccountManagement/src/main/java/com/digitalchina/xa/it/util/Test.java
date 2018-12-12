@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.web3j.abi.datatypes.Address;
@@ -67,7 +69,7 @@ public class Test {
 //		});
 //	}
 	
-//	public static void main(String[] args) {
+	public static void main(String[] args) {
 //		String aa = "asdfxxxzxcvdf4ewrdsfgbxvcxv";
 //		ECKeyPair ecKeyPair= ECKeyPair.create(getSHA2HexValue(aa));
 //		System.out.println("PrivateKey:" + ecKeyPair.getPrivateKey().toString(16));
@@ -89,7 +91,20 @@ public class Test {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-//    }
+		List<String> tempTxList = new ArrayList<String>();
+		tempTxList.add(String.valueOf(4586));
+		tempTxList.add("mojja");
+		tempTxList.add("0x024a3c0d945739237eedf78c80c6ae5daf22c010xxxcvsdds");
+		MerkleTrees merkleTrees = new MerkleTrees(tempTxList);
+	    merkleTrees.merkle_tree();
+	    String merkleTreesRoot = merkleTrees.getRoot();
+	    String ticket = "";
+	    for (int i = merkleTreesRoot.length(); i > 0; i = i - 2) {
+	    	ticket = ticket + merkleTreesRoot.subSequence(i-1, i);        
+	    }
+		System.out.println(ticket);
+		System.out.println(merkleTreesRoot);
+    }
 //	public static void main(String[] args) {
 //		Admin admin = Admin.build(new HttpService(ip));
 //		Web3j web3j = Web3j.build(new HttpService(ip));
@@ -113,18 +128,18 @@ public class Test {
 //		System.out.println(aaa);
 //	}
 	
-	public static void main(String[] args) {
-		String aaa = "%7B\"itcode\"%3A\"fannl\"%2C\"articleName\"%3A\"哎哎哎\"%2C\"articleContent\"%3A\"<p><i><mark+class%3D%5C\"marker-yellow%5C\"><strong><u>给这个div添加个边框！%40￥%23%25￥……%26amp%3B%26amp%3B（）%26amp%3B……%40%23%25￥！%40%23%26amp%3B**“”“”：；；：<%2Fu><%2Fstrong><%2Fmark><%2Fi><%2Fp>\"%2C\"articleFreePart\"%3A\"1\"%2C\"articlePrice\"%3A\"1\"%7D";
-		String s = "";
-		try {
-			s = URLEncoder.encode(aaa,"utf-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String result = HttpRequest.sendPost("http://10.7.10.186:8082/paidRead/insertArticle", "param=" + s);
-		System.out.println(result);
-	}
+//	public static void main(String[] args) {
+//		String aaa = "%7B\"itcode\"%3A\"fannl\"%2C\"articleName\"%3A\"哎哎哎\"%2C\"articleContent\"%3A\"<p><i><mark+class%3D%5C\"marker-yellow%5C\"><strong><u>给这个div添加个边框！%40￥%23%25￥……%26amp%3B%26amp%3B（）%26amp%3B……%40%23%25￥！%40%23%26amp%3B**“”“”：；；：<%2Fu><%2Fstrong><%2Fmark><%2Fi><%2Fp>\"%2C\"articleFreePart\"%3A\"1\"%2C\"articlePrice\"%3A\"1\"%7D";
+//		String s = "";
+//		try {
+//			s = URLEncoder.encode(aaa,"utf-8");
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		String result = HttpRequest.sendPost("http://10.7.10.186:8082/paidRead/insertArticle", "param=" + s);
+//		System.out.println(result);
+//	}
 	
 //	public static void main(String[] args) {
 //    try{
