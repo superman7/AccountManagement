@@ -12,7 +12,7 @@ public interface TPaidlotteryService {
 	int insertLotteryBaseInfo(TPaidlotteryDetailsDomain tPaidlotteryDetailsDomain);
 	
 	//交易成功后更新hashcode，并判断是否开奖
-	int updateHashcodeAndJudge(String hashcode, String transactionId);
+	int updateHashcodeAndJudge(String hashcode, int transactionId);
 	
 	/*Info*/
 	//获取结束或未结束的抽奖
@@ -30,4 +30,10 @@ public interface TPaidlotteryService {
 	
 	//根据lotteryId查询某次抽奖的参与用户信息
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByLotteryId(int lotteryId);
+	
+	//传入lotteryInfoId,itcode,hashcode,生成ticket
+	String generateTicket(int lotteryId, String itcode, String hashcode);
+	
+	//传入lotteryInfoId,生成win ticket
+	List<String> generateWinTicket(int lotteryId, int winCount);
 }

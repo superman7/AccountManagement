@@ -1,5 +1,6 @@
 package com.digitalchina.xa.it.controller;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,7 @@ public class PaidLotteryController {
 	}
 	
 	@ResponseBody
-	@PostMapping("/insertLotteryDetails")
+	@GetMapping("/insertLotteryDetails")
 	public Map<String, Object> insertLotterydetails(
 			@RequestParam(name = "param", required = true) String jsonValue){
 		/*
@@ -58,17 +59,20 @@ public class PaidLotteryController {
 		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
 		Integer lotteryId = Integer.valueOf(jsonObj.getString("lotteryId"));
 		String itcode = jsonObj.getString("itcode");
+		String turnBalance = jsonObj.getString("unitPrice");
+		
+		//TODO 余额判断
 		
 		//向t_paidlottery_details表中插入信息， 参数为lotteryId, itcode, result(0), buyTime
-		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new DateTime(new Date().getTime()));
+		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new Timestamp(new Date().getTime()));
 		int transactionId = tPaidlotteryService.insertLotteryBaseInfo(tpdd);
+		System.out.println("transactionId" + transactionId);
 		
 		//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
-		String url = TConfigUtils.selectValueByKey("kafka_address") + "";
-		String postParam = "itcode=" + itcode + "&turnBalance=" + null + "&transactionId=" + transactionId;
-		HttpRequest.sendPost(url, postParam);
+//		String url = TConfigUtils.selectValueByKey("kafka_address") + "";
+//		String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance + "&transactionId=" + transactionId;
+//		HttpRequest.sendPost(url, postParam);
 		
-		modelMap.put("", "");
 		return modelMap;
 	}
 	

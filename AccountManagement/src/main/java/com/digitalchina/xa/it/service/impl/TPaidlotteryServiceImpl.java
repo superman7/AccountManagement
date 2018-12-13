@@ -1,5 +1,6 @@
 package com.digitalchina.xa.it.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import com.digitalchina.xa.it.dao.TPaidlotteryInfoDAO;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 import com.digitalchina.xa.it.service.TPaidlotteryService;
+import com.digitalchina.xa.it.util.MerkleTrees;
 
 @Service(value = "TPaidlotteryService")
 public class TPaidlotteryServiceImpl implements TPaidlotteryService {
@@ -24,6 +26,7 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 			try {
 				Integer effectedNumber = tPaidlotteryDetailsDAO.insertLotteryBaseInfo(tPaidlotteryDetailsDomain);
 				if(effectedNumber > 0) {
+					System.out.println(tPaidlotteryDetailsDomain.getId());
 					return tPaidlotteryDetailsDomain.getId();
 				} else {
 					throw new RuntimeException("插入购买奖票信息失败");
@@ -37,12 +40,15 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	}
 
 	@Override
-	public int updateHashcodeAndJudge(String hashcode, String transactionId) {
-		//计算ticket值,更新该用户的ticket，hashcode值。
-		String ticket = "";
+	public int updateHashcodeAndJudge(String hashcode, int transactionId) {
+		//根据transactionId获取lotteryId
+		TPaidlotteryDetailsDomain tpdd = tPaidlotteryDetailsDAO.selectLotteryDetailsById(transactionId);
+		
+		//计算ticket值,更新该用户的ticket，hashcode值。 								info更新nowSumAmount
+		String ticket = generateTicket(tpdd.getLotteryId(), tpdd.getItcode(), hashcode);
 		tPaidlotteryDetailsDAO.updateHashcode(hashcode, ticket, transactionId);
 		
-		//根据transactionId获取lotteryId，再用lotteryId查Info，联表查询
+		//根据transactionId获取lotteryId，再用lotteryId查Info，联表查询?
 		//TPaidlotteryInfoDomain tpid = tPaidlotteryInfoDAO.selectOnelotteryBylotteryId(String lotteryId);
 		
 		Boolean flag = false;
@@ -80,7 +86,31 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	}
 
 	@Override
-	public List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId) {
+	public List<TPaidlotteryDetailsDomain>selectLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId) {
 		return tPaidlotteryDetailsDAO.selectLotteryDetailsByItcodeAndLotteryId(itcode, lotteryId);
+	}
+		
+	@Override
+	public String generateTicket(int lotteryId, String itcode, String hashcode) {
+		List<String> tempTxList = new ArrayList<String>();
+		tempTxList.add(String.valueOf(lotteryId));
+		tempTxList.add(itcode);
+		tempTxList.add(hashcode);
+		MerkleTrees merkleTrees = new MerkleTrees(tempTxList);
+	    merkleTrees.merkle_tree();
+	    
+	    String merkleTreesRoot = merkleTrees.getRoot();
+	    String ticket = "";
+	    
+	    for (int i = merkleTreesRoot.length(); i > 0; i = i - 2) {
+	    	ticket = ticket + merkleTreesRoot.subSequence(i-1, i);        
+	    }
+	    
+		return ticket;
+	}
+
+	@Override
+	public List<String> generateWinTicket(int lotteryId, int winCount) {
+		return tPaidlotteryDetailsDAO.generateWinTicket(lotteryId, winCount);
 	}
 }

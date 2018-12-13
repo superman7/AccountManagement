@@ -39,15 +39,18 @@
 	</select>
 	
 	<insert id="insertLotteryBaseInfo" parameterType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            select @@IDENTITY as id
+        </selectKey>
 		INSERT INTO
 			<include refid="BASE_TABLE"/>
 			<trim prefix="(" suffix=")" suffixOverrides=",">
-				lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReword,buyTime
+				lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReward,buyTime
 			</trim>
 			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
 				#{lotteryId, jdbcType=INTEGER},#{itcode, jdbcType=VARCHAR},#{account,jdbcType=VARCHAR},#{hashcode,jdbcType=VARCHAR},
-				#{ticket,jdbcType=VARCHAR},#{result,jdbcType=INTEGER},#{winTicket,jdbcType=VARCHAR},#{winReword,jdbcType=VARCHAR},
-				#{buyTime,jdbcType=DATETIME}
+				#{ticket,jdbcType=VARCHAR},#{result,jdbcType=INTEGER},#{winTicket,jdbcType=VARCHAR},#{winReward,jdbcType=VARCHAR},
+				#{buyTime,jdbcType=TIMESTAMP}
 			</trim>
 	</insert>
 	
@@ -61,4 +64,17 @@
 		WHERE
 			id = #{transactionId, jdbcType=INTEGER}
 	</update>
+	
+	<select id="generateWinTicket" resultType="java.lang.String">
+		SELECT 
+			ticket 
+		FROM 
+			<include refid="BASE_TABLE"/> 
+		WHERE 
+			lotteryId = #{lotteryId, jdbcType=INTEGER} 
+			AND backup3 = 1 
+		ORDER BY 
+			ticket 
+		DESC LIMIT #{winCount, jdbcType=INTEGER}; 
+	</select>
 </mapper>

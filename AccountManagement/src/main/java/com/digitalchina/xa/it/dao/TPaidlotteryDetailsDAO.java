@@ -11,7 +11,7 @@ public interface TPaidlotteryDetailsDAO {
 	int insertLotteryBaseInfo(TPaidlotteryDetailsDomain tPaidlotteryDetailsDomain);
 	
 	//交易成功后更新hashcode，ticket字段
-	int updateHashcode(@Param("hashcode")String hashcode, @Param("ticket")String ticket, @Param("transactionId")String transactionId);
+	int updateHashcode(@Param("hashcode")String hashcode, @Param("ticket")String ticket, @Param("transactionId")int transactionId);
 	
 	//根据itcode查询某用户的抽奖记录
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcode(@Param("itcode")String itcode);
@@ -21,4 +21,10 @@ public interface TPaidlotteryDetailsDAO {
 	
 	//根据lotteryId查询某次抽奖的参与用户信息
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByLotteryId(@Param("lotteryId")int lotteryId);
+	
+	//
+	List<String> generateWinTicket(@Param("lotteryId")int lotteryId, @Param("winCount")int winCount);
+	
+	//根据id查询
+	TPaidlotteryDetailsDomain selectLotteryDetailsById(@Param("id")int id);
 }

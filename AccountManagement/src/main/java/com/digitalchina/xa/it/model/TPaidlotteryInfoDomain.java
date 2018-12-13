@@ -46,6 +46,9 @@ public class TPaidlotteryInfoDomain {
 	    private Integer backup4;
 	    
 	    private Integer backup5;
+	    
+	    public TPaidlotteryInfoDomain() {
+		}
 
 		public Integer getId() {
 			return id;

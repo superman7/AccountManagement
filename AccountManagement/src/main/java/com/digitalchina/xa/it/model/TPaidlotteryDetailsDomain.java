@@ -1,8 +1,9 @@
 package com.digitalchina.xa.it.model;
 
-import org.joda.time.DateTime;
+import java.sql.Timestamp;
 
 public class TPaidlotteryDetailsDomain {
+	
 		private Integer id;
 	
 	    private Integer lotteryId;
@@ -21,7 +22,7 @@ public class TPaidlotteryDetailsDomain {
 	    
 	    private String winReward;
 	    
-	    private DateTime buyTime;
+	    private Timestamp buyTime;
 	    
 	    private String backup1;
 	    
@@ -31,7 +32,26 @@ public class TPaidlotteryDetailsDomain {
 	    
 	    private Integer backup4;
 	    
-	    public TPaidlotteryDetailsDomain(Integer lotteryId, String itcode, String account, String hashcode, String ticket, Integer result, String winTicket, String winReward, DateTime buyTime) {
+	    public TPaidlotteryDetailsDomain(){
+	    	
+	    }
+	    public TPaidlotteryDetailsDomain(Integer lotteryId, String itcode, String account, String hashcode, String ticket, Integer result, String winTicket, String winReward, Timestamp buyTime, String backup1, String backup2, Integer backup3, Integer backup4) {
+	    	this.lotteryId = lotteryId;
+	    	this.itcode = itcode;
+	    	this.account = account;
+	    	this.hashcode = hashcode;
+	    	this.ticket = ticket;
+	    	this.result = result;
+	    	this.winTicket = winTicket;
+	    	this.winReward = winReward;
+	    	this.buyTime = buyTime;
+	    	this.backup1 = backup1;
+	    	this.backup2 = backup2;
+	    	this.backup3 = backup3;
+	    	this.backup4 = backup4;
+	    }
+	    
+	    public TPaidlotteryDetailsDomain(Integer lotteryId, String itcode, String account, String hashcode, String ticket, Integer result, String winTicket, String winReward, Timestamp buyTime) {
 	    	this.lotteryId = lotteryId;
 	    	this.itcode = itcode;
 	    	this.account = account;
@@ -115,11 +135,11 @@ public class TPaidlotteryDetailsDomain {
 			this.winReward = winReward;
 		}
 
-		public DateTime getBuyTime() {
+		public Timestamp getBuyTime() {
 			return buyTime;
 		}
 
-		public void setBuyTime(DateTime buyTime) {
+		public void setBuyTime(Timestamp buyTime) {
 			this.buyTime = buyTime;
 		}
 
@@ -155,3 +175,4 @@ public class TPaidlotteryDetailsDomain {
 			this.backup4 = backup4;
 		}
 }
+
