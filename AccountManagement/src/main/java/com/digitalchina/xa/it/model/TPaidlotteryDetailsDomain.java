@@ -19,7 +19,7 @@ public class TPaidlotteryDetailsDomain {
 	    
 	    private String winTicket;
 	    
-	    private String winReword;
+	    private String winReward;
 	    
 	    private DateTime buyTime;
 	    
@@ -31,7 +31,7 @@ public class TPaidlotteryDetailsDomain {
 	    
 	    private Integer backup4;
 	    
-	    public TPaidlotteryDetailsDomain(Integer lotteryId, String itcode, String account, String hashcode, String ticket, Integer result, String winTicket, String winReword, DateTime buyTime) {
+	    public TPaidlotteryDetailsDomain(Integer lotteryId, String itcode, String account, String hashcode, String ticket, Integer result, String winTicket, String winReward, DateTime buyTime) {
 	    	this.lotteryId = lotteryId;
 	    	this.itcode = itcode;
 	    	this.account = account;
@@ -39,7 +39,7 @@ public class TPaidlotteryDetailsDomain {
 	    	this.ticket = ticket;
 	    	this.result = result;
 	    	this.winTicket = winTicket;
-	    	this.winReword = winReword;
+	    	this.winReward = winReward;
 	    	this.buyTime = buyTime;
 	    }
 	    
@@ -108,11 +108,11 @@ public class TPaidlotteryDetailsDomain {
 		}
 
 		public String getWinReword() {
-			return winReword;
+			return winReward;
 		}
 
-		public void setWinReword(String winReword) {
-			this.winReword = winReword;
+		public void setWinReword(String winReward) {
+			this.winReward = winReward;
 		}
 
 		public DateTime getBuyTime() {

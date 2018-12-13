@@ -6,6 +6,59 @@
 	</sql>
 
 	<sql id="BASE_COLUMN">
-		id,lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReword,buyTime,backup1,backup2,backup3,backup4
+		id,lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReward,buyTime,backup1,backup2,backup3,backup4
 	</sql>
+	
+	<select id="selectLotteryDetailsByItcode" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectLotteryDetailsByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode,jdbcType=VARCHAR}
+		AND
+			lotteryId = #{lotteryId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectLotteryDetailsByLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			lotteryId = #{lotteryId,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertLotteryBaseInfo" parameterType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReword,buyTime
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{lotteryId, jdbcType=INTEGER},#{itcode, jdbcType=VARCHAR},#{account,jdbcType=VARCHAR},#{hashcode,jdbcType=VARCHAR},
+				#{ticket,jdbcType=VARCHAR},#{result,jdbcType=INTEGER},#{winTicket,jdbcType=VARCHAR},#{winReword,jdbcType=VARCHAR},
+				#{buyTime,jdbcType=DATETIME}
+			</trim>
+	</insert>
+	
+	<update id="updateHashcode">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			hashcode = #{hashcode, jdbcType=VARCHAR}
+		AND
+			ticket = #{ticket, jdbcType=VARCHAR}
+		WHERE
+			id = #{transactionId, jdbcType=INTEGER}
+	</update>
 </mapper>
