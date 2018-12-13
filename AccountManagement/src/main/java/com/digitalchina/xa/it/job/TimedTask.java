@@ -34,6 +34,7 @@ import com.digitalchina.xa.it.service.TopicOptionService;
 import com.digitalchina.xa.it.service.TopicService;
 import com.digitalchina.xa.it.service.VoteService;
 import com.digitalchina.xa.it.util.HttpRequest;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 import scala.util.Random;
 
@@ -222,7 +223,7 @@ public class TimedTask {
 		System.out.println(startTime + "***" + endTime);
 		
 		System.err.println("开始查询返现用户...");
-		String url = "http://10.7.10.124:8083/cashBack/processDeduction";
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/cashBack/processDeduction";
 		List<VirtualMachineDomain> cashBackUsers = virtualMachineDAO.selectCashBackUsers(startTime, endTime);
 		Map<String, Integer> cashBackMap = new HashMap<String, Integer>();
 		
