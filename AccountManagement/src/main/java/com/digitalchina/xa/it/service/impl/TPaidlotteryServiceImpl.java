@@ -13,7 +13,7 @@ import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 import com.digitalchina.xa.it.service.TPaidlotteryService;
 import com.digitalchina.xa.it.util.MerkleTrees;
 
-@Service(value = "TPaidlotteryDetailsService")
+@Service(value = "TPaidlotteryService")
 public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	@Autowired
 	private TPaidlotteryDetailsDAO tPaidlotteryDetailsDAO;
@@ -22,16 +22,33 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 
 	@Override
 	public int insertLotteryBaseInfo(TPaidlotteryDetailsDomain tPaidlotteryDetailsDomain) {
-		return 0;
+		if(tPaidlotteryDetailsDomain != null) {
+			try {
+				Integer effectedNumber = tPaidlotteryDetailsDAO.insertLotteryBaseInfo(tPaidlotteryDetailsDomain);
+				if(effectedNumber > 0) {
+					System.out.println(tPaidlotteryDetailsDomain.getId());
+					return tPaidlotteryDetailsDomain.getId();
+				} else {
+					throw new RuntimeException("插入购买奖票信息失败");
+				}
+			} catch(Exception e) {
+				throw new RuntimeException("插入购买奖票信息失败 " + e.getMessage());
+			}
+		} else {
+			throw new RuntimeException("tPaidlotteryDetailsDomain为null");
+		}
 	}
 
 	@Override
-	public int updateHashcodeAndJudge(String hashcode, String transactionId) {
-		//计算ticket值,更新该用户的ticket，hashcode值。
-		String ticket = "";
+	public int updateHashcodeAndJudge(String hashcode, int transactionId) {
+		//根据transactionId获取lotteryId
+		TPaidlotteryDetailsDomain tpdd = tPaidlotteryDetailsDAO.selectLotteryDetailsById(transactionId);
+		
+		//计算ticket值,更新该用户的ticket，hashcode值。 								info更新nowSumAmount
+		String ticket = generateTicket(tpdd.getLotteryId(), tpdd.getItcode(), hashcode);
 		tPaidlotteryDetailsDAO.updateHashcode(hashcode, ticket, transactionId);
 		
-		//根据transactionId获取lotteryId，再用lotteryId查Info，联表查询
+		//根据transactionId获取lotteryId，再用lotteryId查Info，联表查询?
 		//TPaidlotteryInfoDomain tpid = tPaidlotteryInfoDAO.selectOnelotteryBylotteryId(String lotteryId);
 		
 		Boolean flag = false;
@@ -48,6 +65,31 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		return 0;
 	}
 
+	@Override
+	public List<TPaidlotteryInfoDomain> selectLotteryInfoByFlag(int flag) {
+		return tPaidlotteryInfoDAO.selectLotteryInfoByFlag(flag);
+	}
+
+	@Override
+	public List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcode(String itcode) {
+		return tPaidlotteryDetailsDAO.selectLotteryDetailsByItcode(itcode);
+	}
+
+	@Override
+	public List<TPaidlotteryDetailsDomain> selectLotteryDetailsByLotteryId(int lotteryId) {
+		return tPaidlotteryDetailsDAO.selectLotteryDetailsByLotteryId(lotteryId);
+	}
+
+	@Override
+	public TPaidlotteryInfoDomain selectLotteryInfoById(int id) {
+		return tPaidlotteryInfoDAO.selectLotteryInfoById(id);
+	}
+
+	@Override
+	public List<TPaidlotteryDetailsDomain>selectLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId) {
+		return tPaidlotteryDetailsDAO.selectLotteryDetailsByItcodeAndLotteryId(itcode, lotteryId);
+	}
+		
 	@Override
 	public String generateTicket(int lotteryId, String itcode, String hashcode) {
 		List<String> tempTxList = new ArrayList<String>();
