@@ -27,4 +27,9 @@ public interface TPaidlotteryDetailsDAO {
 	
 	//根据id查询
 	TPaidlotteryDetailsDomain selectLotteryDetailsById(@Param("id")int id);
+	
+	//定时任务使用，查询Hash值不为空，backup为
+	List<TPaidlotteryDetailsDomain> selectLotteryDetailsWhereHashIsNotNullAndBackup3Is0();
+	//定时任务使用，更新超时任务
+	void updateLotteryDetailsWhereTimeOut();
 }

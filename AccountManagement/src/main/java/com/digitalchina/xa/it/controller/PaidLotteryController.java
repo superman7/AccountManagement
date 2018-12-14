@@ -1,5 +1,6 @@
 package com.digitalchina.xa.it.controller;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
@@ -59,7 +60,8 @@ public class PaidLotteryController {
 		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
 		Integer lotteryId = Integer.valueOf(jsonObj.getString("lotteryId"));
 		String itcode = jsonObj.getString("itcode");
-		String turnBalance = jsonObj.getString("unitPrice");
+		BigInteger turnBalance = BigInteger.valueOf( Long.valueOf(jsonObj.getString("unitPrice")) * 10000000000000000L);
+//		String turnBalance = jsonObj.getString("unitPrice");
 		
 		//TODO 余额判断
 		
@@ -69,10 +71,13 @@ public class PaidLotteryController {
 		System.out.println("transactionId" + transactionId);
 		
 		//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
-//		String url = TConfigUtils.selectValueByKey("kafka_address") + "";
-//		String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance + "&transactionId=" + transactionId;
-//		HttpRequest.sendPost(url, postParam);
-		
+		String url = "http://10.7.10.186:8083/lottery/buyTicket";
+//		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/buyTicket";
+		System.err.println(url);
+		String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance.toString() + "&transactionDetailId=" + transactionId;
+		HttpRequest.sendPost(url, postParam);
+		//kafka那边更新account和hashcode
+		//定时任务，查询到
 		return modelMap;
 	}
 	

@@ -8,6 +8,14 @@
 	<sql id="BASE_COLUMN">
 		id,lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReward,buyTime,backup1,backup2,backup3,backup4
 	</sql>
+	<select id="selectLotteryDetailsById" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			id = #{id,jdbcType=INTEGER}
+	</select>
 	
 	<select id="selectLotteryDetailsByItcode" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
 		SELECT
@@ -58,9 +66,9 @@
 		UPDATE 
 			<include refid="BASE_TABLE"/>
 		SET    
-			hashcode = #{hashcode, jdbcType=VARCHAR}
-		AND
-			ticket = #{ticket, jdbcType=VARCHAR}
+			hashcode = #{hashcode, jdbcType=VARCHAR},
+			ticket = #{ticket, jdbcType=VARCHAR},
+			backup3 = 1
 		WHERE
 			id = #{transactionId, jdbcType=INTEGER}
 	</update>
@@ -77,4 +85,26 @@
 			ticket 
 		DESC LIMIT #{winCount, jdbcType=INTEGER}; 
 	</select>
+	
+	<select id="selectLotteryDetailsWhereHashIsNotNullAndBackup3Is0" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			hashcode &lt;&gt; ''
+		AND
+			backup3 = 0
+	</select>
+	
+	<update id="updateLotteryDetailsWhereTimeOut">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			backup3 = 2
+		WHERE
+			hashcode = '0x0'
+		OR
+			(hashcode = '' AND date_add(buyTime, interval 1 hour) &lt;=now())
+	</update>
 </mapper>
