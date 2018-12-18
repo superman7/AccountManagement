@@ -15,7 +15,7 @@ public interface EthAccountService {
 	
 	EthAccountDomain selectEthAccountByAddress(String address);
 	
-	EthAccountDomain selectDefaultEthAccount(String itcode, String status);
+	EthAccountDomain selectDefaultEthAccount(String itcode);
 	
 	String selectKeystoreByAccount(EthAccountDomain ethAccountDomain);
 	
@@ -27,7 +27,7 @@ public interface EthAccountService {
 	
 	Boolean updateDefaultBalance(String itcode, String status, BigDecimal balance);
 	
-	Boolean updateKeystoreAndAlias(String keystore, String alias, String address);
+	Boolean updateKeystoreAndAlias(String keystore, String alias, String address, Integer available);
 
 	void refreshBalance(String itcode);
 

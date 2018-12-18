@@ -66,8 +66,8 @@ public class TimedTask {
 	@Autowired
     private TopicDAO topicDAO;
 	
-	@Autowired
-	private SigninRewardService srService;
+/*	@Autowired
+	private SigninRewardService srService;*/
 
 	@Transactional
 	@Scheduled(cron="55 59 23 * * ?")
@@ -150,7 +150,7 @@ public class TimedTask {
 		}
 	}
 	
-	//每天8点30分30秒执行前一天考勤奖励
+/*	//每天8点30分30秒执行前一天考勤奖励
 	@Transactional
 	@Scheduled(cron="30 30 08 * * ?")
 //	@Scheduled(cron="55 30 14 * * ?")
@@ -173,7 +173,7 @@ public class TimedTask {
 
 		srService.attendanceReward(result);
 	}
-	
+	*/
 
 	@Scheduled(fixedRate=15000)
 	public void updateTurnResultStatusJob(){
@@ -216,6 +216,7 @@ public class TimedTask {
 	//每天7:30:30返还前一天购买虚拟机神州币
 	@Transactional
 	@Scheduled(cron="30 30 07 * * ?")
+//	@Scheduled(cron="5 * * * * ?")
 	public void backToUser(){
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date date=new Date();

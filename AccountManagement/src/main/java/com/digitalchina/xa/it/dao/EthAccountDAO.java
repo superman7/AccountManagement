@@ -14,7 +14,7 @@ public interface EthAccountDAO {
 	
 	EthAccountDomain selectEthAccountByAddress(String address);
 	
-	EthAccountDomain selectDefaultEthAccount(String itcode, String status);
+	EthAccountDomain selectDefaultEthAccount(@Param("itcode")String itcode);
 	
 	String selectKeystoreByAccount(EthAccountDomain ethAccountDomain);
 	
@@ -27,6 +27,6 @@ public interface EthAccountDAO {
 	int updateDefaultBalance(String itcode, String status, BigDecimal balance);
 	
 	int updateKeystoreAndAlias(EthAccountDomain ethAccountDomain);
-
+	
 	int updateAccountBalance(EthAccountDomain xxxx);
 }
