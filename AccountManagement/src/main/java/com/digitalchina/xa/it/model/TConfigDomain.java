@@ -61,6 +61,4 @@ public class TConfigDomain {
 		public void setCfgStatus(int cfgStatus) {
 			this.cfgStatus = cfgStatus;
 		}
-	    
-	    
 }

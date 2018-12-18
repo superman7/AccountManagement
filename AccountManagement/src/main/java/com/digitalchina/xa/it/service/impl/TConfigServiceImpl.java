@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.digitalchina.xa.it.dao.TConfigDAO;
-import com.digitalchina.xa.it.model.EthAccountDomain;
 import com.digitalchina.xa.it.model.TConfigDomain;
 import com.digitalchina.xa.it.service.TConfigService;
 
@@ -21,7 +20,7 @@ public class TConfigServiceImpl implements TConfigService {
 	}
 
 	@Override
-	public Boolean UpdateEthNodesStatus(String cfgValue, Integer cfgStatus) {
+	public Boolean UpdateEthNodesStatus(String cfgValue, Boolean cfgStatus) {
 		if(cfgValue != null && cfgValue != "" && cfgStatus != null) {
 			try {
 				int effectedNumber = tConfigDAO.UpdateEthNodesStatus(cfgValue, cfgStatus);
@@ -46,5 +45,10 @@ public class TConfigServiceImpl implements TConfigService {
 	@Override
 	public List<TConfigDomain> selectEthNodesInfo() {
 		return tConfigDAO.selectEthNodesInfo();
+	}
+
+	@Override
+	public List<TConfigDomain> selectContractInfo() {
+		return tConfigDAO.selectContractInfo();
 	}
 }

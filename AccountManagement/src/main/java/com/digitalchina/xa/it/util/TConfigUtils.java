@@ -27,17 +27,13 @@ public class TConfigUtils {
 		List<String> ipArr =  newtconfigService.selectIpArr();
 		return ipArr.get(new Random().nextInt(5));
 	}
-	
-	public static String[] selectIpArr() {
-		return (String[]) newtconfigService.selectIpArr().toArray();
+
+	public static List<String> selectIpArr() {
+		return newtconfigService.selectIpArr();
 	}
 	
 	public static String selectValueByKey(String cfgKey) {
 		return newtconfigService.selectValueByKey(cfgKey);
-	}
-	
-	public static Boolean selectIpArr(String cfgValue, Integer cfgStatus) {
-		return newtconfigService.UpdateEthNodesStatus(cfgValue, cfgStatus);
 	}
 }
 

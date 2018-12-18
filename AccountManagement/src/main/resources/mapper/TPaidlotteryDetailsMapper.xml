@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.TPaidlotteryDetailsDAO" >
+	<sql id="BASE_TABLE">
+		t_paidlottery_details
+	</sql>
+
+	<sql id="BASE_COLUMN">
+		id,lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReward,buyTime,backup1,backup2,backup3,backup4
+	</sql>
+	<select id="selectLotteryDetailsById" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			id = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectLotteryDetailsByItcode" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectLotteryDetailsByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode,jdbcType=VARCHAR}
+		AND
+			lotteryId = #{lotteryId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectLotteryDetailsByLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			lotteryId = #{lotteryId,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertLotteryBaseInfo" parameterType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            select @@IDENTITY as id
+        </selectKey>
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReward,buyTime
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{lotteryId, jdbcType=INTEGER},#{itcode, jdbcType=VARCHAR},#{account,jdbcType=VARCHAR},#{hashcode,jdbcType=VARCHAR},
+				#{ticket,jdbcType=VARCHAR},#{result,jdbcType=INTEGER},#{winTicket,jdbcType=VARCHAR},#{winReward,jdbcType=VARCHAR},
+				#{buyTime,jdbcType=TIMESTAMP}
+			</trim>
+	</insert>
+	
+	<update id="updateHashcode">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			hashcode = #{hashcode, jdbcType=VARCHAR},
+			ticket = #{ticket, jdbcType=VARCHAR},
+			backup3 = 1
+		WHERE
+			id = #{transactionId, jdbcType=INTEGER}
+	</update>
+	
+	<select id="generateWinTicket" resultType="java.lang.String">
+		SELECT 
+			ticket 
+		FROM 
+			<include refid="BASE_TABLE"/> 
+		WHERE 
+			lotteryId = #{lotteryId, jdbcType=INTEGER} 
+			AND backup3 = 1 
+		ORDER BY 
+			ticket 
+		DESC LIMIT #{winCount, jdbcType=INTEGER}; 
+	</select>
+	
+	<select id="selectLotteryDetailsWhereHashIsNotNullAndBackup3Is0" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			hashcode &lt;&gt; ''
+		AND
+			backup3 = 0
+	</select>
+	
+	<update id="updateLotteryDetailsWhereTimeOut">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			backup3 = 2
+		WHERE
+			hashcode = '0x0'
+		OR
+			(hashcode = '' AND date_add(buyTime, interval 1 hour) &lt;=now())
+	</update>
+</mapper>
