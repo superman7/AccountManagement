@@ -43,7 +43,7 @@
 		FROM
 			<include refid="BASE_TABLE"/>
 		WHERE
-			lotteryId = #{lotteryId,jdbcType=VARCHAR}
+			lotteryId = #{lotteryId,jdbcType=INTEGER}
 	</select>
 	
 	<insert id="insertLotteryBaseInfo" parameterType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
@@ -62,11 +62,10 @@
 			</trim>
 	</insert>
 	
-	<update id="updateHashcode">
+	<update id="updateTicket">
 		UPDATE 
 			<include refid="BASE_TABLE"/>
 		SET    
-			hashcode = #{hashcode, jdbcType=VARCHAR},
 			ticket = #{ticket, jdbcType=VARCHAR},
 			backup3 = 1
 		WHERE
@@ -106,5 +105,16 @@
 			hashcode = '0x0'
 		OR
 			(hashcode = '' AND date_add(buyTime, interval 1 hour) &lt;=now())
+	</update>
+	
+	<update id="updateDetailAfterLotteryFinished">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			result = #{result, jdbcType=INTEGER},
+			winTicket = #{winTicket, jdbcType=VARCHAR},
+			winReward = #{winReward, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=INTEGER}
 	</update>
 </mapper>

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,9 +60,18 @@ public class PaidLotteryController {
 		Integer lotteryId = Integer.valueOf(jsonObj.getString("lotteryId"));
 		String itcode = jsonObj.getString("itcode");
 		BigInteger turnBalance = BigInteger.valueOf( Long.valueOf(jsonObj.getString("unitPrice")) * 10000000000000000L);
-//		String turnBalance = jsonObj.getString("unitPrice");
 		
 		//TODO 余额判断
+		
+		//判断是否达到所需金额
+		TPaidlotteryInfoDomain tpid = tPaidlotteryService.selectLotteryInfoById(lotteryId);
+		if(tpid.getNowSumAmount() == tpid.getWinSumAmount()) {
+			modelMap.put("data", "LotteryOver");
+			return modelMap;
+		}
+		
+		//直接更新Info表nowSumAmount、backup4（待确认交易笔数）
+		tPaidlotteryService.updateNowSumAmountAndBackup4(lotteryId);
 		
 		//向t_paidlottery_details表中插入信息， 参数为lotteryId, itcode, result(0), buyTime
 		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new Timestamp(new Date().getTime()));
@@ -78,6 +86,8 @@ public class PaidLotteryController {
 		HttpRequest.sendPost(url, postParam);
 		//kafka那边更新account和hashcode
 		//定时任务，查询到
+		
+		modelMap.put("data", "success");
 		return modelMap;
 	}
 	
