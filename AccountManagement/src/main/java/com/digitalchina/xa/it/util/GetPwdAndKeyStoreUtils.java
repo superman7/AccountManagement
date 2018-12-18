@@ -25,6 +25,21 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class GetPwdAndKeyStoreUtils {
 	
+	public static Map<String, String> getDefaultPwdAndKeyStoreUtils(String param){
+		Map<String, String> resultMap = new HashMap<String, String>();
+		
+		ECKeyPair ecKeyPair= ECKeyPair.create(getSHA2HexValue(param));
+		try {
+			WalletFile walletFile = Wallet.createLight(TConfigUtils.selectValueByKey("default_password"), ecKeyPair);
+			String keystore = ((JSONObject) JSONObject.toJSON(walletFile)).toJSONString();
+			resultMap.put("keystore", keystore);
+		} catch (CipherException e) {
+			e.printStackTrace();
+		}
+		
+		return resultMap;
+	}
+	
 	public static Map<String, String> getPwdAndKeyStoreUtils(String param){
 		Map<String, String> resultMap = new HashMap<String, String>();
 		

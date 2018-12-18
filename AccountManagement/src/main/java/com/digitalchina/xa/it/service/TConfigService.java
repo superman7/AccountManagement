@@ -12,4 +12,6 @@ public interface TConfigService {
 	String selectValueByKey(String cfgKey);
 	
 	List<TConfigDomain> selectEthNodesInfo();
+	
+	List<TConfigDomain> selectContractInfo();
 }

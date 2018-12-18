@@ -47,4 +47,9 @@ public class TConfigServiceImpl implements TConfigService {
 	public List<TConfigDomain> selectEthNodesInfo() {
 		return tConfigDAO.selectEthNodesInfo();
 	}
+
+	@Override
+	public List<TConfigDomain> selectContractInfo() {
+		return tConfigDAO.selectContractInfo();
+	}
 }

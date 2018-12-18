@@ -5,7 +5,9 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +66,8 @@ public class TimedTask {
 	@Autowired
     private TopicDAO topicDAO;
 	
-	@Autowired
-	private SigninRewardService srService;
+/*	@Autowired
+	private SigninRewardService srService;*/
 
 	@Transactional
 	@Scheduled(cron="55 59 23 * * ?")
@@ -148,7 +150,7 @@ public class TimedTask {
 		}
 	}
 	
-	//每天8点30分30秒执行前一天考勤奖励
+/*	//每天8点30分30秒执行前一天考勤奖励
 	@Transactional
 	@Scheduled(cron="30 30 08 * * ?")
 //	@Scheduled(cron="55 30 14 * * ?")
@@ -171,7 +173,7 @@ public class TimedTask {
 
 		srService.attendanceReward(result);
 	}
-	
+	*/
 
 	@Scheduled(fixedRate=15000)
 	public void updateTurnResultStatusJob(){
@@ -214,6 +216,7 @@ public class TimedTask {
 	//每天7:30:30返还前一天购买虚拟机神州币
 	@Transactional
 	@Scheduled(cron="30 30 07 * * ?")
+//	@Scheduled(cron="5 * * * * ?")
 	public void backToUser(){
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date date=new Date();
@@ -229,16 +232,23 @@ public class TimedTask {
 		System.err.println("开始查询返现用户...");
 		String url = TConfigUtils.selectValueByKey("kafka_address") + "/cashBack/processDeduction";
 		List<VirtualMachineDomain> cashBackUsers = virtualMachineDAO.selectCashBackUsers(startTime, endTime);
+		Map<String, Integer> cashBackMap = new HashMap<String, Integer>();
+		
 		for(int index = 0; index < cashBackUsers.size(); index++) {
 			String itcode = cashBackUsers.get(index).getUserItcode();
-			System.out.println(itcode);
 			String cashValue =  cashBackUsers.get(index).getSpare2();
-			Integer flag = cashBackDAO.selectLimitFlagByItcode(itcode);
-			System.out.println("flag=" + flag);
+			Integer cash = Integer.valueOf(cashValue.substring(0, cashValue.indexOf("神")));
+			if(cashBackMap.get(itcode) == null || cashBackMap.get(itcode) < cash) {
+				cashBackMap.put(itcode, cash);
+			}
+		}
+		
+		for(String key : cashBackMap.keySet()) {
+			Integer flag = cashBackDAO.selectLimitFlagByItcode(key);
 			if(flag == null) {
 				//最高返现额暂定300SZB
-				Integer turnBalance = Integer.valueOf(cashValue.substring(0, cashValue.indexOf("神"))) > 300 ? 300 : Integer.valueOf(cashValue.substring(0, cashValue.indexOf("神")));
-				String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance.toString();
+				Integer turnBalance = cashBackMap.get(key) > 300 ? 300 : cashBackMap.get(key);
+				String postParam = "itcode=" + key + "&turnBalance=" + turnBalance;
 				HttpRequest.sendPost(url, postParam);
 				System.out.println(postParam);
 			}

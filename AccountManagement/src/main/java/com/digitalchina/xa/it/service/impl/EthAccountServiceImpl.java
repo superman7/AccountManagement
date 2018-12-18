@@ -57,11 +57,6 @@ public class EthAccountServiceImpl implements EthAccountService {
 	}
 
 	@Override
-	public EthAccountDomain selectDefaultEthAccount(String itcode, String status) {
-		return ethAccountDAO.selectDefaultEthAccount(itcode, status);
-	}
-	
-	@Override
 	@Transactional
 	public Boolean insert(EthAccountDomain ethAccountDomain) {
 		if(ethAccountDomain == null) {
@@ -147,13 +142,14 @@ public class EthAccountServiceImpl implements EthAccountService {
 	}
 
 	@Override
-	public Boolean updateKeystoreAndAlias(String keystore, String alias, String address) {
+	public Boolean updateKeystoreAndAlias(String keystore, String alias, String address, Integer available) {
 		if(keystore != null && keystore != "" && alias != null && alias != "") {
 			try {
 				EthAccountDomain xxxx = new EthAccountDomain();
 				xxxx.setKeystore(keystore);
 				xxxx.setAlias(alias);
 				xxxx.setAccount(address);
+				xxxx.setAvailable(available);
 				int effectedNumber = ethAccountDAO.updateKeystoreAndAlias(xxxx);
 				if(effectedNumber > 0) {
 					return true;
@@ -223,5 +219,10 @@ public class EthAccountServiceImpl implements EthAccountService {
 	@Override
 	public String selectKeystoreByItcode(String itcode) {
 		return ethAccountDAO.selectKeystoreByItcode(itcode);
+	}
+
+	@Override
+	public EthAccountDomain selectDefaultEthAccount(String itcode) {
+		return ethAccountDAO.selectDefaultEthAccount(itcode);
 	}
 }

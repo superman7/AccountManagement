@@ -521,7 +521,7 @@ public class EthAccountController {
 			WalletFile walletFile = Wallet.createLight(traPassword, ecKeyPair);
 			String keystore = ((JSONObject) JSONObject.toJSON(walletFile)).toJSONString();
 			System.out.println(keystore);
-			ethAccountService.updateKeystoreAndAlias(keystore, alias, address);
+			ethAccountService.updateKeystoreAndAlias(keystore, alias, address, 1);
 		} catch (CipherException e) {
 			e.printStackTrace();
 		}

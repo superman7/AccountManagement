@@ -40,7 +40,7 @@
 		FROM
 			<include refid="BASE_TABLE"/>
 		WHERE
-			itcode = #{0} AND available = #{1}
+			itcode = #{itcode,jdbcType=VARCHAR} AND available = 3
 	</select>
 	<select id="selectKeystoreByAccount" parameterType="com.digitalchina.xa.it.model.EthAccountDomain" resultType="java.lang.String">
 		SELECT
@@ -109,7 +109,7 @@
 		SET
 			keystore = #{keystore, jdbcType=VARCHAR},
 			alias = #{alias, jdbcType=VARCHAR},
-			available = 1
+			available = #{available, jdbcType=INTEGER}
 		WHERE
 			account = #{account, jdbcType=VARCHAR}
 	</update>
