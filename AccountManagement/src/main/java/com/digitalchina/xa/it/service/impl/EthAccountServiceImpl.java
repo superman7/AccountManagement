@@ -57,8 +57,8 @@ public class EthAccountServiceImpl implements EthAccountService {
 	}
 
 	@Override
-	public EthAccountDomain selectDefaultEthAccount(String itcode, String status) {
-		return ethAccountDAO.selectDefaultEthAccount(itcode, status);
+	public EthAccountDomain selectDefaultEthAccount(String itcode) {
+		return ethAccountDAO.selectDefaultEthAccount(itcode);
 	}
 	
 	@Override
