@@ -71,8 +71,6 @@ public class LotteryTask {
 				if(!tr.getBlockHash().contains("00000000")) {
 					System.out.println("更新ID为" + wtdList.get(i).getId() + "的交易状态为已完成");
 					tPaidlotteryService.updateHashcodeAndJudge(transactionHash, wtdList.get(i).getId());
-					TPaidlotteryDetailsDomain tpdd = tPaidlotteryService.selectLotteryDetailsById(wtdList.get(i).getId());
-					tPaidlotteryService.updateBackup4AfterDeal(tpdd.getLotteryId());
 				}
 			}
 		} catch (InterruptedException e) {
@@ -85,13 +83,37 @@ public class LotteryTask {
 	}
 	
 	@Transactional
-	@Scheduled(cron="30 * * * * ?")
+	@Scheduled(cron="20,50 * * * * ?")
 	public void runLottery(){
-		List<TPaidlotteryInfoDomain > tpidList = tPaidlotteryInfoDAO.selectRunLottery();
+		List<TPaidlotteryInfoDomain> tpidList = tPaidlotteryInfoDAO.selectRunLottery();
 		if(tpidList.size() == 0) {
 			return;
 		}
 		TPaidlotteryInfoDomain tpid = tpidList.get(0);
 		tPaidlotteryService.runALottery(tpid);
+	}
+	
+	@Transactional
+	@Scheduled(cron="5,35 * * * * ?")
+	public void lotteryControl(){
+		List<TPaidlotteryInfoDomain> tpidList = tPaidlotteryInfoDAO.selectUnfinishedLottery();
+		if(tpidList.size() == 0) {
+			return;
+		}
+		for(int index = 0; index < tpidList.size(); index++) {
+			TPaidlotteryInfoDomain tpid = tpidList.get(index);
+			int count1 = tPaidlotteryDetailsDAO.selectCountByBackup3(tpid.getId(), 1);
+			List<TPaidlotteryDetailsDomain> errorList = tPaidlotteryDetailsDAO.selectDetailByBackup3(tpid.getId(), 2);
+			if(errorList.size() > 0) {
+				//更新Info表nowSumAmount，backup4
+				tPaidlotteryInfoDAO.updateNowSumAmountAndBackup4Sub(tpid.getId(), errorList.size());
+				for(int j = 0; j < errorList.size(); j++) {
+					tPaidlotteryDetailsDAO.updateBackup3From2To3(errorList.get(j).getId());
+				}
+			}
+			if(count1 == tpid.getBackup4()) {
+				tPaidlotteryInfoDAO.updateBackup4To0(tpid.getId());
+			}
+		}
 	}
 }

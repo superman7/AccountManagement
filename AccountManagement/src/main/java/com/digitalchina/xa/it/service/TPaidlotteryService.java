@@ -33,8 +33,6 @@ public interface TPaidlotteryService {
 	//根据id获取抽奖Info
 	TPaidlotteryInfoDomain selectLotteryInfoById(int id);
 	
-	Boolean updateBackup4AfterDeal(@Param("id")int id);
-	
 	/*Detail*/
 	//根据itcode查询某用户的抽奖记录
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcode(String itcode);

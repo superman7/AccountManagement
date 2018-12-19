@@ -36,4 +36,13 @@ public interface TPaidlotteryDetailsDAO {
 	
 	//开奖后更新result，winTicket，winReword
 	int updateDetailAfterLotteryFinished(@Param("id")int id, @Param("result")int result, @Param("winTicket")String winTicket, @Param("winReward")String winReward);
+	
+	//根据lottery，backup3查询个数
+	int selectCountByBackup3(@Param("lotteryId")int lotteryId, @Param("backup3")int backup3);
+	
+	//根据lottery，backup3查询个数
+	List<TPaidlotteryDetailsDomain> selectDetailByBackup3(@Param("lotteryId")int lotteryId, @Param("backup3")int backup3);
+	
+	//将backup3=2改为3
+	int updateBackup3From2To3(@Param("id")int id);
 }

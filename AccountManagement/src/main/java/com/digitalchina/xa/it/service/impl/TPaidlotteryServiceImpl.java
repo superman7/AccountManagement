@@ -49,25 +49,25 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		String winTickets = "";
 		String winItcodes = "";
 		
-		if(ticketList.size() == 1) {
-			winTickets = ticketList.get(0);
-		} else {
-			for(int index = 0; index < ticketList.size(); index ++) {
-				winTickets += "&" +ticketList.get(index);
-			}
+		for(int index = 0; index < ticketList.size(); index ++) {
+			winTickets += ticketList.get(index) + "&";
 		}
+		winTickets = winTickets.substring(0, winTickets.length() - 1);
+		String[] rewardList = tpid.getReward().split("&");
 		
 		for(int index1 = 0; index1 < tpddList.size(); index1++) {
 			TPaidlotteryDetailsDomain tpddTemp = tpddList.get(index1); 
 			for(int index2 = 0; index2 < ticketList.size(); index2++) {
 				if(tpddTemp.getTicket().equals(ticketList.get(index2))) {
-					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 2, winTickets, tpid.getReward());
+//					System.out.println("-------" + tpddTemp.getId() + "////" + rewardList[index2] + "--------");
+					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 2, winTickets, rewardList[index2]);
 					winItcodes += tpddTemp.getItcode() + "&";
 				} else if(tpddTemp.getResult() != 2) {
 					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 1, winTickets, "无");
 				}
 			}
 		}
+		winItcodes = winItcodes.substring(0, winItcodes.length() - 1);
 		tPaidlotteryInfoDAO.updateAfterLotteryFinished(tpid.getId(), new Timestamp(new Date().getTime()), winItcodes, winTickets);
 	}
 	
@@ -80,7 +80,6 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		//计算ticket值,更新该用户的ticket值。
 		String ticket = generateTicket(lotteryId, tpdd.getItcode(), hashcode);
 		tPaidlotteryDetailsDAO.updateTicket(ticket, transactionId);
-		
 		return true;
 	}
 
@@ -144,20 +143,6 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 			}
 		} catch(Exception e) {
 			throw new RuntimeException("updateNowSumAmountAndBackup4失败 " + e.getMessage());
-		}
-	}
-
-	@Override
-	public Boolean updateBackup4AfterDeal(int id) {
-		try {
-			Integer effectedNumber = tPaidlotteryInfoDAO.updateBackup4AfterDeal(id);
-			if(effectedNumber > 0) {
-				return true;
-			} else {
-				throw new RuntimeException("updateBackup4AfterDeal失败");
-			}
-		} catch(Exception e) {
-			throw new RuntimeException("updateBackup4AfterDeal失败 " + e.getMessage());
 		}
 	}
 

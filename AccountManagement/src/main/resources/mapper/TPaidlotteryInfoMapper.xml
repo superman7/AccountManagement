@@ -49,6 +49,15 @@
 			backup4 = 0
 	</select>
 	
+	<select id="selectUnfinishedLottery" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			flag = 0
+	</select>
+	
 	<update id="updateNowSumAmountAndBackup4">
 		UPDATE 
 			<include refid="BASE_TABLE"/>
@@ -59,13 +68,23 @@
 			id = #{id,jdbcType=INTEGER}
 	</update>
 	
-	<update id="updateBackup4AfterDeal">
+	<update id="updateNowSumAmountAndBackup4Sub">
 		UPDATE 
 			<include refid="BASE_TABLE"/>
 		SET    
+			nowSumAmount = nowSumAmount - unitPrice * count,
 			backup4 = backup4 - 1
 		WHERE
 			id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateBackup4To0">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			backup4 = 0
+		WHERE
+			id = #{id, jdbcType=INTEGER}
 	</update>
 	
 	<update id="updateAfterLotteryFinished">

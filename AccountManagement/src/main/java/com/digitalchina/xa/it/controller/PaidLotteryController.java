@@ -92,20 +92,9 @@ public class PaidLotteryController {
 	}
 	
 	@ResponseBody
-	@PostMapping("/kafkaUpdateDetails")
+	@PostMapping("/getResult")
 	public Map<String, Object> kafkaUpdateDetails(
 			@RequestParam(name = "param", required = true) String jsonValue){
-		/*
-		 * 1.kafka回传hash信息
-		 * 2.更新奖票字段
-		 * 3.判断开奖及更新info
-		 */
-		
-		//接收hashcode与transactionId
-		
-		//更新hashcode，service层计算ticket，判断开奖条件，若不开，则更新id=transactionId的ticket字段；若开，则比对lotteryId，更新此次参与者的result，winTicket，winReword字段。
-		//tPaidlotteryService.updateHashcodeAndJudge(hashcode, transactionId);
-		
 		return null;
 	}
 	
