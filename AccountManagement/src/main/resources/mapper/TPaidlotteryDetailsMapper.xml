@@ -127,7 +127,7 @@
 		WHERE
 			hashcode = '0x0'
 		OR
-			(hashcode = '' AND date_add(buyTime, interval 0.25 hour) &lt;=now())
+			(hashcode = '' AND date_add(buyTime, interval 10 MINUTE) &lt;=now())
 	</update>
 	
 	<update id="updateDetailAfterLotteryFinished">
