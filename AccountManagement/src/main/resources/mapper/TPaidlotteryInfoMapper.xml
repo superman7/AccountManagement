@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.TPaidlotteryInfoDAO" >
+	<sql id="BASE_TABLE">
+		t_paidlottery_info
+	</sql>
+
+	<sql id="BASE_COLUMN">
+		id,name,description,flag,typeCode,winCount,unitPrice,winSumAmount,winDate,winSumPerson,nowSumPerson,nowSumAmount,reward,winner,winTicket,limitEveryday,lotteryTime,backup1,backup2,backup3,backup4,backup5
+	</sql>
+	
+	<select id="selectLotteryInfoByFlag" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			flag = #{flag,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectLotteryInfoById" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			id = #{id,jdbcType=INTEGER}
+	</select>
+</mapper>
