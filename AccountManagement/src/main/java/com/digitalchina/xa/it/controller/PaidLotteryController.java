@@ -46,6 +46,30 @@ public class PaidLotteryController {
 	        @RequestParam(name = "param", required = true) String jsonValue){
 		return null;
 	}
+	@Transactional
+	@ResponseBody
+	@GetMapping("/selectLotteryInfo")
+	public Map<String, Object> selectLotteryInfo(
+			@RequestParam(name = "param", required = true) String jsonValue){
+		/*
+		 * 1.插入detail信息
+		 * 2.调用kafka进行合约交易
+		 */
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+		Integer lotteryId = Integer.valueOf(jsonObj.getString("lotteryId"));
+		
+		TPaidlotteryInfoDomain tpid = tPaidlotteryService.selectLotteryInfoById(lotteryId);
+		if(tpid.getNowSumAmount() >= tpid.getWinSumAmount()) {
+			modelMap.put("data", "LotteryOver");
+			return modelMap;
+		}
+		modelMap.put("data", "success");
+		return modelMap;
+	}
 	
 	@Transactional
 	@ResponseBody
