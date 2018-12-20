@@ -72,7 +72,7 @@
 		UPDATE 
 			<include refid="BASE_TABLE"/>
 		SET    
-			nowSumAmount = nowSumAmount - unitPrice * count,
+			nowSumAmount = nowSumAmount - unitPrice * #{count,jdbcType=INTEGER},
 			backup4 = backup4 - 1
 		WHERE
 			id = #{id,jdbcType=INTEGER}
