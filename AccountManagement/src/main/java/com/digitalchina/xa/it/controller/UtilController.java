@@ -20,20 +20,21 @@ public class UtilController {
 	
 	@ResponseBody
 	@GetMapping("/getBalance")
-	public String getBalance(@RequestParam(name = "param", required = true) String itcode){
+	public String getBalance(@RequestParam(name = "itcode", required = true) String itcode){
 		EthAccountDomain ead = ethAccountService.selectDefaultEthAccount(itcode);
 		String returnStr = "";
 		if(ead == null) {
-			String account = CreatAddressUtils.creatAddressUtils("");
+			String account = CreatAddressUtils.creatAddressUtils(itcode);
 			EthAccountDomain ethAccountDomain = new EthAccountDomain();
 			ethAccountDomain.setItcode(itcode);
 			ethAccountDomain.setAccount(account);
 			ethAccountService.insertItcodeAndAccount(ethAccountDomain);
-			String keystore = GetPwdAndKeyStoreUtils.getDefaultPwdAndKeyStoreUtils("").get("keystore");
-			ethAccountService.updateKeystoreAndAlias(keystore, "默认账户", account, 3);
+//			String keystore = GetPwdAndKeyStoreUtils.getDefaultPwdAndKeyStoreUtils(itcode).get("keystore");
+//			ethAccountService.updateKeystoreAndAlias(keystore, "默认账户", account, 3);
 			return account + "_" + 10;
 		}
 		returnStr = ead.getAccount() + "_" + ead.getBalance();
+		System.out.println(returnStr);
 		return returnStr;
 	} 
 }

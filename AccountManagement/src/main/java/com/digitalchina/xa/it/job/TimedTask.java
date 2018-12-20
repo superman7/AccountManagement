@@ -257,21 +257,41 @@ public class TimedTask {
 	
 	//检查区块链节点工作状态是否正常
 	@Transactional
-	@Scheduled(cron="30 30 07 * * ?")
+	@Scheduled(cron="5 * * * * ?")
 	public void checkEthNodes(){
 		String textAddress = "0x8a950e851344715a51036567ca1b44aab3f15110";
-		String[] ipArr = TConfigUtils.selectIpArr();
-		for(int index = 0; index < ipArr.length; index++) {
-			Web3j web3j =Web3j.build(new HttpService(ipArr[index]));
+		List<String> ipArr = TConfigUtils.selectIpArr();
+		for(int index = 0; index < ipArr.size(); index++) {
+			Web3j web3j =Web3j.build(new HttpService(ipArr.get(index)));
 			try {
 				web3j.ethGetBalance(textAddress,DefaultBlockParameterName.LATEST).send().getBalance();
-				tconfigDAO.UpdateEthNodesStatus(ipArr[index], 1);
+				tconfigDAO.UpdateEthNodesStatus(ipArr.get(index), true);
 	        } catch (IOException e) {
 	        	if(e.getMessage().contains("Failed to connect to")) {
 	        		System.out.println(e.getMessage());
-	        		tconfigDAO.UpdateEthNodesStatus(ipArr[index], 0);
+	        		tconfigDAO.UpdateEthNodesStatus(ipArr.get(index), false);
 	        	}
 			}
 		}
 	}
+	
+//	//为新用户
+//	@Transactional
+//	@Scheduled(cron="30 30 07 * * ?")
+//	public void creatKeystore(){
+//		String textAddress = "0x8a950e851344715a51036567ca1b44aab3f15110";
+//		String[] ipArr = TConfigUtils.selectIpArr();
+//		for(int index = 0; index < ipArr.length; index++) {
+//			Web3j web3j =Web3j.build(new HttpService(ipArr[index]));
+//			try {
+//				web3j.ethGetBalance(textAddress,DefaultBlockParameterName.LATEST).send().getBalance();
+//				tconfigDAO.UpdateEthNodesStatus(ipArr[index], 1);
+//	        } catch (IOException e) {
+//	        	if(e.getMessage().contains("Failed to connect to")) {
+//	        		System.out.println(e.getMessage());
+//	        		tconfigDAO.UpdateEthNodesStatus(ipArr[index], 0);
+//	        	}
+//			}
+//		}
+//	}
 }

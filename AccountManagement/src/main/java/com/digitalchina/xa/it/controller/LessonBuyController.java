@@ -21,8 +21,10 @@ import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.xa.it.dao.SystemTransactionDetailDAO;
 import com.digitalchina.xa.it.model.LessonBuyDomain;
 import com.digitalchina.xa.it.model.LessonDetailDomain;
+import com.digitalchina.xa.it.model.SystemTransactionDetailDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.LessonBuyService;
 import com.digitalchina.xa.it.service.LessonContractService;
@@ -42,6 +44,8 @@ public class LessonBuyController {
 	private LessonContractService lessonContractService;
 	@Autowired
 	private EthAccountService ethAccountService;
+	@Autowired
+	private SystemTransactionDetailDAO systemTransactionDetailDAO;
 	
 	@ResponseBody
 	@GetMapping("/insertBuyInfo")
@@ -66,13 +70,19 @@ public class LessonBuyController {
 		lb.setItcode(itcode);
 		lb.setCost(cost);
 		lb.setDiscount(discount);
-		lb.setBuyTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		lb.setBuyTime(date);
 		lb.setType(1);
 		Integer transactionDetailId = lessonBuyService.insertBuyInfo(lb);
+		Double money = (cost*discount/10)*10000000000000000L;
 		BigInteger turnBalance = BigInteger.valueOf((long) (cost*discount/10)*10000000000000000L);
 		System.out.println("*******记录购买信息********");
 		
 		//余额判断
+		
+		//向system_transactiondetail表记录信息 
+		SystemTransactionDetailDomain stdd = new SystemTransactionDetailDomain("", TConfigUtils.selectValueByKey("lesson_contract"), money, null, date, 0, "remark", itcode, "lesson_contract", "", 0, "", transactionDetailId);
+		systemTransactionDetailDAO.insertBaseInfo(stdd);
 		
 		//向kafka集群发送扣费信息
 		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lessonBuy/processDeduction";

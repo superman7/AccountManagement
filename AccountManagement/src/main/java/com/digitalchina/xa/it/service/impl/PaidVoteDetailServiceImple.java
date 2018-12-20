@@ -2,6 +2,8 @@ package com.digitalchina.xa.it.service.impl;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +15,9 @@ import org.web3j.protocol.http.HttpService;
 
 import com.digitalchina.xa.it.dao.EthAccountDAO;
 import com.digitalchina.xa.it.dao.PaidVoteDetailDAO;
+import com.digitalchina.xa.it.dao.SystemTransactionDetailDAO;
 import com.digitalchina.xa.it.model.PaidVoteDetailDomain;
+import com.digitalchina.xa.it.model.SystemTransactionDetailDomain;
 import com.digitalchina.xa.it.service.PaidVoteDetailService;
 import com.digitalchina.xa.it.util.HttpRequest;
 import com.digitalchina.xa.it.util.TConfigUtils;
@@ -30,6 +34,8 @@ public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
     
     @Autowired
     private EthAccountDAO ethAccountDAO;
+    @Autowired
+    private SystemTransactionDetailDAO systemTransactionDetailDAO;
     
 	@Override
 	public String voteToSomebody(String toaccount, String fromaccount, String toitcode, String fromitcode,
@@ -68,6 +74,10 @@ public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
 			e.printStackTrace();
 			System.out.println("查询余额失败");
 		}
+		
+		//向system_transactiondetail表记录信息 
+		SystemTransactionDetailDomain stdd = new SystemTransactionDetailDomain("", TConfigUtils.selectValueByKey("lesson_contract"), Double.valueOf(turncount), null, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), 0, "remark", fromitcode, "paidvote_contract", "", 0, "", transactionDetailId);
+		systemTransactionDetailDAO.insertBaseInfo(stdd);
 		
 		//向kafka发送交易请求，参数为：account，itcode，金额，transactionDetailId
 		String url = TConfigUtils.selectValueByKey("kafka_address") + "/paidVotes/insertVoteDetail";

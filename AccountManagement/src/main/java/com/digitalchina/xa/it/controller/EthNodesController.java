@@ -33,8 +33,6 @@ public class EthNodesController {
 	public Map<String, Object> statusCheck(){
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		List<TConfigDomain> dataList = tconfigService.selectEthNodesInfo();
-		System.out.println(dataList.get(0));
-		System.out.println(JSONObject.toJSON(dataList));
 		modelMap.put("success", true);
 		modelMap.put("data", JSONObject.toJSON(dataList));
 		return modelMap;
