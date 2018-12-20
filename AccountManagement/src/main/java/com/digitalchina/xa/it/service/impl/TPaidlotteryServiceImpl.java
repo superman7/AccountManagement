@@ -59,8 +59,8 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 			TPaidlotteryDetailsDomain tpddTemp = tpddList.get(index1); 
 			for(int index2 = 0; index2 < ticketList.size(); index2++) {
 				if(tpddTemp.getTicket().equals(ticketList.get(index2))) {
-//					System.out.println("-------" + tpddTemp.getId() + "////" + rewardList[index2] + "--------");
 					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 2, winTickets, rewardList[index2]);
+					tpddTemp.setResult(2);
 					winItcodes += tpddTemp.getItcode() + "&";
 				} else if(tpddTemp.getResult() != 2) {
 					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 1, winTickets, "无");
