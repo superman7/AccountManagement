@@ -3,6 +3,8 @@ package com.digitalchina.xa.it.controller;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -123,7 +125,11 @@ public class PaidLotteryController {
 		
 		TPaidlotteryInfoDomain tpid = tPaidlotteryService.selectLotteryInfoById(id);
 		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryService.selectLotteryDetailsByItcodeAndLotteryId(itcode, id);
-
+		
+		for(TPaidlotteryDetailsDomain tpldd : tpddList){
+	        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			tpldd.setBackup2(sdf.format(tpldd.getBuyTime()));
+		}
 		modelMap.put("infoData", JSONObject.toJSON(tpid));
 		modelMap.put("detailData", JSONObject.toJSON(tpddList));
 		return modelMap;
