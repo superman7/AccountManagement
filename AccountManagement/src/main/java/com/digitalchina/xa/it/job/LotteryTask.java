@@ -85,6 +85,7 @@ public class LotteryTask {
 	@Transactional
 	@Scheduled(cron="20,50 * * * * ?")
 	public void runLottery(){
+		//开奖条件：1.flag = 0；2.winSumAmount = nowSumAmount；3.backup4 = 0
 		List<TPaidlotteryInfoDomain> tpidList = tPaidlotteryInfoDAO.selectRunLottery();
 		if(tpidList.size() == 0) {
 			return;
@@ -96,23 +97,39 @@ public class LotteryTask {
 	@Transactional
 	@Scheduled(cron="5,35 * * * * ?")
 	public void lotteryControl(){
+		//查询未结束的抽奖
 		List<TPaidlotteryInfoDomain> tpidList = tPaidlotteryInfoDAO.selectUnfinishedLottery();
 		if(tpidList.size() == 0) {
 			return;
 		}
 		for(int index = 0; index < tpidList.size(); index++) {
 			TPaidlotteryInfoDomain tpid = tpidList.get(index);
+			//查询抽奖details中，区块链交易已确认的个数
 			int count1 = tPaidlotteryDetailsDAO.selectCountByBackup3(tpid.getId(), 1);
+			if(count1 >= (tpid.getWinSumAmount() / tpid.getUnitPrice())) {
+				tPaidlotteryInfoDAO.updateBackup4To0(tpid.getId());
+			}
+		}
+	}
+	@Transactional
+	@Scheduled(fixedRate=10000)
+	public void lotteryUnfinishedUpdate(){
+		//查询未结束的抽奖
+		List<TPaidlotteryInfoDomain> tpidList = tPaidlotteryInfoDAO.selectUnfinishedLottery();
+		if(tpidList.size() == 0) {
+			return;
+		}
+		for(int index = 0; index < tpidList.size(); index++) {
+			TPaidlotteryInfoDomain tpid = tpidList.get(index);
+			//查询抽奖details中，区块链交易已失败的个数
 			List<TPaidlotteryDetailsDomain> errorList = tPaidlotteryDetailsDAO.selectDetailByBackup3(tpid.getId(), 2);
 			if(errorList.size() > 0) {
 				//更新Info表nowSumAmount，backup4
+				//将已失败交易的金额累计清除，更新交易状态为3
 				tPaidlotteryInfoDAO.updateNowSumAmountAndBackup4Sub(tpid.getId(), errorList.size());
 				for(int j = 0; j < errorList.size(); j++) {
 					tPaidlotteryDetailsDAO.updateBackup3From2To3(errorList.get(j).getId());
 				}
-			}
-			if(count1 == tpid.getBackup4()) {
-				tPaidlotteryInfoDAO.updateBackup4To0(tpid.getId());
 			}
 		}
 	}

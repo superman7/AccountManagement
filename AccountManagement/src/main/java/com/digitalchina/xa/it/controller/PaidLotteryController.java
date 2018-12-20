@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +47,7 @@ public class PaidLotteryController {
 		return null;
 	}
 	
+	@Transactional
 	@ResponseBody
 	@GetMapping("/insertLotteryDetails")
 	public Map<String, Object> insertLotterydetails(
@@ -77,14 +79,15 @@ public class PaidLotteryController {
 		}
 		
 		//判断是否达到所需金额
-		TPaidlotteryInfoDomain tpid = tPaidlotteryService.selectLotteryInfoById(lotteryId);
-		if(tpid.getNowSumAmount() == tpid.getWinSumAmount()) {
-			modelMap.put("data", "LotteryOver");
-			return modelMap;
+		synchronized(this){
+			TPaidlotteryInfoDomain tpid = tPaidlotteryService.selectLotteryInfoById(lotteryId);
+			if(tpid.getNowSumAmount() >= tpid.getWinSumAmount()) {
+				modelMap.put("data", "LotteryOver");
+				return modelMap;
+			}
+			//直接更新Info表nowSumAmount、backup4（待确认交易笔数）
+			tPaidlotteryService.updateNowSumAmountAndBackup4(lotteryId);
 		}
-		
-		//直接更新Info表nowSumAmount、backup4（待确认交易笔数）
-		tPaidlotteryService.updateNowSumAmountAndBackup4(lotteryId);
 		
 		//向t_paidlottery_details表中插入信息， 参数为lotteryId, itcode, result(0), buyTime
 		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new Timestamp(new Date().getTime()));
@@ -111,6 +114,7 @@ public class PaidLotteryController {
 		return null;
 	}
 	
+	@Transactional
 	@ResponseBody
 	@GetMapping("/lotteryInfo/getOne")
 	public Map<String, Object> selectLotteryInfoById(
