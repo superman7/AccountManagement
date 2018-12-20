@@ -1,6 +1,8 @@
 package com.digitalchina.xa.it.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,31 +40,47 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 			throw new RuntimeException("tPaidlotteryDetailsDomain为null");
 		}
 	}
-
+	
 	@Override
-	public int updateHashcodeAndJudge(String hashcode, int transactionId) {
+	public void runALottery(TPaidlotteryInfoDomain tpid) {
+		//开奖，根据lotteryId，更新此次参与者的result，winTicket，winReword字段,更新t_paidlottery_info表flag，lotteryTime，winner，winTicket
+		List<String> ticketList = generateWinTicket(tpid.getId(), tpid.getWinCount());
+		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryDetailsDAO.selectLotteryDetailsByLotteryId(tpid.getId());
+		String winTickets = "";
+		String winItcodes = "";
+		
+		for(int index = 0; index < ticketList.size(); index ++) {
+			winTickets += ticketList.get(index) + "&";
+		}
+		winTickets = winTickets.substring(0, winTickets.length() - 1);
+		String[] rewardList = tpid.getReward().split("&");
+		
+		for(int index1 = 0; index1 < tpddList.size(); index1++) {
+			TPaidlotteryDetailsDomain tpddTemp = tpddList.get(index1); 
+			for(int index2 = 0; index2 < ticketList.size(); index2++) {
+				if(tpddTemp.getTicket().equals(ticketList.get(index2))) {
+					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 2, winTickets, rewardList[index2]);
+					tpddTemp.setResult(2);
+					winItcodes += tpddTemp.getItcode() + "&";
+				} else if(tpddTemp.getResult() != 2) {
+					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 1, winTickets, "无");
+				}
+			}
+		}
+		winItcodes = winItcodes.substring(0, winItcodes.length() - 1);
+		tPaidlotteryInfoDAO.updateAfterLotteryFinished(tpid.getId(), new Timestamp(new Date().getTime()), winItcodes, winTickets);
+	}
+	
+	@Override
+	public Boolean updateHashcodeAndJudge(String hashcode, int transactionId) {
 		//根据transactionId获取lotteryId
 		TPaidlotteryDetailsDomain tpdd = tPaidlotteryDetailsDAO.selectLotteryDetailsById(transactionId);
+		int lotteryId = tpdd.getLotteryId();
 		
-		//计算ticket值,更新该用户的ticket，hashcode值。 								info更新nowSumAmount
-		String ticket = generateTicket(tpdd.getLotteryId(), tpdd.getItcode(), hashcode);
-		tPaidlotteryDetailsDAO.updateHashcode(hashcode, ticket, transactionId);
-		
-		//根据transactionId获取lotteryId，再用lotteryId查Info，联表查询?
-		//TPaidlotteryInfoDomain tpid = tPaidlotteryInfoDAO.selectOnelotteryBylotteryId(String lotteryId);
-		
-		Boolean flag = false;
-		//判断开奖条件，需要typeCode...
-		//TODO
-		
-		//不开,返回。开，根据lotteryId，更新此次参与者的result，winTicket，winReword字段,更新t_paidlottery_info表flag，lotteryTime
-		if(flag == true) {
-			//TODO
-		} else {
-			return 0;
-		}
-		
-		return 0;
+		//计算ticket值,更新该用户的ticket值。
+		String ticket = generateTicket(lotteryId, tpdd.getItcode(), hashcode);
+		tPaidlotteryDetailsDAO.updateTicket(ticket, transactionId);
+		return true;
 	}
 
 	@Override
@@ -112,5 +130,24 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	@Override
 	public List<String> generateWinTicket(int lotteryId, int winCount) {
 		return tPaidlotteryDetailsDAO.generateWinTicket(lotteryId, winCount);
+	}
+
+	@Override
+	public Boolean updateNowSumAmountAndBackup4(int id) {
+		try {
+			Integer effectedNumber = tPaidlotteryInfoDAO.updateNowSumAmountAndBackup4(id);
+			if(effectedNumber > 0) {
+				return true;
+			} else {
+				throw new RuntimeException("updateNowSumAmountAndBackup4失败");
+			}
+		} catch(Exception e) {
+			throw new RuntimeException("updateNowSumAmountAndBackup4失败 " + e.getMessage());
+		}
+	}
+
+	@Override
+	public TPaidlotteryDetailsDomain selectLotteryDetailsById(int id) {
+		return tPaidlotteryDetailsDAO.selectLotteryDetailsById(id);
 	}
 }

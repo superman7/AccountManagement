@@ -1,5 +1,6 @@
 package com.digitalchina.xa.it.controller;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -7,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.http.HttpService;
 
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
+import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.TPaidlotteryService;
 import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 import com.digitalchina.xa.it.util.HttpRequest;
@@ -30,18 +34,13 @@ public class PaidLotteryController {
 	
 	@Autowired
 	private TPaidlotteryService tPaidlotteryService;
+	@Autowired
+	private EthAccountService ethAccountService;
 	
 	@ResponseBody
 	@PostMapping("/insertLotteryInfo")
 	public Map<String, Object> insertLotteryInfo(
 	        @RequestParam(name = "param", required = true) String jsonValue){
-		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
-		if(!(boolean) modelMap.get("success")){
-			return modelMap;
-		}
-		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
-		
-		
 		return null;
 	}
 	
@@ -61,9 +60,29 @@ public class PaidLotteryController {
 		Integer lotteryId = Integer.valueOf(jsonObj.getString("lotteryId"));
 		String itcode = jsonObj.getString("itcode");
 		BigInteger turnBalance = BigInteger.valueOf( Long.valueOf(jsonObj.getString("unitPrice")) * 10000000000000000L);
-//		String turnBalance = jsonObj.getString("unitPrice");
 		
 		//TODO 余额判断
+		try {
+			Web3j web3j =Web3j.build(new HttpService(TConfigUtils.selectIp()));
+			BigInteger balance = web3j.ethGetBalance(ethAccountService.selectDefaultEthAccount(itcode).getAccount(),DefaultBlockParameterName.LATEST).send().getBalance().divide(BigInteger.valueOf(10000000000000000L));
+			if(Double.valueOf(jsonObj.getString("unitPrice")) > Double.valueOf(balance.toString())-0.25) {
+				modelMap.put("data", "balanceNotEnough");
+				return modelMap;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("查询余额失败");
+		}
+		
+		//判断是否达到所需金额
+		TPaidlotteryInfoDomain tpid = tPaidlotteryService.selectLotteryInfoById(lotteryId);
+		if(tpid.getNowSumAmount() == tpid.getWinSumAmount()) {
+			modelMap.put("data", "LotteryOver");
+			return modelMap;
+		}
+		
+		//直接更新Info表nowSumAmount、backup4（待确认交易笔数）
+		tPaidlotteryService.updateNowSumAmountAndBackup4(lotteryId);
 		
 		//向t_paidlottery_details表中插入信息， 参数为lotteryId, itcode, result(0), buyTime
 		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new Timestamp(new Date().getTime()));
@@ -78,24 +97,15 @@ public class PaidLotteryController {
 		HttpRequest.sendPost(url, postParam);
 		//kafka那边更新account和hashcode
 		//定时任务，查询到
+		
+		modelMap.put("data", "success");
 		return modelMap;
 	}
 	
 	@ResponseBody
-	@PostMapping("/kafkaUpdateDetails")
+	@PostMapping("/getResult")
 	public Map<String, Object> kafkaUpdateDetails(
 			@RequestParam(name = "param", required = true) String jsonValue){
-		/*
-		 * 1.kafka回传hash信息
-		 * 2.更新奖票字段
-		 * 3.判断开奖及更新info
-		 */
-		
-		//接收hashcode与transactionId
-		
-		//更新hashcode，service层计算ticket，判断开奖条件，若不开，则更新id=transactionId的ticket字段；若开，则比对lotteryId，更新此次参与者的result，winTicket，winReword字段。
-		//tPaidlotteryService.updateHashcodeAndJudge(hashcode, transactionId);
-		
 		return null;
 	}
 	

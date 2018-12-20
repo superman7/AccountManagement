@@ -15,7 +15,7 @@ public interface EthAccountService {
 	
 	EthAccountDomain selectEthAccountByAddress(String address);
 	
-	EthAccountDomain selectDefaultEthAccount(String itcode, String status);
+	EthAccountDomain selectDefaultEthAccount(String itcode);
 	
 	String selectKeystoreByAccount(EthAccountDomain ethAccountDomain);
 	
