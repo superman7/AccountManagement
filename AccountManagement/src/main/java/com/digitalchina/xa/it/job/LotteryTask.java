@@ -50,7 +50,6 @@ public class LotteryTask {
 	
 	@Scheduled(fixedRate=15000)
 	public void updateTurnResultStatusJob(){
-		System.err.println("定时任务_更新超时写入中交易状态");
 		tPaidlotteryDetailsDAO.updateLotteryDetailsWhereTimeOut();
 		
 		Web3j web3j = Web3j.build(new HttpService(ip[new Random().nextInt(5)]));

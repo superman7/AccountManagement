@@ -61,7 +61,6 @@ public class PaidLotteryController {
 		}
 		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
 		Integer lotteryId = Integer.valueOf(jsonObj.getString("lotteryId"));
-		
 		TPaidlotteryInfoDomain tpid = tPaidlotteryService.selectLotteryInfoById(lotteryId);
 		if(tpid.getNowSumAmount() >= tpid.getWinSumAmount()) {
 			modelMap.put("data", "LotteryOver");
