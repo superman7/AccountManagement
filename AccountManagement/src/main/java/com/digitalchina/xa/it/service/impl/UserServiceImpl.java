@@ -16,6 +16,7 @@ import org.web3j.protocol.http.HttpService;
 import com.digitalchina.xa.it.dao.UserDAO;
 import com.digitalchina.xa.it.model.UserDomain;
 import com.digitalchina.xa.it.service.UserService;
+import com.digitalchina.xa.it.util.TConfigUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -26,9 +27,6 @@ import com.github.pagehelper.PageInfo;
 public class UserServiceImpl implements UserService {
 
 	private volatile static Web3j web3j;
-    private static String ip = "http://10.7.10.124:8545";
-    private static String[] ipArr = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
-    
     @Autowired
     private UserDAO userDAO;//这里会报错，但是并不会影响
 
@@ -69,7 +67,7 @@ public class UserServiceImpl implements UserService {
 			if(web3j==null){
 	            synchronized (UserService.class){
 	                if(web3j==null){
-	                    web3j =Web3j.build(new HttpService(ip));
+	                    web3j =Web3j.build(new HttpService(TConfigUtils.selectIp()));
 	                }
 	            }
 	        }

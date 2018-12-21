@@ -23,6 +23,7 @@ import org.web3j.protocol.http.HttpService;
 
 import com.digitalchina.xa.it.dao.CashBackDAO;
 import com.digitalchina.xa.it.dao.PaidVoteDetailDAO;
+import com.digitalchina.xa.it.dao.TConfigDAO;
 import com.digitalchina.xa.it.dao.TopicDAO;
 import com.digitalchina.xa.it.dao.VirtualMachineDAO;
 import com.digitalchina.xa.it.dao.WalletAccountDAO;
@@ -30,6 +31,8 @@ import com.digitalchina.xa.it.dao.WalletTransactionDAO;
 import com.digitalchina.xa.it.model.TopicDomain;
 import com.digitalchina.xa.it.model.VirtualMachineDomain;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
+import com.digitalchina.xa.it.service.SigninRewardService;
+import com.digitalchina.xa.it.service.TConfigService;
 import com.digitalchina.xa.it.service.TopicOptionService;
 import com.digitalchina.xa.it.service.TopicService;
 import com.digitalchina.xa.it.service.VoteService;
@@ -51,10 +54,9 @@ public class TimedTask {
 	private CashBackDAO cashBackDAO;
 	@Autowired
 	private VirtualMachineDAO virtualMachineDAO;
+	@Autowired
+	private TConfigDAO tconfigDAO;
 	
-	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
-	
-
 	@Autowired
 	private TopicService topicService;
 	@Autowired
@@ -63,6 +65,9 @@ public class TimedTask {
 	private VoteService voteService;
 	@Autowired
     private TopicDAO topicDAO;
+	
+/*	@Autowired
+	private SigninRewardService srService;*/
 
 	@Transactional
 	@Scheduled(cron="55 59 23 * * ?")
@@ -100,7 +105,7 @@ public class TimedTask {
 	@Transactional
 	@Scheduled(cron="10,40 * * * * ?")
 	public void updateTranscationStatus(){
-		Web3j web3j = Web3j.build(new HttpService(ip[new Random().nextInt(5)]));
+		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
 		List<WalletTransactionDomain> wtdList = walletTransactionDAO.selectHashAndAccounts();
 		if(wtdList == null) {
 			web3j.shutdown();
@@ -145,7 +150,7 @@ public class TimedTask {
 		}
 	}
 	
-	//每天8点30分30秒执行前一天考勤奖励
+/*	//每天8点30分30秒执行前一天考勤奖励
 	@Transactional
 	@Scheduled(cron="30 30 08 * * ?")
 //	@Scheduled(cron="55 30 14 * * ?")
@@ -164,14 +169,15 @@ public class TimedTask {
 		result = result.substring(0, result.length() - 1 );
 		System.err.println(result);
 		//FIXME 发送get请求，http://10.0.5.217:8080/eth/attendanceReward/result
-		HttpRequest.sendGet("http://10.0.5.217:8080/eth/attendanceReward/" + result, "");
+//		HttpRequest.sendGet("http://10.0.5.217:8080/eth/attendanceReward/" + result, "");
+
+		srService.attendanceReward(result);
 	}
-	
+	*/
 
 	@Scheduled(fixedRate=15000)
 	public void updateTurnResultStatusJob(){
-		Integer index = (int)(Math.random()*5);
-    	String ipAddress = ip[index];
+    	String ipAddress = TConfigUtils.selectIp();
 		System.err.println("更新交易状态时以太坊链接的ip为"+ipAddress);
 		
 		Admin admin = Admin.build(new HttpService(ipAddress));
@@ -210,6 +216,7 @@ public class TimedTask {
 	//每天7:30:30返还前一天购买虚拟机神州币
 	@Transactional
 	@Scheduled(cron="30 30 07 * * ?")
+//	@Scheduled(cron="5 * * * * ?")
 	public void backToUser(){
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date date=new Date();
@@ -247,4 +254,44 @@ public class TimedTask {
 			}
 		}
 	}
+	
+	//检查区块链节点工作状态是否正常
+	@Transactional
+	@Scheduled(cron="5 * * * * ?")
+	public void checkEthNodes(){
+		String textAddress = "0x8a950e851344715a51036567ca1b44aab3f15110";
+		List<String> ipArr = TConfigUtils.selectIpArr();
+		for(int index = 0; index < ipArr.size(); index++) {
+			Web3j web3j =Web3j.build(new HttpService(ipArr.get(index)));
+			try {
+				web3j.ethGetBalance(textAddress,DefaultBlockParameterName.LATEST).send().getBalance();
+				tconfigDAO.UpdateEthNodesStatus(ipArr.get(index), true);
+	        } catch (IOException e) {
+	        	if(e.getMessage().contains("Failed to connect to")) {
+	        		System.out.println(e.getMessage());
+	        		tconfigDAO.UpdateEthNodesStatus(ipArr.get(index), false);
+	        	}
+			}
+		}
+	}
+	
+//	//为新用户
+//	@Transactional
+//	@Scheduled(cron="30 30 07 * * ?")
+//	public void creatKeystore(){
+//		String textAddress = "0x8a950e851344715a51036567ca1b44aab3f15110";
+//		String[] ipArr = TConfigUtils.selectIpArr();
+//		for(int index = 0; index < ipArr.length; index++) {
+//			Web3j web3j =Web3j.build(new HttpService(ipArr[index]));
+//			try {
+//				web3j.ethGetBalance(textAddress,DefaultBlockParameterName.LATEST).send().getBalance();
+//				tconfigDAO.UpdateEthNodesStatus(ipArr[index], 1);
+//	        } catch (IOException e) {
+//	        	if(e.getMessage().contains("Failed to connect to")) {
+//	        		System.out.println(e.getMessage());
+//	        		tconfigDAO.UpdateEthNodesStatus(ipArr[index], 0);
+//	        	}
+//			}
+//		}
+//	}
 }

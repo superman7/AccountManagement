@@ -35,6 +35,7 @@ import org.web3j.utils.Numeric;
 
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.contract.Transfer;
+import com.digitalchina.xa.it.service.PaidVoteDetailService;
 
 import scala.util.Random;
 

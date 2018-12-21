@@ -1,15 +1,12 @@
-package com.digitalchina.xa.it.service.impl;
+/*package com.digitalchina.xa.it.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.web3j.protocol.Web3j;
 
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.dao.SigninRewardDAO;
@@ -19,8 +16,9 @@ import com.digitalchina.xa.it.model.UserDomain;
 import com.digitalchina.xa.it.service.LuckycashService;
 import com.digitalchina.xa.it.service.SigninRewardService;
 import com.digitalchina.xa.it.service.UserService;
-import com.digitalchina.xa.it.util.Encrypt;
-import com.digitalchina.xa.it.util.EncryptImpl;
+import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
+import com.digitalchina.xa.it.util.HttpRequest;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Service(value = "signinRewardService")
 public class SigninRewardServiceImpl implements SigninRewardService{
@@ -30,58 +28,36 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 	@Autowired
 	private LuckycashService luckycashService;
 	
-//    private volatile static Web3j web3j;
-//    private static String ip = "";
-//    private static final String rootPath = "/eth/datadir/keystore/";
-//    private static final String address = "0x16a9de544cbf62d8b55852a66fb7e7740803d78a";
-//    private static String[] ipArr = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
-    
     @Autowired
     private SigninRewardDAO srDao;
+    
+    @Autowired
+   	private JdbcTemplate jdbc;
 
+    private Integer voteRewardValue = Integer.valueOf(TConfigUtils.selectValueByKey("vote_reward_value"));
+    private Integer attendanceRewardValue = Integer.valueOf(TConfigUtils.selectValueByKey("attendance_reward_value"));
 	@Override
 	public Map<String, Object> addLuckyNumber(String param) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		//FIXME 封装为统一的静态方法调用
-		System.out.println(param);
-		Encrypt encrypt = new EncryptImpl();
-		String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(param);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
-			return modelMap;
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(param);
+		
+		if((boolean) modelMap.get("success")){
+			//获取前端发送的密语，密语密码，地址名和交易密码
+			JSONObject allInfoSentenceJson = JSONObject.parseObject((String) modelMap.get("data"));
+			String luckyNum = allInfoSentenceJson.getString("luckyNum");
+			String luckyGuys = allInfoSentenceJson.getString("luckyGuys");
+			String luckyGuysCount = allInfoSentenceJson.getString("luckyGuysCount");
+			
+			LuckycashDomain luckycashDomain = new LuckycashDomain();
+			luckycashDomain.setAvailable(0);
+			luckycashDomain.setLuckyNum(luckyNum);
+			luckycashDomain.setLuckyGuys(luckyGuys);
+			luckycashDomain.setLuckyGuysCount(Integer.valueOf(luckyGuysCount));
+			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
+			luckycashDomain.setAvailableTime(nousedate);
+			luckycashService.insert(luckycashDomain);
+			
+			modelMap.remove("data");
 		}
-		String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-		modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-		System.err.println("红包详情的JSON为:" + data);
-		
-		//获取前端发送的密语，密语密码，地址名和交易密码
-		JSONObject allInfoSentenceJson = JSONObject.parseObject(data);
-		String luckyNum = allInfoSentenceJson.getString("luckyNum");
-		String luckyGuys = allInfoSentenceJson.getString("luckyGuys");
-		String luckyGuysCount = allInfoSentenceJson.getString("luckyGuysCount");
-		
-		LuckycashDomain luckycashDomain = new LuckycashDomain();
-		luckycashDomain.setAvailable(0);
-		luckycashDomain.setLuckyNum(luckyNum);
-		luckycashDomain.setLuckyGuys(luckyGuys);
-		luckycashDomain.setLuckyGuysCount(Integer.valueOf(luckyGuysCount));
-		Timestamp nousedate = new Timestamp(System.currentTimeMillis());
-		luckycashDomain.setAvailableTime(nousedate);
-		luckycashService.insert(luckycashDomain);
-		
-		modelMap.put("success", true);
-		
 		return modelMap;
 	}
 
@@ -170,7 +146,7 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 			sr.setSigntime(nousedate);
 			sr.setRewards(Integer.valueOf(rewards));
 			this.addSigninReward(sr);
-			return "{\"status\":1,\"value\":" + rewards + ",\"lucky\":\"" + luckyNum + "\"}";
+			return "{\"status\":1,\"value\":" + rewards + ",\"lucky\":\"" + luckyNum + ",\"transactionDetailId\":\"" + sr.getId() + "\"}";
 		}
 //		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //		SigninRewardDomain sr = new SigninRewardDomain();
@@ -231,4 +207,52 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 		}
 	    return "{\"status\":0,\"value\":0}";
 	}
+
+	@Override
+	public String voteReward(String itcode) {
+		List<UserDomain> userList = userService.findUserByItcode(itcode);
+		if(userList.size() > 0){
+			SigninRewardDomain sr = new SigninRewardDomain();
+			sr.setItcode(itcode);
+			sr.setAccountkey(userList.get(0).getAccount());
+			sr.setType(0);
+			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
+			
+			sr.setSigntime(nousedate);
+			sr.setRewards(voteRewardValue);
+			this.addSigninReward(sr);
+			return voteRewardValue.toString() + "," + sr.getId().toString();
+		}
+		return "error";
+	}
+
+	@Override
+	public void attendanceReward(String employeeNumber) {
+		String sql = "SELECT * FROM am_person a LEFT JOIN am_ethaccount b on a.ITCODE=b.itcode WHERE b.available='3' and a.EMPLOYEENUMBER in "+ "(" + employeeNumber + ")";
+        List<Map<String,Object>> list = jdbc.queryForList(sql);
+        
+		//向kafka集群发送充值信息
+		String ip = TConfigUtils.selectValueByKey("kafka_address");
+		String url = ip + "/signin/attendanceReward";
+		
+        for(int i = 0; i < list.size(); i++) {
+        	String itcode = list.get(i).get("itcode").toString();
+        	List<UserDomain> userList = userService.findUserByItcode(itcode);
+    		if(userList.size() > 0){
+    			SigninRewardDomain sr = new SigninRewardDomain();
+    			sr.setItcode(itcode);
+    			sr.setAccountkey(userList.get(0).getAccount());
+    			sr.setType(0);
+    			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
+    			
+    			sr.setSigntime(nousedate);
+    			sr.setRewards(attendanceRewardValue);
+    			this.addSigninReward(sr);
+    			String transactionDetailId = sr.getId().toString();
+    			String postParam = "itcode=" + itcode + "&reward=" + attendanceRewardValue.toString() + "&transactionDetailId=" + transactionDetailId;
+    			HttpRequest.sendGet(url, postParam);
+    		}
+        }
+	}
 }
+*/

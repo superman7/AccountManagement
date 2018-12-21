@@ -46,16 +46,22 @@ import org.web3j.utils.Numeric;
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.contract.Transfer;
 import com.digitalchina.xa.it.dao.KeywordToAccountDAO;
+import com.digitalchina.xa.it.dao.SystemTransactionDetailDAO;
 import com.digitalchina.xa.it.model.EthAccountDomain;
 import com.digitalchina.xa.it.model.KeywordToAccountDomain;
+import com.digitalchina.xa.it.model.SystemTransactionDetailDomain;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.MnemonicService;
+import com.digitalchina.xa.it.service.TConfigService;
 import com.digitalchina.xa.it.service.WalletTransactionService;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
 import com.digitalchina.xa.it.util.GetPwdAndKeyStoreUtils;
+import com.digitalchina.xa.it.util.HttpRequest;
+import com.digitalchina.xa.it.util.TConfigUtils;
 import com.digitalchina.xa.it.util.CreatAddressUtils;
+import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 
 import scala.util.Random;
 
@@ -69,12 +75,14 @@ public class EthAccountController {
 	private MnemonicService mnemonicService;
 	@Autowired
 	private WalletTransactionService walletTransactionService;
+	@Autowired
+	private TConfigService tconfigService;
 	
 	@Autowired
 	private KeywordToAccountDAO keywordToAccountDAO;
+	@Autowired
+	private SystemTransactionDetailDAO systemTransactionDetailDAO;
 	
-	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
-
 	private static String keystoreName = "keystore.json";
 	private static final BigInteger tax = BigInteger.valueOf(5000000000000000L);
 	private static String address = "0x024a3c0d945739237eedf78c80c6ae5daf22c010";
@@ -82,7 +90,7 @@ public class EthAccountController {
 	private static String tempFilePath = "/eth/javaServer/wallet/temp/";
 	
 //	@ResponseBody
-//	@GetMapping("/refreshAllUsersBalance")
+//	@GetMapping("/refreshAllUsersBalance") 
 //	public void refreshBalance(){
 //	    userService.refreshBalance();
 //	}
@@ -111,41 +119,24 @@ public class EthAccountController {
 	@GetMapping("/balanceQuery")
 	public Map<String, Object> balanceQuery(
 			@RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		Web3j web3j = Web3j.build(new HttpService(ip[new Random().nextInt(5)]));
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
-			return modelMap;
-		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	JSONObject accountJson = JSONObject.parseObject(data);
-		String account = accountJson.getString("account");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
 		
-		try {
-			BigInteger balance = web3j.ethGetBalance(account,DefaultBlockParameterName.LATEST).send().getBalance();
-			modelMap.put("success", true);
-			modelMap.put("balance", Double.parseDouble(balance.toString()));
-			web3j.shutdown();
-		} catch (IOException e) {
-			modelMap.put("success", false);
-			System.out.println("查询余额失败");
+		if((boolean) modelMap.get("success")){
+			//获取前端发送的密语，密语密码，地址名和交易密码
+			JSONObject accountJson = JSONObject.parseObject((String) modelMap.get("data"));
+			String account = accountJson.getString("account");
+			try {
+				BigInteger balance = web3j.ethGetBalance(account,DefaultBlockParameterName.LATEST).send().getBalance();
+				modelMap.put("balance", Double.parseDouble(balance.toString()));
+				web3j.shutdown();
+			} catch (IOException e) {
+				modelMap.put("success", false);
+				modelMap.put("errMsg", "查询余额失败");
+				System.out.println("查询余额失败");
+				return modelMap;
+			}
 		}
-		
 		return modelMap;
 	}
 	
@@ -154,30 +145,11 @@ public class EthAccountController {
 	@GetMapping("/chargeFromInput")
 	public Map<String, Object> chargeFromInput(
 			@RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	
-    	JSONObject chargeJson = JSONObject.parseObject(data);
+		JSONObject chargeJson = JSONObject.parseObject((String) modelMap.get("data"));
 		String account = chargeJson.getString("account");
 		String password = chargeJson.getString("password");
 		String defaultAcc = chargeJson.getString("defaultAcc");
@@ -186,8 +158,9 @@ public class EthAccountController {
 		
 		try {
 			List<Web3j> web3jList = new ArrayList<>();
-			for(int i = 0; i < ip.length; i++) {
-				web3jList.add(Web3j.build(new HttpService(ip[i])));
+			List<String> ipArr = TConfigUtils.selectIpArr();
+			for(int i = 0; i < ipArr.size(); i++) {
+				web3jList.add(Web3j.build(new HttpService(ipArr.get(i))));
 			}
 			File keystoreFile = keystoreToFile(keystore, account + ".json");
 			System.out.println("开始解锁。。。");
@@ -235,7 +208,6 @@ public class EthAccountController {
 			wtd.setConfirmTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 			walletTransactionService.insertBaseInfo(wtd);
 			
-			modelMap.put("success", true);
 			modelMap.put("transactionHash", transactionHash);
 		} catch (Exception e) {
 			System.out.println("解锁失败。。。");
@@ -255,39 +227,17 @@ public class EthAccountController {
 	@GetMapping("/getKeystore")
 	public Map<String, Object> getKeystore(
 			@RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
 		
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	JSONObject accountJson = JSONObject.parseObject(data);
+		JSONObject accountJson = JSONObject.parseObject((String) modelMap.get("data"));
 		String account = accountJson.getString("account");
-		
 		EthAccountDomain ethAccountDomain = new EthAccountDomain();
 		ethAccountDomain.setAccount(account);
 		String keystore = ethAccountService.selectKeystoreByAccount(ethAccountDomain);
-		
 		System.out.println(keystore);
-		
-		modelMap.put("success", true);
 		modelMap.put("keystore", keystore);
 		
 		return modelMap;
@@ -298,95 +248,99 @@ public class EthAccountController {
 	@GetMapping("/withdrawConfirm")
 	public Map<String, Object> withdrawConfirm(
 			@RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	
-    	JSONObject withdrawJson = JSONObject.parseObject(data);
+		JSONObject withdrawJson = JSONObject.parseObject((String) modelMap.get("data"));
+		
 		String account = withdrawJson.getString("account");
 		String defaultAcc = withdrawJson.getString("defaultAcc");
 		String itcode = withdrawJson.getString("itcode");
 		String alias = withdrawJson.getString("alias");
 		Double money = (Double.parseDouble(withdrawJson.getString("money")))*10000000000000000L;
-		
 		BigDecimal moneyBigDecimal = new BigDecimal(money);// 转账金额
-		EthAccountDomain ead = new EthAccountDomain();
-		ead.setAccount(defaultAcc);
-		String keystore = ethAccountService.selectKeystoreByAccount(ead);
-		System.out.println(keystore);
-		try {
-			List<Web3j> web3jList = new ArrayList<>();
-			for(int i = 0; i < ip.length; i++) {
-				web3jList.add(Web3j.build(new HttpService(ip[i])));
-			}
-			File keystoreFile = keystoreToFile(keystore, defaultAcc + ".json");//
-			Credentials credentials = WalletUtils.loadCredentials("mini0823", keystoreFile);
-			System.out.println("解锁成功。。。");
-			keystoreFile.delete();
-			System.out.println("删除临时keystore文件成功。。。");
-			
-			EthGetTransactionCount ethGetTransactionCount = web3jList.get(new Random().nextInt(5)).ethGetTransactionCount(defaultAcc, DefaultBlockParameterName.LATEST).sendAsync().get();
-			BigInteger nonce = ethGetTransactionCount.getTransactionCount();
-			System.err.println("nonce:" + nonce);
-			RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, BigInteger.valueOf(2200000000L), BigInteger.valueOf(2100000L), account, moneyBigDecimal.toBigInteger());
-			//签名Transaction，这里要对交易做签名
-			byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
-			String hexValue = Numeric.toHexString(signedMessage);
-			System.err.println("hexValue:" + hexValue);
-			//发送交易
-			String transactionHash = "";
-			String realTransactionHash = "";
-			for(int i = 0; i < web3jList.size(); i++) {
-				transactionHash = web3jList.get(i).ethSendRawTransaction(hexValue).sendAsync().get().getTransactionHash();
-				if(transactionHash != null) {
-					realTransactionHash = transactionHash;
-				}
-			}
-			
-			WalletTransactionDomain wtd = new WalletTransactionDomain();
-			wtd.setItcode(itcode);
-			wtd.setAccountFrom(defaultAcc);
-			wtd.setAccountTo(account);
-			wtd.setAliasFrom("默认账户");
-			wtd.setAliasTo(alias);
-			wtd.setBalance(money);
-			wtd.setTransactionHash(realTransactionHash);
-			wtd.setConfirmTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			walletTransactionService.insertBaseInfo(wtd);
-			
-			modelMap.put("success", true);
-			modelMap.put("transactionHash", transactionHash);
-		} catch (Exception e) {
-			System.out.println("解锁失败。。。");
-			e.printStackTrace();
-			if(e.getMessage().contains("Invalid password provided")) {
-				modelMap.put("success", false);
-				modelMap.put("errMsg", "invalidPassword");
-				return modelMap;
-			}
-		}
-    	
+		
+		//记录提现交易信息
+		WalletTransactionDomain wtd = new WalletTransactionDomain();
+		wtd.setItcode(itcode);
+		wtd.setAccountFrom(defaultAcc);
+		wtd.setAccountTo(account);
+		wtd.setAliasFrom("默认账户");
+		wtd.setAliasTo(alias);
+		wtd.setBalance(money);
+		String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		wtd.setConfirmTime(date);
+		Integer transactionDetailId = walletTransactionService.insertBaseInfo(wtd);
+		
+		//向system_transactiondetail表记录信息 
+		SystemTransactionDetailDomain stdd = new SystemTransactionDetailDomain(defaultAcc, account, money/10000000000000000L, null, date, 0, "remark", itcode, itcode, "", 0, "", transactionDetailId);
+		systemTransactionDetailDAO.insertBaseInfo(stdd);
+		
+		//向kafka发送交易请求，参数为：account，itcode，金额，transactionDetailId
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/ethAccount/withdrawConfirm";
+		String postParam = "itcode=" + itcode + "account" + account + "&transactionDetailId=" + transactionDetailId + "&turnBalance=" + moneyBigDecimal;
+		HttpRequest.sendPost(url, postParam);
+		
 		return modelMap;
 	}
+	
+//	EthAccountDomain ead = new EthAccountDomain();
+//		ead.setAccount(defaultAcc);
+//		String keystore = ethAccountService.selectKeystoreByAccount(ead);
+//		System.out.println(keystore);
+//		try {
+//			List<Web3j> web3jList = new ArrayList<>();
+//			String[] ipArr = TConfigUtils.selectIpArr();
+//			for(int i = 0; i < ipArr.length; i++) {
+//				web3jList.add(Web3j.build(new HttpService(ipArr[i])));
+//			}
+//			File keystoreFile = keystoreToFile(keystore, defaultAcc + ".json");//
+//			Credentials credentials = WalletUtils.loadCredentials("mini0823", keystoreFile);
+//			System.out.println("解锁成功。。。");
+//			keystoreFile.delete();
+//			System.out.println("删除临时keystore文件成功。。。");
+//			
+//			EthGetTransactionCount ethGetTransactionCount = web3jList.get(new Random().nextInt(5)).ethGetTransactionCount(defaultAcc, DefaultBlockParameterName.LATEST).sendAsync().get();
+//			BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+//			System.err.println("nonce:" + nonce);
+//			RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, BigInteger.valueOf(2200000000L), BigInteger.valueOf(2100000L), account, moneyBigDecimal.toBigInteger());
+//			//签名Transaction，这里要对交易做签名
+//			byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+//			String hexValue = Numeric.toHexString(signedMessage);
+//			System.err.println("hexValue:" + hexValue);
+//			//发送交易
+//			String transactionHash = "";
+//			String realTransactionHash = "";
+//			for(int i = 0; i < web3jList.size(); i++) {
+//				transactionHash = web3jList.get(i).ethSendRawTransaction(hexValue).sendAsync().get().getTransactionHash();
+//				if(transactionHash != null) {
+//					realTransactionHash = transactionHash;
+//				}
+//			}
+//			
+//			WalletTransactionDomain wtd = new WalletTransactionDomain();
+//			wtd.setItcode(itcode);
+//			wtd.setAccountFrom(defaultAcc);
+//			wtd.setAccountTo(account);
+//			wtd.setAliasFrom("默认账户");
+//			wtd.setAliasTo(alias);
+//			wtd.setBalance(money);
+//			wtd.setTransactionHash(realTransactionHash);
+//			wtd.setConfirmTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+//			walletTransactionService.insertBaseInfo(wtd);
+//			
+//			modelMap.put("success", true);
+//			modelMap.put("transactionHash", transactionHash);
+//		} catch (Exception e) {
+//			System.out.println("解锁失败。。。");
+//			e.printStackTrace();
+//			if(e.getMessage().contains("Invalid password provided")) {
+//				modelMap.put("success", false);
+//				modelMap.put("errMsg", "invalidPassword");
+//				return modelMap;
+//			}
+//		}
 	
 //	确认充值请求，提交账户地址（FROM），密码，金额，钱包地址（TO）
 	@ResponseBody
@@ -431,8 +385,9 @@ public class EthAccountController {
 		System.out.println(keystore);
 		try {
 			List<Web3j> web3jList = new ArrayList<>();
-			for(int i = 0; i < ip.length; i++) {
-				web3jList.add(Web3j.build(new HttpService(ip[i])));
+			List<String> ipArr = TConfigUtils.selectIpArr();
+			for(int i = 0; i < ipArr.size(); i++) {
+				web3jList.add(Web3j.build(new HttpService(ipArr.get(i))));
 			}
 			File keystoreFile = keystoreToFile(keystore, account + ".json");
 			System.out.println("开始解锁。。。");
@@ -502,30 +457,11 @@ public class EthAccountController {
 	@Transactional
 	public Map<String, Object> accountList(
             @RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	
-		JSONObject mnemonicJson = JSONObject.parseObject(data);
+		JSONObject mnemonicJson = JSONObject.parseObject((String) modelMap.get("data"));
 		String itcode = mnemonicJson.getString("itcode");
 		ethAccountService.refreshBalance(itcode);
 		modelMap.put("success", true);
@@ -540,30 +476,12 @@ public class EthAccountController {
 	@GetMapping("/newAddress")
 	public Map<String, Object> newAddress(
             @RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
 		//获取前端发送的数据，包括密语，密语密码和itcode
-		JSONObject mnemonicJson = JSONObject.parseObject(data);
+		JSONObject mnemonicJson = JSONObject.parseObject((String) modelMap.get("data"));
 		String mnemonic = mnemonicJson.getString("mnemonic");
 		String mnePassword = mnemonicJson.getString("mnePassword");
 		String itcode = mnemonicJson.getString("itcode");
@@ -583,7 +501,6 @@ public class EthAccountController {
 			ethAccountDomain.setAccount(address);
 			ethAccountService.insertItcodeAndAccount(ethAccountDomain);
 			
-			modelMap.put("success", true);
 			modelMap.put("address", address);
 			modelMap.put("mnemonic", mnemonic);
 			modelMap.put("mnePassword", mnePassword);
@@ -595,31 +512,12 @@ public class EthAccountController {
 	@ResponseBody
 	@GetMapping("/newAccount")
 	public Map<String, Object> newAccount(@RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	
 		//获取前端发送的密语，密语密码，地址名和交易密码
-		JSONObject allInfoSentenceJson = JSONObject.parseObject(data);
+		JSONObject allInfoSentenceJson = JSONObject.parseObject((String) modelMap.get("data"));
 		String mnemonic = allInfoSentenceJson.getString("mnemonic");
 		String mnePassword = allInfoSentenceJson.getString("mnePassword");
 		String alias = allInfoSentenceJson.getString("alias");
@@ -632,12 +530,10 @@ public class EthAccountController {
 			WalletFile walletFile = Wallet.createLight(traPassword, ecKeyPair);
 			String keystore = ((JSONObject) JSONObject.toJSON(walletFile)).toJSONString();
 			System.out.println(keystore);
-			ethAccountService.updateKeystoreAndAlias(keystore, alias, address);
+			ethAccountService.updateKeystoreAndAlias(keystore, alias, address, 1);
 		} catch (CipherException e) {
 			e.printStackTrace();
 		}
-		
-		modelMap.put("success", true);
 		
 		return modelMap;
 	}
@@ -663,30 +559,11 @@ public class EthAccountController {
 	@ResponseBody
 	@GetMapping("/checkUp")
 	public Map<String, Object> checkUp(@RequestParam(name = "param", required = true) String jsonValue) {
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		System.out.println(jsonValue);
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的助记词，密码及itcode的JSON为:" + data);
-    	
-		JSONObject aliasInfoJson = JSONObject.parseObject(data);
+		JSONObject aliasInfoJson = JSONObject.parseObject((String) modelMap.get("data"));
 		String itcode = aliasInfoJson.getString("itcode");
 		String alias = aliasInfoJson.getString("alias");
 		

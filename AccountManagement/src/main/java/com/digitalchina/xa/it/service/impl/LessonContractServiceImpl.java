@@ -25,18 +25,18 @@ import org.web3j.tx.response.TransactionReceiptProcessor;
 
 import com.digitalchina.xa.it.contract.Lesson;
 import com.digitalchina.xa.it.service.LessonContractService;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 import scala.util.Random;
 
 @Service(value = "LessonContractService")
 public class LessonContractServiceImpl implements LessonContractService{
-    private static String[] ipArr = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
     private static String address = "0x861b6f2ca079e1cfa5da9b429fa9d82a6645b419";
     private volatile static Web3j web3j;
     
 	@Override
 	public Web3j build() {
-		return Web3j.build(new HttpService(ipArr[new Random().nextInt(5)]));
+		return Web3j.build(new HttpService(TConfigUtils.selectIp()));
 	}
 	
 	@Override
@@ -49,8 +49,7 @@ public class LessonContractServiceImpl implements LessonContractService{
     
 	@Override
 	public String buyChapter(Credentials credentials, String lesson, BigInteger value) throws Exception {
-		Integer index = (int)(Math.random()*5);
-    	String ip = ipArr[index];
+    	String ip = TConfigUtils.selectIp();
 		System.err.println("转账时以太坊链接的ip为"+ip);
 		if(web3j==null){
             synchronized (LessonContractService.class){

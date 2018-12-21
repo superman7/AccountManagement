@@ -21,12 +21,15 @@ import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.xa.it.dao.SystemTransactionDetailDAO;
 import com.digitalchina.xa.it.model.LessonBuyDomain;
 import com.digitalchina.xa.it.model.LessonDetailDomain;
+import com.digitalchina.xa.it.model.SystemTransactionDetailDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.LessonBuyService;
 import com.digitalchina.xa.it.service.LessonContractService;
 import com.digitalchina.xa.it.service.LessonDetailService;
+import com.digitalchina.xa.it.util.DecryptAndDecodeUtils;
 import com.digitalchina.xa.it.util.Encrypt;
 import com.digitalchina.xa.it.util.EncryptImpl;
 import com.digitalchina.xa.it.util.HttpRequest;
@@ -41,33 +44,18 @@ public class LessonBuyController {
 	private LessonContractService lessonContractService;
 	@Autowired
 	private EthAccountService ethAccountService;
+	@Autowired
+	private SystemTransactionDetailDAO systemTransactionDetailDAO;
 	
 	@ResponseBody
 	@GetMapping("/insertBuyInfo")
 	public Map<String, Object> updateChapter(
 	        @RequestParam(name = "param", required = true) String jsonValue){
-		Map<String, Object> modelMap = new HashMap<String, Object>();
-		Encrypt encrypt = new EncryptImpl();
-    	String decrypt = null;
-		try {
-			decrypt = encrypt.decrypt(jsonValue);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！");
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
 			return modelMap;
 		}
-    	String data = null;
-		try {
-			data = URLDecoder.decode(decrypt, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			modelMap.put("success", false);
-			modelMap.put("errMsg", "解密失败！非utf-8编码。");
-			return modelMap;
-		}
-    	System.err.println("解密的JSON为:" + data);
-    	JSONObject jsonObj = JSONObject.parseObject(data);
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
 		String itcode = jsonObj.getString("itcode");
 		String chapterNum = jsonObj.getString("chapterNum");
 		String lessonId = jsonObj.getString("lessonId");
@@ -82,18 +70,25 @@ public class LessonBuyController {
 		lb.setItcode(itcode);
 		lb.setCost(cost);
 		lb.setDiscount(discount);
-		lb.setBuyTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		lb.setBuyTime(date);
 		lb.setType(1);
 		Integer transactionDetailId = lessonBuyService.insertBuyInfo(lb);
+		Double money = (cost*discount/10)*10000000000000000L;
 		BigInteger turnBalance = BigInteger.valueOf((long) (cost*discount/10)*10000000000000000L);
 		System.out.println("*******记录购买信息********");
+		
+		//余额判断
+		
+		//向system_transactiondetail表记录信息 
+		SystemTransactionDetailDomain stdd = new SystemTransactionDetailDomain("", TConfigUtils.selectValueByKey("lesson_contract"), money, null, date, 0, "remark", itcode, "lesson_contract", "", 0, "", transactionDetailId);
+		systemTransactionDetailDAO.insertBaseInfo(stdd);
 		
 		//向kafka集群发送扣费信息
 		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lessonBuy/processDeduction";
 		String postParam = "itcode=" + itcode + "&transactionDetailId=" + transactionDetailId + "&turnBalance=" + turnBalance;
 		HttpRequest.sendPost(url, postParam);
 		
-		modelMap.put("success", true);		
 		return modelMap;
 	}
 }
