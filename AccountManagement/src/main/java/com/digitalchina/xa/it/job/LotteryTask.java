@@ -85,12 +85,12 @@ public class LotteryTask {
 	@Scheduled(cron="20,50 * * * * ?")
 	public void runLottery(){
 		//开奖条件：1.flag = 0；2.winSumAmount = nowSumAmount；3.backup4 = 0
-		List<TPaidlotteryInfoDomain> tpidList = tPaidlotteryInfoDAO.selectRunLottery();
-		if(tpidList.size() == 0) {
+		List<TPaidlotteryInfoDomain> tpidList0 = tPaidlotteryInfoDAO.selectRunLottery();
+		if(tpidList0.size() == 0) {
 			return;
 		}
-		TPaidlotteryInfoDomain tpid = tpidList.get(0);
-		tPaidlotteryService.runALottery(tpid);
+		TPaidlotteryInfoDomain tpid0 = tpidList0.get(0);
+		tPaidlotteryService.runALottery(tpid0);
 	}
 	
 	@Transactional

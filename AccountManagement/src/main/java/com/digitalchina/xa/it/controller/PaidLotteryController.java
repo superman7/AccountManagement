@@ -118,8 +118,7 @@ public class PaidLotteryController {
 		System.out.println("transactionId" + transactionId);
 		
 		//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
-		String url = TConfigUtils.selectValueByKey("kafka_address_test") + "/lottery/buyTicket";
-//		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/buyTicket";
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/buyTicket";
 		System.err.println(url);
 		String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance.toString() + "&transactionDetailId=" + transactionId;
 		HttpRequest.sendPost(url, postParam);
