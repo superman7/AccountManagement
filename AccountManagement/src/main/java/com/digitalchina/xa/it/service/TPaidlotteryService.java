@@ -26,14 +26,23 @@ public interface TPaidlotteryService {
 	//开奖
 	void runALottery(TPaidlotteryInfoDomain tpid);
 	
-	/*Info*/
+	/*******************Info***********************/
 	//获取结束或未结束的抽奖
 	List<TPaidlotteryInfoDomain> selectLotteryInfoByFlag(int flag);
 	
 	//根据id获取抽奖Info
 	TPaidlotteryInfoDomain selectLotteryInfoById(int id);
 	
-	/*Detail*/
+	//获取smb夺宝
+	TPaidlotteryInfoDomain selectOneSmbTpid();
+	
+	//获取红包夺宝
+	List<TPaidlotteryInfoDomain> selectHbTpids();
+		
+	//获取其他夺宝
+	List<TPaidlotteryInfoDomain> selectOtherTpids();
+	
+	/******************Detail**********************/
 	//根据itcode查询某用户的抽奖记录
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcode(String itcode);
 	
