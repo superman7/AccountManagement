@@ -31,4 +31,13 @@ public interface TPaidlotteryInfoDAO {
 	
 	//成功交易个数与backup4相等时，backup4更新为0
 	int updateBackup4To0(@Param("id")int id);
+	
+	//获取smb夺宝
+	TPaidlotteryInfoDomain selectOneSmbTpid();
+	
+	//获取红包夺宝
+	List<TPaidlotteryInfoDomain> selectHbTpids();
+		
+	//获取其他夺宝
+	List<TPaidlotteryInfoDomain> selectOtherTpids();
 }

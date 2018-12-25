@@ -23,8 +23,6 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.http.HttpService;
 
 import com.alibaba.fastjson.JSONObject;
-import com.digitalchina.xa.it.dao.SystemTransactionDetailDAO;
-import com.digitalchina.xa.it.model.SystemTransactionDetailDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
@@ -36,9 +34,7 @@ import com.digitalchina.xa.it.util.TConfigUtils;
 @Controller
 @RequestMapping(value = "/paidLottery")
 public class PaidLotteryController {
-
-	@Autowired
-	private SystemTransactionDetailDAO systemTransactionDetailDAO;
+	
 	@Autowired
 	private TPaidlotteryService tPaidlotteryService;
 	@Autowired
@@ -121,13 +117,9 @@ public class PaidLotteryController {
 		int transactionId = tPaidlotteryService.insertLotteryBaseInfo(tpdd);
 		System.out.println("transactionId" + transactionId);
 		
-		String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-		//向system_transactiondetails表中插入信息
-		SystemTransactionDetailDomain stdd = new SystemTransactionDetailDomain(itcode, TConfigUtils.selectValueByKey("lottery_contract"), Double.valueOf(turnBalance.toString()), null, date, 0, "remark", itcode, "LotteryAdmin", "", 0, "LotteryBuyTicket", transactionId);
-		systemTransactionDetailDAO.insertBaseInfo(stdd);
-		
 		//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
-		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/buyTicket";
+		String url = TConfigUtils.selectValueByKey("kafka_address_test") + "/lottery/buyTicket";
+//		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/buyTicket";
 		System.err.println(url);
 		String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance.toString() + "&transactionDetailId=" + transactionId;
 		HttpRequest.sendPost(url, postParam);
@@ -167,6 +159,37 @@ public class PaidLotteryController {
 		}
 		modelMap.put("infoData", JSONObject.toJSON(tpid));
 		modelMap.put("detailData", JSONObject.toJSON(tpddList));
+		return modelMap;
+	}
+	
+	@ResponseBody
+	@GetMapping("/lotteryInfo/getData")
+	public Map<String, Object> getData(
+			@RequestParam(name = "param", required = true) String jsonValue){
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+//		String itcode = jsonObj.getString("itcode");
+//		int id = Integer.valueOf(jsonObj.getString("id"));
+		TPaidlotteryInfoDomain smbTpid = tPaidlotteryService.selectOneSmbTpid();			
+		List<TPaidlotteryInfoDomain> hbTpidList = tPaidlotteryService.selectHbTpids();	
+		List<TPaidlotteryInfoDomain> otherTpidList = tPaidlotteryService.selectOtherTpids();
+		
+		DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		smbTpid.setBackup1(sdf.format(smbTpid.getLotteryTime()));
+		for(TPaidlotteryInfoDomain tpid : hbTpidList){
+	        tpid.setBackup1(sdf.format(tpid.getLotteryTime()));
+		}
+		for(TPaidlotteryInfoDomain tpid : otherTpidList){
+	        tpid.setBackup1(sdf.format(tpid.getLotteryTime()));
+		}
+		
+		modelMap.put("smb", JSONObject.toJSON(smbTpid));
+		modelMap.put("hongbao", JSONObject.toJSON(hbTpidList));
+		modelMap.put("other", JSONObject.toJSON(otherTpidList));
+		
 		return modelMap;
 	}
 	
