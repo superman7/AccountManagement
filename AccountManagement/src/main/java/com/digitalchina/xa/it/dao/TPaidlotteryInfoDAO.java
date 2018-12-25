@@ -8,6 +8,9 @@ import org.apache.ibatis.annotations.Param;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 
 public interface TPaidlotteryInfoDAO {
+	//插入抽奖信息
+	void insertLotteryInfo(TPaidlotteryInfoDomain tplid);
+	
 	//获取结束或未结束的抽奖
 	List<TPaidlotteryInfoDomain> selectLotteryInfoByFlag(@Param("flag")int flag);
 	
@@ -31,4 +34,7 @@ public interface TPaidlotteryInfoDAO {
 	
 	//成功交易个数与backup4相等时，backup4更新为0
 	int updateBackup4To0(@Param("id")int id);
+	
+	//获取当前SZB抽奖的数量 flag=0,typeCode=1
+	List<TPaidlotteryInfoDomain> selectUnfinishedSZBLottery();
 }

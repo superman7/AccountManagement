@@ -49,6 +49,17 @@
 			cfg_extra = 'EthNodes'
 	</select>
 	
+	<select id="selectConfigByExtra" resultType="com.digitalchina.xa.it.model.TConfigDomain">
+		SELECT
+			cfg_value,cfg_status
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			cfg_extra = #{cfgExtra, jdbcType=VARCHAR}
+		AND
+			cfg_status = 1
+	</select>
+	
 	<select id="selectContractInfo" resultType="com.digitalchina.xa.it.model.TConfigDomain">
 		SELECT
 			cfg_key,cfg_value

@@ -1,5 +1,7 @@
 package com.digitalchina.xa.it.job;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -13,11 +15,13 @@ import org.web3j.protocol.http.HttpService;
 
 import com.digitalchina.xa.it.dao.CashBackDAO;
 import com.digitalchina.xa.it.dao.PaidVoteDetailDAO;
+import com.digitalchina.xa.it.dao.TConfigDAO;
 import com.digitalchina.xa.it.dao.TPaidlotteryDetailsDAO;
 import com.digitalchina.xa.it.dao.TPaidlotteryInfoDAO;
 import com.digitalchina.xa.it.dao.VirtualMachineDAO;
 import com.digitalchina.xa.it.dao.WalletAccountDAO;
 import com.digitalchina.xa.it.dao.WalletTransactionDAO;
+import com.digitalchina.xa.it.model.TConfigDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 import com.digitalchina.xa.it.service.TPaidlotteryService;
@@ -30,6 +34,10 @@ public class LotteryTask {
     private WalletAccountDAO walletAccountDAO;
 	@Autowired
 	private WalletTransactionDAO walletTransactionDAO;
+	@Autowired
+	private TConfigDAO tconfigDAO;
+	@Autowired
+	private TPaidlotteryInfoDAO tpaidLotteryInfoDAO;
 	
 	@Autowired
 	private PaidVoteDetailDAO paidVoteDetailDAO;
@@ -48,6 +56,7 @@ public class LotteryTask {
 	@Autowired
     private TPaidlotteryService tPaidlotteryService;
 	
+	//定时更新抽奖Detail的链上状态
 	@Scheduled(fixedRate=15000)
 	public void updateTurnResultStatusJob(){
 		tPaidlotteryDetailsDAO.updateLotteryDetailsWhereTimeOut();
@@ -80,7 +89,8 @@ public class LotteryTask {
 			web3j.shutdown();
 		}
 	}
-	
+
+	//定时处理需要开奖的信息
 	@Transactional
 	@Scheduled(cron="20,50 * * * * ?")
 	public void runLottery(){
@@ -93,6 +103,7 @@ public class LotteryTask {
 		tPaidlotteryService.runALottery(tpid0);
 	}
 	
+	//将开奖信息更新为待开奖
 	@Transactional
 	@Scheduled(cron="5,35 * * * * ?")
 	public void lotteryControl(){
@@ -110,6 +121,7 @@ public class LotteryTask {
 			}
 		}
 	}
+	//遇到交易异常的状态，回退开奖信息记录的状态
 	@Transactional
 	@Scheduled(fixedRate=10000)
 	public void lotteryUnfinishedUpdate(){
@@ -131,5 +143,81 @@ public class LotteryTask {
 				}
 			}
 		}
+	}
+	
+	//创建神州币抽奖
+	@Transactional
+	@Scheduled(fixedRate=60000)
+	public void lotterySZBCreate(){
+		System.err.println("插入新的SZB抽奖信息...");
+		List<TPaidlotteryInfoDomain> tpidList = tPaidlotteryInfoDAO.selectUnfinishedSZBLottery();
+		if(tpidList.size() > 0) {
+			return;
+		}
+		TPaidlotteryInfoDomain tpid = new TPaidlotteryInfoDomain();
+		List<TConfigDomain> tconfigList = tconfigDAO.selectConfigByExtra("LotterySzbInfo");
+		String lotteryInfo = tconfigList.get((int) (Math.random() * tconfigList.size())).getCfgValue();
+		
+		String[] infoList = lotteryInfo.split("##");
+		
+		tpid.setName(infoList[0]);
+		tpid.setDescription(infoList[1]);
+		tpid.setWinSumAmount(Integer.valueOf(infoList[2]));
+		tpid.setWinSumPerson(Integer.valueOf(infoList[3]));
+		tpid.setReward(infoList[4]);
+		tpid.setUnitPrice(Integer.valueOf(infoList[5]));
+		tpid.setLimitEveryday(Integer.valueOf(infoList[6]));
+		tpid.setWinCount(Integer.valueOf(infoList[7]));
+		
+		tpid.setFlag(0);
+		//1为神州币抽奖
+		tpid.setTypeCode(1);
+		tpid.setNowSumAmount(0);
+		tpid.setBackup4(0);
+		tpid.setBackup5(0);
+		tpid.setLotteryTime(new Timestamp(new Date().getTime()));
+		
+		tpid.setNowSumPerson(0);
+		tpid.setWinDate("");
+		tpid.setBackup1("");
+		tpid.setBackup2("");
+		tpid.setBackup3("");
+		tpaidLotteryInfoDAO.insertLotteryInfo(tpid);
+	}
+	
+	//创建人民币抽奖
+	@Transactional
+	@Scheduled(cron="00 30 09 * * ?")
+	public void lotteryRMBCreate(){
+		System.err.println("插入当日的RMB抽奖信息...");
+		
+		TPaidlotteryInfoDomain tpid = new TPaidlotteryInfoDomain();
+		List<TConfigDomain> tconfigList = tconfigDAO.selectConfigByExtra("LotteryRmbInfo");
+		String lotteryInfo = tconfigList.get((int) (Math.random() * tconfigList.size())).getCfgValue();
+		String[] infoList = lotteryInfo.split("##");
+		
+		tpid.setName(infoList[0]);
+		tpid.setDescription(infoList[1]);
+		tpid.setWinSumAmount(Integer.valueOf(infoList[2]));
+		tpid.setWinSumPerson(Integer.valueOf(infoList[3]));
+		tpid.setReward(infoList[4]);
+		tpid.setUnitPrice(Integer.valueOf(infoList[5]));
+		tpid.setLimitEveryday(Integer.valueOf(infoList[6]));
+		tpid.setWinCount(Integer.valueOf(infoList[7]));
+		
+		tpid.setFlag(0);
+		//0为现金红包抽奖
+		tpid.setTypeCode(0);
+		tpid.setNowSumAmount(0);
+		tpid.setBackup4(0);
+		tpid.setBackup5(0);
+		tpid.setLotteryTime(new Timestamp(new Date().getTime()));
+		
+		tpid.setNowSumPerson(0);
+		tpid.setWinDate("");
+		tpid.setBackup1("");
+		tpid.setBackup2("");
+		tpid.setBackup3("");
+		tpaidLotteryInfoDAO.insertLotteryInfo(tpid);
 	}
 }

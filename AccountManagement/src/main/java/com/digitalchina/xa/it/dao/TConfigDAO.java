@@ -16,4 +16,6 @@ public interface TConfigDAO {
 	List<TConfigDomain> selectEthNodesInfo();
 	
 	List<TConfigDomain> selectContractInfo();
+	
+	List<TConfigDomain> selectConfigByExtra(@Param("cfgExtra")String cfgExtra);
 }

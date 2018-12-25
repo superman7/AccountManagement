@@ -1,5 +1,7 @@
 package com.digitalchina.xa.it.model;
 
+import java.sql.Timestamp;
+
 import org.joda.time.DateTime;
 
 public class TPaidlotteryInfoDomain {
@@ -35,7 +37,7 @@ public class TPaidlotteryInfoDomain {
 		
 		private Integer limitEveryday;
 		
-		private DateTime lotteryTime;
+		private Timestamp lotteryTime;
 		
 	    private String backup1;
 	    
@@ -178,14 +180,6 @@ public class TPaidlotteryInfoDomain {
 			this.limitEveryday = limitEveryday;
 		}
 
-		public DateTime getLotteryTime() {
-			return lotteryTime;
-		}
-
-		public void setLotteryTime(DateTime lotteryTime) {
-			this.lotteryTime = lotteryTime;
-		}
-
 		public String getBackup1() {
 			return backup1;
 		}
@@ -224,5 +218,13 @@ public class TPaidlotteryInfoDomain {
 
 		public void setBackup5(Integer backup5) {
 			this.backup5 = backup5;
+		}
+
+		public Timestamp getLotteryTime() {
+			return lotteryTime;
+		}
+
+		public void setLotteryTime(Timestamp lotteryTime) {
+			this.lotteryTime = lotteryTime;
 		}
 }

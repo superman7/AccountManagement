@@ -9,6 +9,25 @@
 		id,name,description,flag,typeCode,winCount,unitPrice,winSumAmount,winDate,winSumPerson,nowSumPerson,nowSumAmount,reward,winner,winTicket,limitEveryday,lotteryTime,backup1,backup2,backup3,backup4,backup5
 	</sql>
 	
+	<insert id="insertLotteryInfo" parameterType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            select @@IDENTITY as id
+        </selectKey>
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				name,description,flag,typeCode,winCount,unitPrice,winSumAmount,winDate,winSumPerson,nowSumPerson,nowSumAmount,reward,winner,winTicket,limitEveryday,lotteryTime,backup1,backup2,backup3,backup4,backup5
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{name, jdbcType=VARCHAR}, #{description, jdbcType=VARCHAR}, #{flag, jdbcType=INTEGER}, #{typeCode, jdbcType=INTEGER}, 
+				#{winCount, jdbcType=INTEGER}, #{unitPrice, jdbcType=INTEGER}, #{winSumAmount, jdbcType=INTEGER}, #{winDate, jdbcType=VARCHAR}, 
+				#{winSumPerson, jdbcType=INTEGER}, #{nowSumPerson, jdbcType=INTEGER}, #{nowSumAmount, jdbcType=INTEGER}, #{reward, jdbcType=VARCHAR}, 
+				#{winner, jdbcType=VARCHAR}, #{winTicket, jdbcType=VARCHAR}, #{limitEveryday, jdbcType=INTEGER}, #{lotteryTime, jdbcType=TIMESTAMP}, 
+				#{backup1, jdbcType=VARCHAR}, #{backup2, jdbcType=VARCHAR}, #{backup3, jdbcType=VARCHAR}, #{backup4, jdbcType=INTEGER}, 
+				#{backup5, jdbcType=INTEGER} 
+			</trim>
+	</insert>
+	
 	<select id="selectLotteryInfoByFlag" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>
@@ -16,6 +35,17 @@
 			<include refid="BASE_TABLE"/>
 		WHERE
 			flag = #{flag,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectUnfinishedSZBLottery" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			flag = 0
+		AND
+			typeCode = 1
 	</select>
 	
 	<select id="selectLotteryInfoById" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
