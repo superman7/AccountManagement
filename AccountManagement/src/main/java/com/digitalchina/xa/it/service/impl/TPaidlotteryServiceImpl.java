@@ -13,9 +13,7 @@ import com.digitalchina.xa.it.dao.TPaidlotteryInfoDAO;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 import com.digitalchina.xa.it.service.TPaidlotteryService;
-import com.digitalchina.xa.it.util.HttpRequest;
 import com.digitalchina.xa.it.util.MerkleTrees;
-import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Service(value = "TPaidlotteryService")
 public class TPaidlotteryServiceImpl implements TPaidlotteryService {
@@ -64,15 +62,6 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 2, winTickets, rewardList[index2]);
 					tpddTemp.setResult(2);
 					winItcodes += tpddTemp.getItcode() + "&";
-					
-					//抽奖奖品为神州币
-					if(tpid.getTypeCode() == 1){
-						//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
-						String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/issueReward";
-//						String url = "http://10.7.10.186:8083/lottery/issueReward";
-						String postParam = "itcode=" + tpddTemp.getItcode() + "&turnBalance=" + rewardList[index2].toString() + "&transactionDetailId=" + tpid.getId();
-						HttpRequest.sendPost(url, postParam);
-					}
 				} else if(tpddTemp.getResult() != 2) {
 					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 1, winTickets, "无");
 				}
@@ -160,5 +149,20 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	@Override
 	public TPaidlotteryDetailsDomain selectLotteryDetailsById(int id) {
 		return tPaidlotteryDetailsDAO.selectLotteryDetailsById(id);
+	}
+
+	@Override
+	public TPaidlotteryInfoDomain selectOneSmbTpid() {
+		return tPaidlotteryInfoDAO.selectOneSmbTpid();
+	}
+
+	@Override
+	public List<TPaidlotteryInfoDomain> selectHbTpids() {
+		return tPaidlotteryInfoDAO.selectHbTpids();
+	}
+
+	@Override
+	public List<TPaidlotteryInfoDomain> selectOtherTpids() {
+		return tPaidlotteryInfoDAO.selectOtherTpids();
 	}
 }
