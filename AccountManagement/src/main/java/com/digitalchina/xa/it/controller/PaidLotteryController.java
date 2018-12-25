@@ -23,6 +23,8 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.http.HttpService;
 
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.xa.it.dao.SystemTransactionDetailDAO;
+import com.digitalchina.xa.it.model.SystemTransactionDetailDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
@@ -34,7 +36,9 @@ import com.digitalchina.xa.it.util.TConfigUtils;
 @Controller
 @RequestMapping(value = "/paidLottery")
 public class PaidLotteryController {
-	
+
+	@Autowired
+	private SystemTransactionDetailDAO systemTransactionDetailDAO;
 	@Autowired
 	private TPaidlotteryService tPaidlotteryService;
 	@Autowired
@@ -116,6 +120,11 @@ public class PaidLotteryController {
 		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new Timestamp(new Date().getTime()));
 		int transactionId = tPaidlotteryService.insertLotteryBaseInfo(tpdd);
 		System.out.println("transactionId" + transactionId);
+		
+		String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		//向system_transactiondetails表中插入信息
+		SystemTransactionDetailDomain stdd = new SystemTransactionDetailDomain(itcode, TConfigUtils.selectValueByKey("lottery_contract"), Double.valueOf(turnBalance.toString()), null, date, 0, "remark", itcode, "LotteryAdmin", "", 0, "LotteryBuyTicket", transactionId);
+		systemTransactionDetailDAO.insertBaseInfo(stdd);
 		
 		//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
 		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/buyTicket";
