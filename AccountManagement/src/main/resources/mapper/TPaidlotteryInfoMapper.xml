@@ -123,6 +123,19 @@
 			typeCode = 2
 	</select>
 	
+	<select id="selectNewOpen" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
+		SELECT
+			id,name,description,winner,winTicket,lotteryTime,backup2,typeCode
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			flag = 1
+		ORDER BY
+			lotteryTime DESC
+		LIMIT  #{count}
+			
+	</select>
+	
 	<update id="updateNowSumAmountAndBackup4">
 		UPDATE 
 			<include refid="BASE_TABLE"/>

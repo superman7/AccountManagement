@@ -176,19 +176,17 @@ public class PaidLotteryController {
 		TPaidlotteryInfoDomain smbTpid = tPaidlotteryService.selectOneSmbTpid();			
 		List<TPaidlotteryInfoDomain> hbTpidList = tPaidlotteryService.selectHbTpids();	
 		List<TPaidlotteryInfoDomain> otherTpidList = tPaidlotteryService.selectOtherTpids();
+		List<TPaidlotteryInfoDomain> newOpenList = tPaidlotteryService.selectNewOpen(Integer.valueOf(TConfigUtils.selectValueByKey("lottery_show_finish_size")));
 		
 		DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		smbTpid.setBackup1(sdf.format(smbTpid.getLotteryTime()));
-		for(TPaidlotteryInfoDomain tpid : hbTpidList){
-	        tpid.setBackup1(sdf.format(tpid.getLotteryTime()));
-		}
-		for(TPaidlotteryInfoDomain tpid : otherTpidList){
+		for(TPaidlotteryInfoDomain tpid : newOpenList){
 	        tpid.setBackup1(sdf.format(tpid.getLotteryTime()));
 		}
 		
-		modelMap.put("smb", JSONObject.toJSON(smbTpid));
-		modelMap.put("hongbao", JSONObject.toJSON(hbTpidList));
-		modelMap.put("other", JSONObject.toJSON(otherTpidList));
+		modelMap.put("smbData", JSONObject.toJSON(smbTpid));
+		modelMap.put("hbData", JSONObject.toJSON(hbTpidList));
+		modelMap.put("otherData", JSONObject.toJSON(otherTpidList));
+		modelMap.put("newOpen", JSONObject.toJSON(newOpenList));
 		
 		return modelMap;
 	}
@@ -232,10 +230,35 @@ public class PaidLotteryController {
 	}
 	
 	@ResponseBody
-	@GetMapping("/lotteryDetail/{itcode}")
-	public void selectlotteryDetailByItcode(
+	@GetMapping("/lotteryDetail/myJoin")
+	public Map<String, Object> selectlotteryDetailByItcode(
 			@RequestParam(name = "param", required = true) String jsonValue){
-		//tPaidlotteryService.selectLotteryDetailsByItcode(itcode);
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+		String itcode = jsonObj.getString("itcode");
+		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryService.selectLotteryDetailsByItcode(itcode);
+		
+		modelMap.put("data", JSONObject.toJSON(tpddList));
+		return modelMap;
+	}
+	
+	@ResponseBody
+	@GetMapping("/lotteryDetail/myWin")
+	public Map<String, Object> selectMyWin(
+			@RequestParam(name = "param", required = true) String jsonValue){
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+		String itcode = jsonObj.getString("itcode");
+		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryService.selectLotteryDetailsByItcodeAndResult(itcode,2);
+		
+		modelMap.put("data", JSONObject.toJSON(tpddList));
+		return modelMap;
 	}
 	
 	@ResponseBody

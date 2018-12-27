@@ -165,4 +165,14 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	public List<TPaidlotteryInfoDomain> selectOtherTpids() {
 		return tPaidlotteryInfoDAO.selectOtherTpids();
 	}
+
+	@Override
+	public List<TPaidlotteryInfoDomain> selectNewOpen(int count) {
+		return tPaidlotteryInfoDAO.selectNewOpen(count);
+	}
+
+	@Override
+	public List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcodeAndResult(String itcode, int result) {
+		return tPaidlotteryDetailsDAO.selectLotteryDetailsByItcodeAndResult(itcode, result);
+	}
 }
