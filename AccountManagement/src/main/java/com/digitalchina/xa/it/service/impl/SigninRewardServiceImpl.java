@@ -1,4 +1,4 @@
-/*package com.digitalchina.xa.it.service.impl;
+package com.digitalchina.xa.it.service.impl;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -255,4 +255,3 @@ public class SigninRewardServiceImpl implements SigninRewardService{
         }
 	}
 }
-*/
