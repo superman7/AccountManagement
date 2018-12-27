@@ -1,4 +1,4 @@
-/*package com.digitalchina.xa.it.service.impl;
+package com.digitalchina.xa.it.service.impl;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -34,8 +34,8 @@ public class SigninRewardServiceImpl implements SigninRewardService{
     @Autowired
    	private JdbcTemplate jdbc;
 
-    private Integer voteRewardValue = Integer.valueOf(TConfigUtils.selectValueByKey("vote_reward_value"));
-    private Integer attendanceRewardValue = Integer.valueOf(TConfigUtils.selectValueByKey("attendance_reward_value"));
+//    private Integer voteRewardValue = Integer.valueOf(TConfigUtils.selectValueByKey("vote_reward_value"));
+//    private Integer attendanceRewardValue = Integer.valueOf(TConfigUtils.selectValueByKey("attendance_reward_value"));
 	@Override
 	public Map<String, Object> addLuckyNumber(String param) {
 		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(param);
@@ -219,9 +219,9 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
 			
 			sr.setSigntime(nousedate);
-			sr.setRewards(voteRewardValue);
+			sr.setRewards(Integer.valueOf(TConfigUtils.selectValueByKey("vote_reward_value")));
 			this.addSigninReward(sr);
-			return voteRewardValue.toString() + "," + sr.getId().toString();
+			return TConfigUtils.selectValueByKey("vote_reward_value") + "," + sr.getId().toString();
 		}
 		return "error";
 	}
@@ -246,13 +246,12 @@ public class SigninRewardServiceImpl implements SigninRewardService{
     			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
     			
     			sr.setSigntime(nousedate);
-    			sr.setRewards(attendanceRewardValue);
+    			sr.setRewards(Integer.valueOf(TConfigUtils.selectValueByKey("attendance_reward_value")));
     			this.addSigninReward(sr);
     			String transactionDetailId = sr.getId().toString();
-    			String postParam = "itcode=" + itcode + "&reward=" + attendanceRewardValue.toString() + "&transactionDetailId=" + transactionDetailId;
+    			String postParam = "itcode=" + itcode + "&reward=" + TConfigUtils.selectValueByKey("attendance_reward_value") + "&transactionDetailId=" + transactionDetailId;
     			HttpRequest.sendGet(url, postParam);
     		}
         }
 	}
 }
-*/
