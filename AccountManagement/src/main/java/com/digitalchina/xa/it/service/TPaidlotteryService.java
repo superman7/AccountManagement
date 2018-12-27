@@ -42,6 +42,9 @@ public interface TPaidlotteryService {
 	//获取其他夺宝
 	List<TPaidlotteryInfoDomain> selectOtherTpids();
 	
+	//获取最近揭晓
+	List<TPaidlotteryInfoDomain> selectNewOpen(int count);
+	
 	/******************Detail**********************/
 	//根据itcode查询某用户的抽奖记录
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcode(String itcode);
@@ -54,4 +57,7 @@ public interface TPaidlotteryService {
 	
 	//根据id查询
 	TPaidlotteryDetailsDomain selectLotteryDetailsById(int id);
+	
+	//根据itcode获取不同result的参与记录
+	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcodeAndResult(String itcode,int result);
 }

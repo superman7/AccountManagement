@@ -46,4 +46,7 @@ public interface TPaidlotteryInfoDAO {
 		
 	//获取其他夺宝
 	List<TPaidlotteryInfoDomain> selectOtherTpids();
+	
+	//获取最新开奖，10个
+	List<TPaidlotteryInfoDomain> selectNewOpen(@Param("count")int count);
 }

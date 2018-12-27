@@ -45,4 +45,7 @@ public interface TPaidlotteryDetailsDAO {
 	
 	//将backup3=2改为3
 	int updateBackup3From2To3(@Param("id")int id);
+	
+	//根据itcode获取不同result的参与记录
+	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcodeAndResult(@Param("itcode")String itcode,@Param("result")int result);
 }
