@@ -136,9 +136,9 @@
 			backup3 = 2,
 			ticket = '交易未成功写入区块链。'
 		WHERE
-			hashcode = '0x0'
-		OR
-			(hashcode = '' AND date_add(buyTime, interval 10 MINUTE) &lt;=now())
+			(hashcode = '0x0' OR (hashcode = '' AND date_add(buyTime, interval 10 MINUTE) &lt;=now()))
+		AND
+			backup3 = 0
 	</update>
 	
 	<update id="updateDetailAfterLotteryFinished">

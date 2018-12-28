@@ -57,7 +57,8 @@ public class LotteryTask {
     private TPaidlotteryService tPaidlotteryService;
 	
 	//定时更新抽奖Detail的链上状态
-	@Scheduled(fixedRate=15000)
+	@Transactional
+	@Scheduled(fixedRate=10000)
 	public void updateTurnResultStatusJob(){
 		tPaidlotteryDetailsDAO.updateLotteryDetailsWhereTimeOut();
 		
@@ -89,6 +90,30 @@ public class LotteryTask {
 			web3j.shutdown();
 		}
 	}
+	//遇到交易异常的状态，回退开奖信息记录的状态
+	@Transactional
+	@Scheduled(fixedRate=30000)
+	public void lotteryUnfinishedUpdate(){
+		//查询未结束的抽奖
+		List<TPaidlotteryInfoDomain> tpidList = tPaidlotteryInfoDAO.selectUnfinishedLottery();
+		if(tpidList.size() == 0) {
+			return;
+		}
+		for(int index = 0; index < tpidList.size(); index++) {
+			TPaidlotteryInfoDomain tpid = tpidList.get(index);
+			//查询抽奖details中，区块链交易已失败的个数
+			List<TPaidlotteryDetailsDomain> errorList = tPaidlotteryDetailsDAO.selectDetailByBackup3(tpid.getId(), 2);
+			if(errorList.size() > 0) {
+				//更新Info表nowSumAmount，backup4
+				//将已失败交易的金额累计清除，更新交易状态为3
+				System.out.println("将LotteryID-" + tpid.getId() + "-已失败交易的金额累计清除，更新交易状态为3,清除金额为-" + errorList.size() + "*单价");
+				tPaidlotteryInfoDAO.updateNowSumAmountAndBackup4Sub(tpid.getId(), errorList.size());
+				for(int j = 0; j < errorList.size(); j++) {
+					tPaidlotteryDetailsDAO.updateBackup3From2To3(errorList.get(j).getId());
+				}
+			}
+		}
+	}
 
 	//定时处理需要开奖的信息
 	@Transactional
@@ -118,29 +143,6 @@ public class LotteryTask {
 			int count1 = tPaidlotteryDetailsDAO.selectCountByBackup3(tpid.getId(), 1);
 			if(count1 >= (tpid.getWinSumAmount() / tpid.getUnitPrice())) {
 				tPaidlotteryInfoDAO.updateBackup4To0(tpid.getId());
-			}
-		}
-	}
-	//遇到交易异常的状态，回退开奖信息记录的状态
-	@Transactional
-	@Scheduled(fixedRate=10000)
-	public void lotteryUnfinishedUpdate(){
-		//查询未结束的抽奖
-		List<TPaidlotteryInfoDomain> tpidList = tPaidlotteryInfoDAO.selectUnfinishedLottery();
-		if(tpidList.size() == 0) {
-			return;
-		}
-		for(int index = 0; index < tpidList.size(); index++) {
-			TPaidlotteryInfoDomain tpid = tpidList.get(index);
-			//查询抽奖details中，区块链交易已失败的个数
-			List<TPaidlotteryDetailsDomain> errorList = tPaidlotteryDetailsDAO.selectDetailByBackup3(tpid.getId(), 2);
-			if(errorList.size() > 0) {
-				//更新Info表nowSumAmount，backup4
-				//将已失败交易的金额累计清除，更新交易状态为3
-				tPaidlotteryInfoDAO.updateNowSumAmountAndBackup4Sub(tpid.getId(), errorList.size());
-				for(int j = 0; j < errorList.size(); j++) {
-					tPaidlotteryDetailsDAO.updateBackup3From2To3(errorList.get(j).getId());
-				}
 			}
 		}
 	}

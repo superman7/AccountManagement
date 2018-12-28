@@ -146,7 +146,7 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 			sr.setSigntime(nousedate);
 			sr.setRewards(Integer.valueOf(rewards));
 			this.addSigninReward(sr);
-			return "{\"status\":1,\"value\":" + rewards + ",\"lucky\":\"" + luckyNum + ",\"transactionDetailId\":\"" + sr.getId() + "\"}";
+			return "{\"status\":1,\"value\":" + rewards + ",\"lucky\":\"" + luckyNum + "\",\"transactionDetailId\":\"" + sr.getId() + "\"}";
 		}
 //		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //		SigninRewardDomain sr = new SigninRewardDomain();
