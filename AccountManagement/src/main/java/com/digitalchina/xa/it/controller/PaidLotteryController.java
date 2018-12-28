@@ -92,7 +92,7 @@ public class PaidLotteryController {
 		try {
 			Web3j web3j =Web3j.build(new HttpService(TConfigUtils.selectIp()));
 			BigInteger balance = web3j.ethGetBalance(ethAccountService.selectDefaultEthAccount(itcode).getAccount(),DefaultBlockParameterName.LATEST).send().getBalance().divide(BigInteger.valueOf(10000000000000000L));
-			if(Double.valueOf(jsonObj.getString("unitPrice")) > Double.valueOf(balance.toString())-0.25) {
+			if(Double.valueOf(jsonObj.getString("unitPrice")) > Double.valueOf(balance.toString())-10) {
 				modelMap.put("data", "balanceNotEnough");
 				return modelMap;
 			}
@@ -118,8 +118,8 @@ public class PaidLotteryController {
 		System.out.println("transactionId" + transactionId);
 		
 		//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
-		String url = TConfigUtils.selectValueByKey("kafka_address_test") + "/lottery/buyTicket";
-//		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/buyTicket";
+//		String url = TConfigUtils.selectValueByKey("kafka_address_test") + "/lottery/buyTicket";
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/buyTicket";
 		System.err.println(url);
 		String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance.toString() + "&transactionDetailId=" + transactionId;
 		HttpRequest.sendPost(url, postParam);
