@@ -99,6 +99,15 @@
 			flag = 0
 	</select>
 	
+	<select id="selectLastRMBLottery" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
+		SELECT
+			MAX(id)
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			typeCode = 0
+	</select>
+	
 	<select id="selectOneSmbTpid" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>

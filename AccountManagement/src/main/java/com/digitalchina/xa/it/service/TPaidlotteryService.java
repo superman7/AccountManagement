@@ -60,4 +60,7 @@ public interface TPaidlotteryService {
 	
 	//根据itcode获取不同result的参与记录
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcodeAndResult(String itcode,int result);
+	
+	//查询最近的红包抽奖typeCode=0
+	Integer selectLastRMBLottery();
 }

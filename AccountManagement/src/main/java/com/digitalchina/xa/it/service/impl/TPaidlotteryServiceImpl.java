@@ -186,4 +186,9 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	public List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcodeAndResult(String itcode, int result) {
 		return tPaidlotteryDetailsDAO.selectLotteryDetailsByItcodeAndResult(itcode, result);
 	}
+
+	@Override
+	public Integer selectLastRMBLottery() {
+		return tPaidlotteryInfoDAO.selectLastRMBLottery();
+	}
 }
