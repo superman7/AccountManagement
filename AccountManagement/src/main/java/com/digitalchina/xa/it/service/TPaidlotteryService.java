@@ -45,6 +45,8 @@ public interface TPaidlotteryService {
 	//获取最近揭晓
 	List<TPaidlotteryInfoDomain> selectNewOpen(int count);
 	
+	Boolean updateLotteryReward(int id, String reward);
+	
 	/******************Detail**********************/
 	//根据itcode查询某用户的抽奖记录
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcode(String itcode);

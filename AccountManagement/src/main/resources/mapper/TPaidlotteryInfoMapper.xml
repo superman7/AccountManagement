@@ -99,7 +99,7 @@
 			flag = 0
 	</select>
 	
-	<select id="selectLastRMBLottery" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
+	<select id="selectLastRMBLottery" resultType="java.lang.Integer">
 		SELECT
 			MAX(id)
 		FROM
@@ -155,6 +155,15 @@
 		LIMIT  #{count}
 			
 	</select>
+	
+	<update id="updateLotteryReward">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			reward = #{reward,jdbcType=VARCHAR}
+		WHERE
+			id = #{id,jdbcType=INTEGER}
+	</update>
 	
 	<update id="updateNowSumAmountAndBackup4">
 		UPDATE 
