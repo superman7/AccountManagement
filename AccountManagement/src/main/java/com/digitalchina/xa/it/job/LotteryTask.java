@@ -191,6 +191,11 @@ public class LotteryTask {
 	@Transactional
 	@Scheduled(cron="00 30 09 * * ?")
 	public void lotteryRMBCreate(){
+		//查询上一日抽奖是否已完成
+		List<TPaidlotteryInfoDomain> tpidList = tPaidlotteryInfoDAO.selectUnfinishedSZBLottery();
+		if(tpidList.size() > 0) {
+			return;
+		}
 		System.err.println("插入当日的RMB抽奖信息...");
 		
 		TPaidlotteryInfoDomain tpid = new TPaidlotteryInfoDomain();

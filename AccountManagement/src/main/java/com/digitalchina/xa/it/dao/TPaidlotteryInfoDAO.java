@@ -38,6 +38,9 @@ public interface TPaidlotteryInfoDAO {
 	//获取当前SZB抽奖的数量 flag=0,typeCode=1
 	List<TPaidlotteryInfoDomain> selectUnfinishedSZBLottery();
 	
+	//获取当前SZB抽奖的数量 flag=0,typeCode=0
+	List<TPaidlotteryInfoDomain> selectUnfinishedRMBLottery();
+	
 	//获取smb夺宝
 	TPaidlotteryInfoDomain selectOneSmbTpid();
 	
