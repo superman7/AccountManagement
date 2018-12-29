@@ -44,6 +44,9 @@ public interface TPaidlotteryInfoDAO {
 	//获取最新的RMB夺宝
 	Integer selectLastRMBLottery();
 	
+	//更新reward字段
+	int updateLotteryReward(@Param("id")int id, @Param("reward")String reward);
+	
 	//获取smb夺宝
 	TPaidlotteryInfoDomain selectOneSmbTpid();
 	

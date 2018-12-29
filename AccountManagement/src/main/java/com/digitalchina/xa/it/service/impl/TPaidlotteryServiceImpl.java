@@ -191,4 +191,22 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	public Integer selectLastRMBLottery() {
 		return tPaidlotteryInfoDAO.selectLastRMBLottery();
 	}
+
+	@Override
+	public Boolean updateLotteryReward(int id, String reward) {
+		if(id != 0 && reward != null) {
+			try {
+				Integer effectedNumber = tPaidlotteryInfoDAO.updateLotteryReward(id, reward);
+				if(effectedNumber > 0) {
+					return true;
+				} else {
+					throw new RuntimeException("更新reward失败");
+				}
+			} catch(Exception e) {
+				throw new RuntimeException("更新reward失败 " + e.getMessage());
+			}
+		} else {
+			throw new RuntimeException("reward或id不正确");
+		}
+	}
 }

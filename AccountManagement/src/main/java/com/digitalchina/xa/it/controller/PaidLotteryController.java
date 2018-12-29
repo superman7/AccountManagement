@@ -70,6 +70,37 @@ public class PaidLotteryController {
 		return modelMap;
 	}
 	
+	@ResponseBody
+	@GetMapping("/lotteryInfo/getCurrentRMBId")
+	public Map<String, Object> getCurrentRMBId(
+			@RequestParam(name = "param", required = true) String jsonValue){
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		Integer id = tPaidlotteryService.selectLastRMBLottery();
+		modelMap.put("data", id);
+		
+		return modelMap;
+	}
+	
+	@ResponseBody
+	@GetMapping("/lotteryInfo/updateReward")
+	public Map<String, Object> updateReward(
+			@RequestParam(name = "param", required = true) String jsonValue){
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+		Integer id = Integer.valueOf(jsonObj.getString("id"));
+		String reward = jsonObj.getString("reward");
+		tPaidlotteryService.updateLotteryReward(id, reward);
+		
+		modelMap.put("data", "true");
+		return modelMap;
+	}
+	
 	@Transactional
 	@ResponseBody
 	@GetMapping("/insertLotteryDetails")
