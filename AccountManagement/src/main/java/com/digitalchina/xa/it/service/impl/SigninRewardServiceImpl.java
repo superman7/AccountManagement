@@ -115,8 +115,8 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 				luckyNum = luckycashDomain.getLuckyNum();
 			}
 		}
-		
-		int rewards = 5;
+		//当前是5SZB
+		int rewards = Integer.valueOf(TConfigUtils.selectValueByKey("signin_reward_value"));
 		if(result.size() > 0){
 			//第1-6天分别为5-10个币，第7天开始增加一个1-10的随机宝箱，14天-21天宝箱大小为6-15,第21天以上宝箱大小为11-20
 			int count = result.size();
