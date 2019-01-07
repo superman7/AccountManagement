@@ -115,16 +115,19 @@ public class Test {
 //	}
 	
 	public static void main(String[] args) {
-		String aaa = "%7B\"itcode\"%3A\"fannl\"%2C\"articleName\"%3A\"哎哎哎\"%2C\"articleContent\"%3A\"<p><i><mark+class%3D%5C\"marker-yellow%5C\"><strong><u>给这个div添加个边框！%40￥%23%25￥……%26amp%3B%26amp%3B（）%26amp%3B……%40%23%25￥！%40%23%26amp%3B**“”“”：；；：<%2Fu><%2Fstrong><%2Fmark><%2Fi><%2Fp>\"%2C\"articleFreePart\"%3A\"1\"%2C\"articlePrice\"%3A\"1\"%7D";
-		String s = "";
-		try {
-			s = URLEncoder.encode(aaa,"utf-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String[] aaa = {};
+//		String s = "";
+//		try {
+//			s = URLEncoder.encode(aaa,"utf-8");
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		for(String s : aaa)
+		{
+			String result = HttpRequest.sendGet("http://localhost:8082/eth/getBalance", "itcode=" + s);
+			System.out.println(result);
 		}
-		String result = HttpRequest.sendPost("http://10.7.10.186:8082/paidRead/insertArticle", "param=" + s);
-		System.out.println(result);
 	}
 	
 //	public static void main(String[] args) {

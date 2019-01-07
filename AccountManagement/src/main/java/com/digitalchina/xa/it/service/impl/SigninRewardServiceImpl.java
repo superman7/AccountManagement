@@ -9,7 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.xa.it.dao.EthAccountDAO;
 import com.digitalchina.xa.it.dao.SigninRewardDAO;
+import com.digitalchina.xa.it.model.EthAccountDomain;
 import com.digitalchina.xa.it.model.LuckycashDomain;
 import com.digitalchina.xa.it.model.SigninRewardDomain;
 import com.digitalchina.xa.it.model.UserDomain;
@@ -24,6 +26,9 @@ import com.digitalchina.xa.it.util.TConfigUtils;
 public class SigninRewardServiceImpl implements SigninRewardService{
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+    private EthAccountDAO ethAccountDAO;
 	
 	@Autowired
 	private LuckycashService luckycashService;
@@ -135,11 +140,12 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 		}
 		
 		//查到此itcode才能进行奖励
-		List<UserDomain> userList = userService.findUserByItcode(itcode);
-		if(userList.size() > 0){
+//		List<UserDomain> userList = userService.findUserByItcode(itcode);
+		EthAccountDomain ethAccountDomain = ethAccountDAO.selectDefaultEthAccount(itcode);
+		if(ethAccountDomain != null){
 			SigninRewardDomain sr = new SigninRewardDomain();
 			sr.setItcode(itcode);
-			sr.setAccountkey(userList.get(0).getAccount());
+			sr.setAccountkey(ethAccountDomain.getAccount());
 			sr.setType(0);
 			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
 			
@@ -192,11 +198,12 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 	@Override
 	public String saveSigninInfoConstant(String itcode) {
 		int rewards = 5 + (int)(Math.random() * 11);
-		List<UserDomain> userList = userService.findUserByItcode(itcode);
-		if(userList.size() > 0){
+//		List<UserDomain> userList = userService.findUserByItcode(itcode);
+		EthAccountDomain ethAccountDomain = ethAccountDAO.selectDefaultEthAccount(itcode);
+		if(ethAccountDomain != null){
 			SigninRewardDomain sr = new SigninRewardDomain();
 			sr.setItcode(itcode);
-			sr.setAccountkey(userList.get(0).getAccount());
+			sr.setAccountkey(ethAccountDomain.getAccount());
 			sr.setType(0);
 			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
 			
@@ -210,11 +217,12 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 
 	@Override
 	public String voteReward(String itcode) {
-		List<UserDomain> userList = userService.findUserByItcode(itcode);
-		if(userList.size() > 0){
+//		List<UserDomain> userList = userService.findUserByItcode(itcode);
+		EthAccountDomain ethAccountDomain = ethAccountDAO.selectDefaultEthAccount(itcode);
+		if(ethAccountDomain != null){
 			SigninRewardDomain sr = new SigninRewardDomain();
 			sr.setItcode(itcode);
-			sr.setAccountkey(userList.get(0).getAccount());
+			sr.setAccountkey(ethAccountDomain.getAccount());
 			sr.setType(0);
 			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
 			
@@ -237,11 +245,13 @@ public class SigninRewardServiceImpl implements SigninRewardService{
 		
         for(int i = 0; i < list.size(); i++) {
         	String itcode = list.get(i).get("itcode").toString();
-        	List<UserDomain> userList = userService.findUserByItcode(itcode);
-    		if(userList.size() > 0){
+//        	List<UserDomain> userList = userService.findUserByItcode(itcode);
+        	EthAccountDomain ethAccountDomain = ethAccountDAO.selectDefaultEthAccount(itcode);
+        	
+    		if(ethAccountDomain != null){
     			SigninRewardDomain sr = new SigninRewardDomain();
     			sr.setItcode(itcode);
-    			sr.setAccountkey(userList.get(0).getAccount());
+    			sr.setAccountkey(ethAccountDomain.getAccount());
     			sr.setType(0);
     			Timestamp nousedate = new Timestamp(System.currentTimeMillis());
     			

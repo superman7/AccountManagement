@@ -29,8 +29,8 @@ public class UtilController {
 			ethAccountDomain.setItcode(itcode);
 			ethAccountDomain.setAccount(account);
 			ethAccountService.insertItcodeAndAccount(ethAccountDomain);
-//			String keystore = GetPwdAndKeyStoreUtils.getDefaultPwdAndKeyStoreUtils(itcode).get("keystore");
-//			ethAccountService.updateKeystoreAndAlias(keystore, "默认账户", account, 3);
+			String keystore = GetPwdAndKeyStoreUtils.getDefaultPwdAndKeyStoreUtils(itcode).get("keystore");
+			ethAccountService.updateKeystoreAndAlias(keystore, "默认账户", account, 4);
 			return account + "_" + 10;
 		}
 		returnStr = ead.getAccount() + "_" + ead.getBalance();
