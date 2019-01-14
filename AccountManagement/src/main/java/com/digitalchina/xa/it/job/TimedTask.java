@@ -70,8 +70,10 @@ public class TimedTask {
 	private SigninRewardService srService;*/
 
 	@Transactional
-//	@Scheduled(cron="55 59 23 * * ?")
-	@Scheduled(cron="0 40 21 ? * SAT")
+	@Scheduled(cron="55 59 23 * * ?")
+//	每周六更新
+//	@Scheduled(cron="0 40 21 ? * SAT")
+	
 //	更换主题投票
 	public void updateVoteTopic(){
 		System.out.println("执行定时任务");

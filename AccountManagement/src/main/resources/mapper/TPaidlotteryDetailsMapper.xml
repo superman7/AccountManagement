@@ -64,12 +64,12 @@
 		INSERT INTO
 			<include refid="BASE_TABLE"/>
 			<trim prefix="(" suffix=")" suffixOverrides=",">
-				lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReward,buyTime
+				lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReward,buyTime,backup4
 			</trim>
 			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
 				#{lotteryId, jdbcType=INTEGER},#{itcode, jdbcType=VARCHAR},#{account,jdbcType=VARCHAR},#{hashcode,jdbcType=VARCHAR},
 				#{ticket,jdbcType=VARCHAR},#{result,jdbcType=INTEGER},#{winTicket,jdbcType=VARCHAR},#{winReward,jdbcType=VARCHAR},
-				#{buyTime,jdbcType=TIMESTAMP}
+				#{buyTime,jdbcType=TIMESTAMP},#{backup4, jdbcType=INTEGER}
 			</trim>
 	</insert>
 	
