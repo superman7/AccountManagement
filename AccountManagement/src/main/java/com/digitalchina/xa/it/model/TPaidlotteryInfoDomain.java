@@ -49,6 +49,8 @@ public class TPaidlotteryInfoDomain {
 	    
 	    private Integer backup5;
 	    
+	    private Integer backup6;
+	    
 	    public TPaidlotteryInfoDomain() {
 		}
 
@@ -226,5 +228,13 @@ public class TPaidlotteryInfoDomain {
 
 		public void setLotteryTime(Timestamp lotteryTime) {
 			this.lotteryTime = lotteryTime;
+		}
+
+		public Integer getBackup6() {
+			return backup6;
+		}
+
+		public void setBackup6(Integer backup6) {
+			this.backup6 = backup6;
 		}
 }
