@@ -46,7 +46,7 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	@Override
 	public void runALottery(TPaidlotteryInfoDomain tpid) {
 		//开奖，根据lotteryId，更新此次参与者的result，winTicket，winReword字段,更新t_paidlottery_info表flag，lotteryTime，winner，winTicket
-		List<String> ticketList = generateWinTicket(tpid.getId(), tpid.getWinCount());
+		List<String> ticketList = generateWinTicketNew(tpid.getId(), tpid.getWinCount(), 0);
 		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryDetailsDAO.selectLotteryDetailsByLotteryId(tpid.getId());
 		String winTickets = "";
 		String winItcodes = "";
