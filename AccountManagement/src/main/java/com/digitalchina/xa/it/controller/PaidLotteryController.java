@@ -116,6 +116,7 @@ public class PaidLotteryController {
 		}
 		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
 		Integer lotteryId = Integer.valueOf(jsonObj.getString("lotteryId"));
+		Integer backup4 = Integer.valueOf(jsonObj.getString("option"));
 		String itcode = jsonObj.getString("itcode");
 		BigInteger turnBalance = BigInteger.valueOf( Long.valueOf(jsonObj.getString("unitPrice")) * 10000000000000000L);
 		
@@ -144,7 +145,8 @@ public class PaidLotteryController {
 		}
 		
 		//向t_paidlottery_details表中插入信息， 参数为lotteryId, itcode, result(0), buyTime
-		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new Timestamp(new Date().getTime()));
+		//20180114 添加option选项
+		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new Timestamp(new Date().getTime()), "", "", 0, backup4);
 		int transactionId = tPaidlotteryService.insertLotteryBaseInfo(tpdd);
 		System.out.println("transactionId" + transactionId);
 		
@@ -204,8 +206,11 @@ public class PaidLotteryController {
 		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
 //		String itcode = jsonObj.getString("itcode");
 //		int id = Integer.valueOf(jsonObj.getString("id"));
-		TPaidlotteryInfoDomain smbTpid = tPaidlotteryService.selectOneSmbTpid();			
-		List<TPaidlotteryInfoDomain> hbTpidList = tPaidlotteryService.selectHbTpids();	
+		//查询当前的未开奖SMB抽奖
+		TPaidlotteryInfoDomain smbTpid = tPaidlotteryService.selectOneSmbTpid();
+		//查询当前的未开奖RMB红包抽奖
+		List<TPaidlotteryInfoDomain> hbTpidList = tPaidlotteryService.selectHbTpids();
+		//查询多选项的抽奖
 		List<TPaidlotteryInfoDomain> otherTpidList = tPaidlotteryService.selectOtherTpids();
 		List<TPaidlotteryInfoDomain> newOpenList = tPaidlotteryService.selectNewOpen(Integer.valueOf(TConfigUtils.selectValueByKey("lottery_show_finish_size")));
 		
