@@ -125,7 +125,9 @@ public class LotteryTask {
 			return;
 		}
 		TPaidlotteryInfoDomain tpid0 = tpidList0.get(0);
-		tPaidlotteryService.runALottery(tpid0);
+		if(tpid0.getTypeCode() == 0 || tpid0.getTypeCode() == 1){
+			tPaidlotteryService.runALottery(tpid0);
+		}
 	}
 	
 	//将开奖信息更新为待开奖
