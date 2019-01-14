@@ -96,6 +96,20 @@
 		DESC LIMIT #{winCount, jdbcType=INTEGER}; 
 	</select>
 	
+	<select id="generateWinTicketNew" resultType="java.lang.String">
+		SELECT 
+			ticket 
+		FROM 
+			<include refid="BASE_TABLE"/> 
+		WHERE 
+			lotteryId = #{lotteryId, jdbcType=INTEGER} 
+			AND backup3 = 1 
+			AND backup4 = #{backup4, jdbcType=INTEGER}
+		ORDER BY 
+			RIGHT(ticket, RAND() * 20 + 10)
+		DESC LIMIT #{winCount, jdbcType=INTEGER}; 
+	</select>
+	
 	<select id="selectLotteryDetailsWhereHashIsNotNullAndBackup3Is0" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>

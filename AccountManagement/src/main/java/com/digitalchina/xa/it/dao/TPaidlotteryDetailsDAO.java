@@ -25,6 +25,8 @@ public interface TPaidlotteryDetailsDAO {
 	//生成ticket
 	List<String> generateWinTicket(@Param("lotteryId")int lotteryId, @Param("winCount")int winCount);
 	
+	//生成ticketNew
+	List<String> generateWinTicketNew(@Param("lotteryId")int lotteryId, @Param("winCount")int winCount, @Param("backup4")int backup4);
 	//根据id查询
 	TPaidlotteryDetailsDomain selectLotteryDetailsById(@Param("id")int id);
 	

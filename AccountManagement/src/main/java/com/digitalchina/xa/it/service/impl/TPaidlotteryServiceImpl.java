@@ -142,7 +142,12 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	public List<String> generateWinTicket(int lotteryId, int winCount) {
 		return tPaidlotteryDetailsDAO.generateWinTicket(lotteryId, winCount);
 	}
-
+	
+	@Override
+	public List<String> generateWinTicketNew(int lotteryId, int winCount, int option) {
+		return tPaidlotteryDetailsDAO.generateWinTicketNew(lotteryId, winCount, option);
+	}
+	
 	@Override
 	public Boolean updateNowSumAmountAndBackup4(int id) {
 		try {

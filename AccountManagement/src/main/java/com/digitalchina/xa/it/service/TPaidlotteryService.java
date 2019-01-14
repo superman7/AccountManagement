@@ -20,6 +20,9 @@ public interface TPaidlotteryService {
 	//传入lotteryInfoId,生成win ticket
 	List<String> generateWinTicket(int lotteryId, int winCount);
 	
+	//传入lotteryInfoId和option(backup4),生成win ticket
+	List<String> generateWinTicketNew(int lotteryId, int winCount, int option);
+	
 	//更新nowSumAmount、backup4
 	Boolean updateNowSumAmountAndBackup4(int id);
 	
