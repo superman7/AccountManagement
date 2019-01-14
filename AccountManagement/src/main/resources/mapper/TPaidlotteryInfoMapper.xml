@@ -145,7 +145,7 @@
 	
 	<select id="selectNewOpen" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
 		SELECT
-			id,name,description,winner,winTicket,lotteryTime,backup2,typeCode
+			id,name,description,winner,winTicket,lotteryTime,backup2,typeCode,backup3,backup1
 		FROM
 			<include refid="BASE_TABLE"/>
 		WHERE
@@ -201,7 +201,8 @@
 			flag = 1,    
 			lotteryTime = #{lotteryTime, jdbcType=TIMESTAMP},
 			winner = #{winner, jdbcType=VARCHAR},
-			winTicket = #{winTicket, jdbcType=VARCHAR}
+			winTicket = #{winTicket, jdbcType=VARCHAR},
+			backup6 = #{backup6, jdbcType=INTEGER}
 		WHERE
 			id = #{id, jdbcType=INTEGER}
 	</update>

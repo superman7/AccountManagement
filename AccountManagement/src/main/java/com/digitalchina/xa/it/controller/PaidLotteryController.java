@@ -101,6 +101,23 @@ public class PaidLotteryController {
 		return modelMap;
 	}
 	
+	@ResponseBody
+	@GetMapping("/lotteryInfo/runOptionLottery")
+	public Map<String, Object> runOptionLottery(
+			@RequestParam(name = "param", required = true) String jsonValue){
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+		Integer id = Integer.valueOf(jsonObj.getString("lotteryId"));
+		Integer option = Integer.valueOf(jsonObj.getString("option"));
+		tPaidlotteryService.runOptionLottery(id, option);
+		
+		modelMap.put("data", "true");
+		return modelMap;
+	}
+	
 	@Transactional
 	@ResponseBody
 	@GetMapping("/insertLotteryDetails")

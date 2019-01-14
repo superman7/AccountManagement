@@ -26,8 +26,11 @@ public interface TPaidlotteryService {
 	//更新nowSumAmount、backup4
 	Boolean updateNowSumAmountAndBackup4(int id);
 	
-	//开奖
+	//单项类开奖（定时任务自动）
 	void runALottery(TPaidlotteryInfoDomain tpid);
+	
+	//双项类开奖（手动提交结果，结果为1/2，对应info中backup1和backup2选项）
+	void runOptionLottery(Integer lotteryId, Integer option);
 	
 	/*******************Info***********************/
 	//获取结束或未结束的抽奖

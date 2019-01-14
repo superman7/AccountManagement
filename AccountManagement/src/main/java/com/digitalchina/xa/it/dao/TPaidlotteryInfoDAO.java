@@ -21,7 +21,7 @@ public interface TPaidlotteryInfoDAO {
 	int updateNowSumAmountAndBackup4(@Param("id")int id);
 	
 	//更新flag，lotteryTime，winner，winTicket
-	int updateAfterLotteryFinished(@Param("id")int id, @Param("lotteryTime")Timestamp lotteryTime, @Param("winner")String winner, @Param("winTicket")String winTicket);
+	int updateAfterLotteryFinished(@Param("id")int id, @Param("lotteryTime")Timestamp lotteryTime, @Param("winner")String winner, @Param("winTicket")String winTicket, @Param("backup6")int backup6);
 	
 	//获取需要开奖的抽奖
 	List<TPaidlotteryInfoDomain> selectRunLottery();

@@ -79,7 +79,47 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 			}
 		}
 		winItcodes = winItcodes.substring(0, winItcodes.length() - 1);
-		tPaidlotteryInfoDAO.updateAfterLotteryFinished(tpid.getId(), new Timestamp(new Date().getTime()), winItcodes, winTickets);
+		tPaidlotteryInfoDAO.updateAfterLotteryFinished(tpid.getId(), new Timestamp(new Date().getTime()), winItcodes, winTickets, 0);
+	}
+
+	@Override
+	public void runOptionLottery(Integer lotteryId, Integer option) {
+		TPaidlotteryInfoDomain tpid = tPaidlotteryInfoDAO.selectLotteryInfoById(lotteryId);
+		//开奖，根据lotteryId，更新此次参与者的result，winTicket，winReword字段,更新t_paidlottery_info表flag，lotteryTime，winner，winTicket
+		List<String> ticketList = generateWinTicketNew(tpid.getId(), tpid.getWinCount(), option);
+		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryDetailsDAO.selectLotteryDetailsByLotteryId(tpid.getId());
+		String winTickets = "";
+		String winItcodes = "";
+		
+		for(int index = 0; index < ticketList.size(); index ++) {
+			winTickets += ticketList.get(index) + "&";
+		}
+		winTickets = winTickets.substring(0, winTickets.length() - 1);
+		String[] rewardList = tpid.getReward().split("&");
+		
+		for(int index1 = 0; index1 < tpddList.size(); index1++) {
+			TPaidlotteryDetailsDomain tpddTemp = tpddList.get(index1); 
+			for(int index2 = 0; index2 < ticketList.size(); index2++) {
+				if(tpddTemp.getTicket().equals(ticketList.get(index2))) {
+					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 2, winTickets, rewardList[index2]);
+					tpddTemp.setResult(2);
+					winItcodes += tpddTemp.getItcode() + "&";
+					
+					//抽奖奖品为神州币
+					if(tpid.getBackup5() == 1){
+						//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
+						String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/issueReward";
+//						String url = "http://10.7.10.186:8083/lottery/issueReward";
+						String postParam = "itcode=" + tpddTemp.getItcode() + "&turnBalance=" + rewardList[index2].toString() + "&transactionDetailId=" + tpid.getId();
+						HttpRequest.sendPost(url, postParam);
+					}
+				} else if(tpddTemp.getResult() != 2) {
+					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 1, winTickets, "无");
+				}
+			}
+		}
+		winItcodes = winItcodes.substring(0, winItcodes.length() - 1);
+		tPaidlotteryInfoDAO.updateAfterLotteryFinished(tpid.getId(), new Timestamp(new Date().getTime()), winItcodes, winTickets, option);
 	}
 	
 	@Override
