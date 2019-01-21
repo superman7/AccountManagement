@@ -46,8 +46,6 @@
 			itcode = #{itcode,jdbcType=VARCHAR}
 		AND
 			lotteryId = #{lotteryId,jdbcType=INTEGER}
-		AND
-			backup1 = ''
 	</select>
 	
 	<select id="selectInviteLotteryDetailsByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">

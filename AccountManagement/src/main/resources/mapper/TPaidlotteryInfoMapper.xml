@@ -106,6 +106,8 @@
 			<include refid="BASE_TABLE"/>
 		WHERE
 			typeCode = 0
+		AND
+			backup3 = ''
 	</select>
 	
 	<select id="selectOneSmbTpid" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
