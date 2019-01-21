@@ -46,6 +46,62 @@
 			itcode = #{itcode,jdbcType=VARCHAR}
 		AND
 			lotteryId = #{lotteryId,jdbcType=INTEGER}
+		AND
+			backup1 = ''
+	</select>
+	
+	<select id="selectInviteLotteryDetailsByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			backup1 = #{itcode,jdbcType=VARCHAR}
+		AND
+			lotteryId = #{lotteryId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectUninviteLotteryDetailsByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode,jdbcType=VARCHAR}
+		AND
+			lotteryId = #{lotteryId,jdbcType=INTEGER}
+		AND
+			backup1 = ''
+		AND 
+			backup2 = ''
+	</select>
+	
+	<select id="selectHaveInvitedByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			itcode = #{itcode,jdbcType=VARCHAR}
+		AND
+			lotteryId = #{lotteryId,jdbcType=INTEGER}
+		AND
+			backup4 &gt; 4
+	</select>
+	
+	<select id="selectIfInvitedByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			backup4 &gt; 4
+		AND
+			lotteryId = #{lotteryId,jdbcType=INTEGER}
+		AND
+			backup1 = #{invitedItcode,jdbcType=VARCHAR}
+		AND 
+			backup2 = #{itcode,jdbcType=VARCHAR}
 	</select>
 	
 	<select id="selectLotteryDetailsByLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
@@ -64,12 +120,12 @@
 		INSERT INTO
 			<include refid="BASE_TABLE"/>
 			<trim prefix="(" suffix=")" suffixOverrides=",">
-				lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReward,buyTime,backup4
+				lotteryId,itcode,account,hashcode,ticket,result,winTicket,winReward,buyTime,backup1,backup2,backup3,backup4
 			</trim>
 			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
 				#{lotteryId, jdbcType=INTEGER},#{itcode, jdbcType=VARCHAR},#{account,jdbcType=VARCHAR},#{hashcode,jdbcType=VARCHAR},
 				#{ticket,jdbcType=VARCHAR},#{result,jdbcType=INTEGER},#{winTicket,jdbcType=VARCHAR},#{winReward,jdbcType=VARCHAR},
-				#{buyTime,jdbcType=TIMESTAMP},#{backup4, jdbcType=INTEGER}
+				#{buyTime,jdbcType=TIMESTAMP},#{backup1, jdbcType=VARCHAR},#{backup2, jdbcType=VARCHAR},#{backup3, jdbcType=INTEGER},#{backup4, jdbcType=INTEGER}
 			</trim>
 	</insert>
 	
@@ -79,6 +135,18 @@
 		SET    
 			ticket = #{ticket, jdbcType=VARCHAR},
 			backup3 = 1
+		WHERE
+			id = #{transactionId, jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateInviteTicket">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			ticket = #{ticket, jdbcType=VARCHAR},
+			backup3 = 1
+			<!-- ,itcode = backup1, -->
+			<!-- account = #{account, jdbcType=VARCHAR} -->
 		WHERE
 			id = #{transactionId, jdbcType=INTEGER}
 	</update>
@@ -171,6 +239,33 @@
 			<include refid="BASE_TABLE"/>
 		SET    
 			backup3 = 3
+		WHERE
+			id = #{id, jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateBackup4From5To0">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			backup4 = 0
+		WHERE
+			id = #{id, jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateBackup4From5To7">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			backup4 = 7
+		WHERE
+			id = #{id, jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateBackup4From5To8">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			backup4 = 7
 		WHERE
 			id = #{id, jdbcType=INTEGER}
 	</update>

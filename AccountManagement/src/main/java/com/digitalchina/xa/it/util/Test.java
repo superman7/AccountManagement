@@ -123,11 +123,12 @@ public class Test {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		for(String s : aaa)
-		{
-			String result = HttpRequest.sendGet("http://localhost:8082/eth/getBalance", "itcode=" + s);
-			System.out.println(result);
-		}
+//		for(String s : aaa)
+//		{
+//			String result = HttpRequest.sendGet("http://localhost:8082/eth/getBalance", "itcode=" + s);
+//			System.out.println(result);
+//		}
+		HttpRequest.sendGet("http://localhost:8082/eth/updateBalance", "");
 	}
 	
 //	public static void main(String[] args) {

@@ -60,6 +60,12 @@ public interface TPaidlotteryService {
 	//根据itcode、lotteryId查询某用户的某次抽奖购买记录
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId);
 	
+	//根据itcode、lotteryId查询某用户的某次抽奖被邀请
+	List<TPaidlotteryDetailsDomain> selectInviteLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId);
+	
+	//根据itcode、lotteryId查询某用户的某次抽奖购买记录
+	List<TPaidlotteryDetailsDomain> selectUninviteLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId);
+	
 	//根据lotteryId查询某次抽奖的参与用户信息
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByLotteryId(int lotteryId);
 	
@@ -71,4 +77,10 @@ public interface TPaidlotteryService {
 	
 	//查询最近的红包抽奖typeCode=0
 	Integer selectLastRMBLottery();
+	
+	//根据itcode、lotteryId、backup4>4查询该用户已邀请条数
+	List<TPaidlotteryDetailsDomain> selectHaveInvitedByItcodeAndLotteryId(String itcode, int lotteryId);
+	
+	//根据itcode、invitedItcode、lotteryId、backup4>4查询用户是否已邀请invitedItcode
+	List<TPaidlotteryDetailsDomain> selectIfInvitedByItcodeAndLotteryId(String itcode, String invitedItcode, int lotteryId);
 }

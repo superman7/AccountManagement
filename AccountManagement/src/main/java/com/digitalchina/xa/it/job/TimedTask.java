@@ -181,12 +181,12 @@ public class TimedTask {
 	@Scheduled(fixedRate=15000)
 	public void updateTurnResultStatusJob(){
     	String ipAddress = TConfigUtils.selectIp();
-		System.err.println("更新交易状态时以太坊链接的ip为"+ipAddress);
 		
 		Admin admin = Admin.build(new HttpService(ipAddress));
 		
 		List<String> list1 = paidVoteDetailDAO.selectUnfinishedTransaction();
 		if(list1.size() > 0){
+			System.err.println("更新交易状态时以太坊链接的ip为"+ipAddress);
 			for (String transactionHash : list1) {
 				if(transactionHash == ""){
 					continue;

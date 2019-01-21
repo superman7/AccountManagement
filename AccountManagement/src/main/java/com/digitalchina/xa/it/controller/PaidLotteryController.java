@@ -23,6 +23,7 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.http.HttpService;
 
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.xa.it.dao.TPaidlotteryDetailsDAO;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
@@ -39,6 +40,8 @@ public class PaidLotteryController {
 	private TPaidlotteryService tPaidlotteryService;
 	@Autowired
 	private EthAccountService ethAccountService;
+	@Autowired
+	private TPaidlotteryDetailsDAO tPaidlotteryDetailsDAO;
 	
 	@ResponseBody
 	@PostMapping("/insertLotteryInfo")
@@ -137,7 +140,7 @@ public class PaidLotteryController {
 		String itcode = jsonObj.getString("itcode");
 		BigInteger turnBalance = BigInteger.valueOf( Long.valueOf(jsonObj.getString("unitPrice")) * 10000000000000000L);
 		
-		//TODO 余额判断
+		//余额判断
 		try {
 			Web3j web3j =Web3j.build(new HttpService(TConfigUtils.selectIp()));
 			BigInteger balance = web3j.ethGetBalance(ethAccountService.selectDefaultEthAccount(itcode).getAccount(),DefaultBlockParameterName.LATEST).send().getBalance().divide(BigInteger.valueOf(10000000000000000L));
@@ -180,6 +183,89 @@ public class PaidLotteryController {
 		return modelMap;
 	}
 	
+	@Transactional
+	@ResponseBody
+	@GetMapping("/inviteLotteryDetails")
+	public Map<String, Object> inviteLotteryDetails(
+			@RequestParam(name = "param", required = true) String jsonValue){
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+		Integer lotteryId = Integer.valueOf(jsonObj.getString("lotteryId"));
+		//此处默认为5，代表未激活的夺宝码
+		Integer backup4 = Integer.valueOf(jsonObj.getString("option"));
+		String itcode = jsonObj.getString("itcode");
+		String inviteItcode = jsonObj.getString("inviteItcode");
+		
+		//用户邀请已达上限
+		List<TPaidlotteryDetailsDomain> tempz1z = tPaidlotteryService.selectHaveInvitedByItcodeAndLotteryId(itcode, lotteryId);
+		if(tempz1z.size() - 20 >= 0){
+			modelMap.put("data", "InviteCountMoreThanLimit");
+			return modelMap;
+		}
+		
+		//该用户已邀请
+		List<TPaidlotteryDetailsDomain> tempz2z = tPaidlotteryService.selectIfInvitedByItcodeAndLotteryId(itcode, inviteItcode, lotteryId);
+		if(!tempz2z.isEmpty()){
+			modelMap.put("data", "ThisItcodeHasBeenInvited");
+			return modelMap;
+		}
+				
+		//查询inviteItcode是否已被邀请
+		List<TPaidlotteryDetailsDomain> tempzz = tPaidlotteryService.selectUninviteLotteryDetailsByItcodeAndLotteryId(inviteItcode, lotteryId);
+		if(!tempzz.isEmpty()){
+			modelMap.put("data", "UserHasBeenInvited");
+			return modelMap;
+		}
+		//未被邀请则进行下述步骤
+		BigInteger turnBalance = BigInteger.valueOf( Long.valueOf(jsonObj.getString("unitPrice")) * 10000000000000000L);
+		
+		//余额判断
+		try {
+			Web3j web3j =Web3j.build(new HttpService(TConfigUtils.selectIp()));
+			BigInteger balance = web3j.ethGetBalance(ethAccountService.selectDefaultEthAccount(itcode).getAccount(),DefaultBlockParameterName.LATEST).send().getBalance().divide(BigInteger.valueOf(10000000000000000L));
+			if(Double.valueOf(jsonObj.getString("unitPrice")) > Double.valueOf(balance.toString()) - 10) {
+				modelMap.put("data", "balanceNotEnough");
+				return modelMap;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("查询余额失败");
+		}
+		
+		//判断是否达到所需金额
+		synchronized(this){
+			TPaidlotteryInfoDomain tpid = tPaidlotteryService.selectLotteryInfoById(lotteryId);
+			if(tpid.getNowSumAmount() >= tpid.getWinSumAmount()) {
+				modelMap.put("data", "LotteryOver");
+				return modelMap;
+			}
+			//直接更新Info表nowSumAmount、backup4（待确认交易笔数）
+			tPaidlotteryService.updateNowSumAmountAndBackup4(lotteryId);
+		}
+		
+		//向t_paidlottery_details表中插入信息， 参数为lotteryId, itcode, result(0), buyTime
+		//20180114 添加option（backup4）选项
+		//20180118 添加inviteItcode（backup1）选项
+		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new Timestamp(new Date().getTime()), inviteItcode, itcode, 0, backup4);
+		int transactionId = tPaidlotteryService.insertLotteryBaseInfo(tpdd);
+		System.out.println("transactionId" + transactionId);
+		
+		//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
+//		String url = TConfigUtils.selectValueByKey("kafka_address_test") + "/lottery/buyTicket";
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/buyTicket";
+		System.err.println(url);
+		String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance.toString() + "&transactionDetailId=" + transactionId;
+		HttpRequest.sendPost(url, postParam);
+		//kafka那边更新account和hashcode
+		//定时任务，查询到
+		
+		modelMap.put("data", "success");
+		return modelMap;
+	}
+	
 	@ResponseBody
 	@PostMapping("/getResult")
 	public Map<String, Object> kafkaUpdateDetails(
@@ -205,7 +291,7 @@ public class PaidLotteryController {
 		
 		for(TPaidlotteryDetailsDomain tpldd : tpddList){
 	        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			tpldd.setBackup2(sdf.format(tpldd.getBuyTime()));
+			tpldd.setHashcode(sdf.format(tpldd.getBuyTime()));
 		}
 		modelMap.put("infoData", JSONObject.toJSON(tpid));
 		modelMap.put("detailData", JSONObject.toJSON(tpddList));
@@ -322,5 +408,98 @@ public class PaidLotteryController {
 		 * 某抽奖参与详情。
 		 */
 		//tPaidlotteryService.selectLotteryDetailsByLotteryId(lotteryId);
+	}
+	//查询邀请我的及界面展示
+	@Transactional
+	@ResponseBody
+	@GetMapping("/lotteryInfo/getInvite")
+	public Map<String, Object> selectInviteLotteryInfoById(
+			@RequestParam(name = "param", required = true) String jsonValue){
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+		String itcode = jsonObj.getString("itcode");
+		int id = Integer.valueOf(jsonObj.getString("id"));
+		
+		TPaidlotteryInfoDomain tpid = tPaidlotteryService.selectLotteryInfoById(id);
+		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryService.selectInviteLotteryDetailsByItcodeAndLotteryId(itcode, id);
+		
+		for(TPaidlotteryDetailsDomain tpldd : tpddList){
+	        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			tpldd.setHashcode(sdf.format(tpldd.getBuyTime()));
+		}
+		modelMap.put("infoData", JSONObject.toJSON(tpid));
+		modelMap.put("detailData", JSONObject.toJSON(tpddList));
+		return modelMap;
+	}
+	
+	@Transactional
+	@ResponseBody
+	@GetMapping("/acceptInvite")
+	public Map<String, Object> acceptInvite(
+			@RequestParam(name = "param", required = true) String jsonValue){
+		Map<String, Object> modelMap = DecryptAndDecodeUtils.decryptAndDecode(jsonValue);
+		if(!(boolean) modelMap.get("success")){
+			return modelMap;
+		}
+		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
+		Integer idKey = Integer.valueOf(jsonObj.getString("id"));
+		//2.为自己再购买一张夺宝券，backup1=admin，backup2=邀请人
+		TPaidlotteryDetailsDomain tpldd = tPaidlotteryService.selectLotteryDetailsById(idKey);
+		String itcode = tpldd.getBackup1();
+		String inviteItcode = tpldd.getBackup2();
+		Integer lotteryId = tpldd.getLotteryId();
+		//1.查出该条记录，将backup4置为0,其余都置为7；
+		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryService.selectInviteLotteryDetailsByItcodeAndLotteryId(itcode, lotteryId);
+		for(TPaidlotteryDetailsDomain tplddTemp : tpddList){
+			if((tplddTemp.getId() - idKey) == 0){
+				tPaidlotteryDetailsDAO.updateBackup4From5To0(tplddTemp.getId());
+			}else{
+				tPaidlotteryDetailsDAO.updateBackup4From5To7(tplddTemp.getId());
+			}
+		}
+		
+		//2.为自己再购买一张夺宝券，backup1=admin，backup2=邀请人		
+		BigInteger turnBalance = BigInteger.valueOf( Long.valueOf(jsonObj.getString("unitPrice")) * 10000000000000000L);
+		
+		//余额判断
+		try {
+			Web3j web3j =Web3j.build(new HttpService(TConfigUtils.selectIp()));
+			BigInteger balance = web3j.ethGetBalance(ethAccountService.selectDefaultEthAccount(itcode).getAccount(),DefaultBlockParameterName.LATEST).send().getBalance().divide(BigInteger.valueOf(10000000000000000L));
+			if(Double.valueOf(jsonObj.getString("unitPrice")) > Double.valueOf(balance.toString()) - 10) {
+				modelMap.put("data", "balanceNotEnough");
+				return modelMap;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("查询余额失败");
+		}
+			
+		//判断是否达到所需金额
+		synchronized(this){
+			TPaidlotteryInfoDomain tpid = tPaidlotteryService.selectLotteryInfoById(lotteryId);
+			if(tpid.getNowSumAmount() >= tpid.getWinSumAmount()) {
+				modelMap.put("data", "LotteryOver");
+				return modelMap;
+			}
+			//直接更新Info表nowSumAmount、backup4（待确认交易笔数）
+			tPaidlotteryService.updateNowSumAmountAndBackup4(lotteryId);
+		}
+		
+		//向t_paidlottery_details表中插入信息， 参数为lotteryId, itcode, result(0), buyTime
+		//20180114 添加option（backup4）选项
+		//20180118 添加inviteItcode（backup1）选项
+		TPaidlotteryDetailsDomain tpdd = new TPaidlotteryDetailsDomain(lotteryId, itcode, "", "", "", 0, "", "", new Timestamp(new Date().getTime()), "admin", inviteItcode, 0, 0);
+		int transactionId = tPaidlotteryService.insertLotteryBaseInfo(tpdd);
+		System.out.println("transactionId" + transactionId);
+		
+		String url = TConfigUtils.selectValueByKey("kafka_address") + "/lottery/buyTicket";
+		System.err.println(url);
+		String postParam = "itcode=" + itcode + "&turnBalance=" + turnBalance.toString() + "&transactionDetailId=" + transactionId;
+		HttpRequest.sendPost(url, postParam);
+		modelMap.put("data", "success");
+		return modelMap;
 	}
 }

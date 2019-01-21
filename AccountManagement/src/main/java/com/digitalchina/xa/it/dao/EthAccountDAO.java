@@ -29,4 +29,6 @@ public interface EthAccountDAO {
 	int updateKeystoreAndAlias(EthAccountDomain ethAccountDomain);
 	
 	int updateAccountBalance(EthAccountDomain xxxx);
+
+	List<EthAccountDomain> selectEthAccountNew();
 }

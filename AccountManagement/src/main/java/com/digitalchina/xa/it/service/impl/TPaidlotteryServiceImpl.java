@@ -12,6 +12,7 @@ import com.digitalchina.xa.it.dao.TPaidlotteryDetailsDAO;
 import com.digitalchina.xa.it.dao.TPaidlotteryInfoDAO;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
+import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.TPaidlotteryService;
 import com.digitalchina.xa.it.util.HttpRequest;
 import com.digitalchina.xa.it.util.MerkleTrees;
@@ -23,7 +24,11 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	private TPaidlotteryDetailsDAO tPaidlotteryDetailsDAO;
 	@Autowired
 	private TPaidlotteryInfoDAO tPaidlotteryInfoDAO;
-
+	
+	@Autowired
+	private EthAccountService ethAccountService;
+	
+	
 	@Override
 	public int insertLotteryBaseInfo(TPaidlotteryDetailsDomain tPaidlotteryDetailsDomain) {
 		if(tPaidlotteryDetailsDomain != null) {
@@ -129,8 +134,16 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		int lotteryId = tpdd.getLotteryId();
 		
 		//计算ticket值,更新该用户的ticket值。
-		String ticket = generateTicket(lotteryId, tpdd.getItcode(), hashcode);
-		tPaidlotteryDetailsDAO.updateTicket(ticket, transactionId);
+		if(tpdd.getBackup4() - 2 <= 0){
+			String ticket = generateTicket(lotteryId, tpdd.getItcode(), hashcode);
+			tPaidlotteryDetailsDAO.updateTicket(ticket, transactionId);	
+		}
+		
+		if(tpdd.getBackup4() - 2 > 0){
+			String ticket = generateTicket(lotteryId, tpdd.getItcode(), hashcode);
+			String account = ethAccountService.selectDefaultEthAccount(tpdd.getItcode()).getAccount();
+			tPaidlotteryDetailsDAO.updateInviteTicket(ticket, transactionId, account);	
+		}
 		return true;
 	}
 
@@ -253,5 +266,25 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		} else {
 			throw new RuntimeException("reward或id不正确");
 		}
+	}
+
+	@Override
+	public List<TPaidlotteryDetailsDomain> selectUninviteLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId) {
+		return tPaidlotteryDetailsDAO.selectUninviteLotteryDetailsByItcodeAndLotteryId(itcode, lotteryId);
+	}
+
+	@Override
+	public List<TPaidlotteryDetailsDomain> selectHaveInvitedByItcodeAndLotteryId(String itcode, int lotteryId) {
+		return tPaidlotteryDetailsDAO.selectHaveInvitedByItcodeAndLotteryId(itcode, lotteryId);
+	}
+
+	@Override
+	public List<TPaidlotteryDetailsDomain> selectIfInvitedByItcodeAndLotteryId(String itcode, String invitedItcode, int lotteryId) {
+		return tPaidlotteryDetailsDAO.selectIfInvitedByItcodeAndLotteryId(itcode, invitedItcode, lotteryId);
+	}
+
+	@Override
+	public List<TPaidlotteryDetailsDomain> selectInviteLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId) {
+		return tPaidlotteryDetailsDAO.selectInviteLotteryDetailsByItcodeAndLotteryId(itcode, lotteryId);
 	}
 }
