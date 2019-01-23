@@ -1,5 +1,7 @@
 package com.digitalchina.xa.it.service.impl;
 
+import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,6 +9,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthBlock.Block;
+import org.web3j.protocol.http.HttpService;
 
 import com.digitalchina.xa.it.dao.TPaidlotteryDetailsDAO;
 import com.digitalchina.xa.it.dao.TPaidlotteryInfoDAO;
@@ -198,7 +204,47 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	
 	@Override
 	public List<String> generateWinTicketNew(int lotteryId, int winCount, int option) {
-		return tPaidlotteryDetailsDAO.generateWinTicketNew(lotteryId, winCount, option);
+		List<String> result = new ArrayList<String> ();
+		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
+		try {
+			TPaidlotteryInfoDomain tplid = tPaidlotteryInfoDAO.selectNewOpen(1).get(0);
+			String lastWinner = tplid.getWinner();
+			String lastWinTicket = tplid.getWinTicket();
+			
+			Block winBlock = web3j.ethGetBlockByNumber(DefaultBlockParameterName.LATEST, true).send().getResult();
+			String winBlockHash = String.valueOf(winBlock.getHash());
+			String winBlockTotalDifficulty = String.valueOf(winBlock.getTotalDifficulty());
+			String winBlockNonce = String.valueOf(winBlock.getNonce());
+			String winBlockTimestamp = String.valueOf(winBlock.getTimestamp());
+			//根据以上参数计算MerkleTreesRoot
+			List<String> tempTxList = new ArrayList<String>();
+			tempTxList.add(lastWinner);
+			tempTxList.add(lastWinTicket);
+			tempTxList.add(winBlockHash);
+			tempTxList.add(winBlockTotalDifficulty);
+			tempTxList.add(winBlockNonce);
+			tempTxList.add(winBlockTimestamp);
+			MerkleTrees merkleTrees = new MerkleTrees(tempTxList);
+		    merkleTrees.merkle_tree();
+		    String merkleTreesRoot = merkleTrees.getRoot();
+		    BigInteger temp1 = new BigInteger(merkleTreesRoot, 16);
+		    
+		    List<String> ticketList = tPaidlotteryDetailsDAO.generateWinTicketNew1(lotteryId, option);
+		    BigInteger ticketListSize = new BigInteger(String.valueOf(ticketList.size() - 1));
+//		    System.err.println(ticketListSize);
+//		    System.err.println(temp1.divideAndRemainder(ticketListSize)[1].toString());
+//		    System.err.println(ticketList.get(Integer.valueOf(temp1.divideAndRemainder(ticketListSize)[1].toString())));
+		    //添加中奖数字
+		    result.add(ticketList.get(Integer.valueOf(temp1.divideAndRemainder(ticketListSize)[1].toString())));
+		    
+		    //更新当期开奖区块hash
+		    tPaidlotteryInfoDAO.updateLotteryWinBlockHash(lotteryId,winBlockHash);
+		} catch (IOException e) {
+			result.add("error");
+			e.printStackTrace();
+			return result;
+		}
+		return result;
 	}
 	
 	@Override

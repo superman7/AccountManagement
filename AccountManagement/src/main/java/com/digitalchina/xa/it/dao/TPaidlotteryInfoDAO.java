@@ -47,6 +47,9 @@ public interface TPaidlotteryInfoDAO {
 	//更新reward字段
 	int updateLotteryReward(@Param("id")int id, @Param("reward")String reward);
 	
+	//更新winDate(winBlockHash)字段
+	int updateLotteryWinBlockHash(@Param("id")int id, @Param("winBlockHash")String winBlockHash);
+	
 	//获取smb夺宝
 	TPaidlotteryInfoDomain selectOneSmbTpid();
 	

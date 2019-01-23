@@ -167,6 +167,15 @@
 			id = #{id,jdbcType=INTEGER}
 	</update>
 	
+	<update id="updateLotteryWinBlockHash">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			winDate = #{winBlockHash,jdbcType=VARCHAR}
+		WHERE
+			id = #{id,jdbcType=INTEGER}
+	</update>
+	
 	<update id="updateNowSumAmountAndBackup4">
 		UPDATE 
 			<include refid="BASE_TABLE"/>

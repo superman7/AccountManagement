@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.web3j.abi.datatypes.Address;
@@ -25,6 +27,8 @@ import org.web3j.protocol.admin.methods.response.PersonalUnlockAccount;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.Request;
 import org.web3j.protocol.core.methods.request.Transaction;
+import org.web3j.protocol.core.methods.response.EthBlock;
+import org.web3j.protocol.core.methods.response.EthBlock.Block;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
@@ -113,9 +117,9 @@ public class Test {
 //		String aaa = CxfUtils.CallService("http://10.0.20.51/services/CreateTopicService?wsdl", "AutoTriggerTopic", "测试--fannl--op1##op2");
 //		System.out.println(aaa);
 //	}
-	
-	public static void main(String[] args) {
-		String[] aaa = {};
+//	
+//	public static void main(String[] args) {
+//		String[] aaa = {};
 //		String s = "";
 //		try {
 //			s = URLEncoder.encode(aaa,"utf-8");
@@ -128,49 +132,56 @@ public class Test {
 //			String result = HttpRequest.sendGet("http://localhost:8082/eth/getBalance", "itcode=" + s);
 //			System.out.println(result);
 //		}
-		HttpRequest.sendGet("http://localhost:8082/eth/updateBalance", "");
-	}
-	
-//	public static void main(String[] args) {
-//    try{
-//		String tempFilePath = "C://temp/";
-//		String keystoreName = "keystore.json";
-//		String keystore = "{\"address\":\"44b8c62b73a77df17ac4a194c5a68a723aea356a\",\"id\":\"8c2b0b9a-b71a-4dd3-b918-9fd3f76e1654\",\"version\":3,\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"1da057b206f250b0bf92056b1d349dbbd3f279d1b495f64b3efc73bc3d9bbd3f\",\"kdfparams\":{\"p\":1,\"r\":8,\"salt\":\"36ac0d9cf7e63b19fd7714055f155e207e6af333025b4cec02377c82b410936b\",\"dklen\":32,\"n\":262144},\"cipherparams\":{\"iv\":\"f3c2ad317a3018f77a99f5f32e2eaa53\"},\"kdf\":\"scrypt\",\"mac\":\"adecd6a46337120c8d86916ec0ef5a25378657900a7ade55c1f5fc26fba48011\"}}";
-//		File file = new File(tempFilePath + keystoreName);
-//        //if file doesnt exists, then create it
-//        if(!file.exists()){
-//         file.createNewFile();
-//        }
-//        
-//        FileWriter fw = new FileWriter(file.getAbsoluteFile());
-//        BufferedWriter bw = new BufferedWriter(fw);
-//        bw.write(keystore);
-//        bw.close();
-//        System.out.println("创建keystore。。。");
-//        Credentials credentials;
-//		try {
-//			Web3j web3j =Web3j.build(new HttpService(ip));
-//			credentials = WalletUtils.loadCredentials("test11", file);
-//			System.out.println("解锁成功。。。");
-//			Transfer contract = Transfer.load(address, web3j, credentials, BigInteger.valueOf(2200000000L), BigInteger.valueOf(4300000L));
-//			
-//			String tocount = "0x8a950e851344715a51036567ca1b44aab3f15110";
-//			contract.transferAToB(new Address(tocount), BigInteger.valueOf(100000000000000000L)).observable().subscribe(x -> {
-//				System.out.println(x.getBlockHash());
-//				System.out.println(x.getBlockNumber());
-//				System.out.println(x.getCumulativeGasUsed());
-//				System.out.println(x.getGasUsed());
-//				System.out.println(x.getStatus());
-//				System.out.println(x.getTransactionHash());
-//			});
-//		} catch (Exception e) {	
-//			e.printStackTrace();
-//		}
-//        System.out.println("删除临时keystore：" + file.delete());
-//       }catch(IOException e){
-//        e.printStackTrace();
-//       }
+//		HttpRequest.sendGet("http://localhost:8082/eth/updateBalance", "");
 //	}
+	/*
+	Number - 区块号。当这个区块处于pending将会返回null。
+	hash - 字符串，区块的哈希串。当这个区块处于pending将会返回null。
+	parentHash - 字符串，32字节的父区块的哈希值。
+	nonce - 字符串，8字节。POW生成的哈希。当这个区块处于pending将会返回null。
+	sha3Uncles - 字符串，32字节。叔区块的哈希值。
+	logsBloom - 字符串，区块日志的布隆过滤器9。当这个区块处于pending将会返回null。
+	transactionsRoot - 字符串，32字节，区块的交易前缀树的根。
+	stateRoot - 字符串，32字节。区块的最终状态前缀树的根。
+	miner - 字符串，20字节。这个区块获得奖励的矿工。
+	difficulty - BigNumber类型。当前块的难度，整数。
+	totalDifficulty - BigNumber类型。区块链到当前块的总难度，整数。
+	extraData - 字符串。当前块的extra data字段。
+	size - Number。当前这个块的字节大小。
+	gasLimit - Number，当前区块允许使用的最大gas。
+	gasUsed - 当前区块累计使用的总的gas。
+	timestamp - Number。区块打包时的unix时间戳。
+	transactions - 数组。交易对象。或者是32字节的交易哈希。
+	uncles - 数组。叔哈希的数组。
+	*/
+	public static void main(String[] args) {
+		Web3j web3j = Web3j.build(new HttpService(ip));
+		try {
+			Block winBlock = web3j.ethGetBlockByNumber(DefaultBlockParameterName.LATEST, true).send().getResult();
+			String winBlockHash = String.valueOf(winBlock.getHash());
+			String winBlockTotalDifficulty = String.valueOf(winBlock.getTotalDifficulty());
+			String winBlockNonce = String.valueOf(winBlock.getNonce());
+			String winBlockTimestamp = String.valueOf(winBlock.getTimestamp());
+			//根据以上参数计算MerkleTreesRoot
+			List<String> tempTxList = new ArrayList<String>();
+			tempTxList.add(winBlockHash);
+			tempTxList.add(winBlockTotalDifficulty);
+			tempTxList.add(winBlockNonce);
+			tempTxList.add(winBlockTimestamp);
+			MerkleTrees merkleTrees = new MerkleTrees(tempTxList);
+		    merkleTrees.merkle_tree();
+		    String merkleTreesRoot = merkleTrees.getRoot();
+		    System.err.println(merkleTreesRoot);
+		    BigInteger zzz =  new BigInteger("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
+		    zzz.divideAndRemainder(new BigInteger("78"));
+//		    long dec_num = Long.parseLong(merkleTreesRoot, 16);
+		    System.err.println( zzz);
+		    System.err.println( zzz.divideAndRemainder(new BigInteger("78"))[0]);
+		    System.err.println( zzz.divideAndRemainder(zzz)[1]);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	public static byte[] getSHA2HexValue(String str) {
         byte[] cipher_byte;
         try{
