@@ -83,4 +83,6 @@ public interface TPaidlotteryService {
 	
 	//根据itcode、invitedItcode、lotteryId、backup4>4查询用户是否已邀请invitedItcode
 	List<TPaidlotteryDetailsDomain> selectIfInvitedByItcodeAndLotteryId(String itcode, String invitedItcode, int lotteryId);
+
+	List<TPaidlotteryDetailsDomain> selectAcceptInviteLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId);
 }

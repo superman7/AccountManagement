@@ -287,4 +287,9 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 	public List<TPaidlotteryDetailsDomain> selectInviteLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId) {
 		return tPaidlotteryDetailsDAO.selectInviteLotteryDetailsByItcodeAndLotteryId(itcode, lotteryId);
 	}
+	
+	@Override
+	public List<TPaidlotteryDetailsDomain> selectAcceptInviteLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId) {
+		return tPaidlotteryDetailsDAO.selectAcceptInviteLotteryDetailsByItcodeAndLotteryId(itcode, lotteryId);
+	}
 }

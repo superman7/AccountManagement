@@ -59,6 +59,19 @@
 			lotteryId = #{lotteryId,jdbcType=INTEGER}
 	</select>
 	
+	<select id="selectAcceptInviteLotteryDetailsByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			backup1 = #{itcode,jdbcType=VARCHAR}
+		AND
+			lotteryId = #{lotteryId,jdbcType=INTEGER}
+		AND
+			(backup4 = 0 OR backup4 = 6)
+	</select>
+	
 	<select id="selectUninviteLotteryDetailsByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>

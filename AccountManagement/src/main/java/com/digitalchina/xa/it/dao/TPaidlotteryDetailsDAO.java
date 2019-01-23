@@ -70,4 +70,6 @@ public interface TPaidlotteryDetailsDAO {
 	
 	//根据itcode、invitedItcode、lotteryId、backup4>4查询用户是否已邀请invitedItcode
 	List<TPaidlotteryDetailsDomain> selectIfInvitedByItcodeAndLotteryId(@Param("itcode")String itcode, @Param("invitedItcode")String invitedItcode, @Param("lotteryId")int lotteryId);
+
+	List<TPaidlotteryDetailsDomain> selectAcceptInviteLotteryDetailsByItcodeAndLotteryId(@Param("itcode")String itcode, @Param("lotteryId")int lotteryId);
 }

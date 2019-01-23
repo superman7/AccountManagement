@@ -24,6 +24,7 @@ import org.web3j.protocol.http.HttpService;
 
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.xa.it.dao.TPaidlotteryDetailsDAO;
+import com.digitalchina.xa.it.model.EthAccountDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 import com.digitalchina.xa.it.service.EthAccountService;
@@ -199,6 +200,12 @@ public class PaidLotteryController {
 		String itcode = jsonObj.getString("itcode");
 		String inviteItcode = jsonObj.getString("inviteItcode");
 		
+		//itcode合法性
+		EthAccountDomain ead = ethAccountService.selectDefaultEthAccount(itcode);
+		if(ead == null){
+			modelMap.put("data", "InviteItcodeIsIllegaly");
+			return modelMap;
+		}
 		//用户邀请已达上限
 		List<TPaidlotteryDetailsDomain> tempz1z = tPaidlotteryService.selectHaveInvitedByItcodeAndLotteryId(itcode, lotteryId);
 		if(tempz1z.size() - 20 >= 0){
@@ -446,19 +453,27 @@ public class PaidLotteryController {
 		}
 		JSONObject jsonObj = JSONObject.parseObject((String) modelMap.get("data"));
 		Integer idKey = Integer.valueOf(jsonObj.getString("id"));
-		//2.为自己再购买一张夺宝券，backup1=admin，backup2=邀请人
+		
 		TPaidlotteryDetailsDomain tpldd = tPaidlotteryService.selectLotteryDetailsById(idKey);
 		String itcode = tpldd.getBackup1();
 		String inviteItcode = tpldd.getBackup2();
 		Integer lotteryId = tpldd.getLotteryId();
-		//1.查出该条记录，将backup4置为0,其余都置为7；
+		//1.查出该条记录，将backup4置为0,其余都置为7；(添加受邀请上限)
 		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryService.selectInviteLotteryDetailsByItcodeAndLotteryId(itcode, lotteryId);
-		for(TPaidlotteryDetailsDomain tplddTemp : tpddList){
-			if((tplddTemp.getId() - idKey) == 0){
-				tPaidlotteryDetailsDAO.updateBackup4From5To0(tplddTemp.getId());
-			}else{
-				tPaidlotteryDetailsDAO.updateBackup4From5To7(tplddTemp.getId());
+		List<TPaidlotteryDetailsDomain> tpddList1 = tPaidlotteryService.selectAcceptInviteLotteryDetailsByItcodeAndLotteryId(itcode, lotteryId);
+		Integer limit = Integer.valueOf(TConfigUtils.selectValueByKey("accept_invite_limit"));
+		if(tpddList1.size() + 1 < limit){
+			tPaidlotteryDetailsDAO.updateBackup4From5To0(idKey);
+		}else if(tpddList1.size() + 1 == limit){
+			tPaidlotteryDetailsDAO.updateBackup4From5To0(idKey);
+			for(TPaidlotteryDetailsDomain tplddTemp : tpddList){
+				if((tplddTemp.getBackup4() != 0) && (tplddTemp.getId() != idKey) ){
+					tPaidlotteryDetailsDAO.updateBackup4From5To7(tplddTemp.getId());
+				}
 			}
+		}else {
+			modelMap.put("data", "acceptInviteLimit");
+			return modelMap;
 		}
 		
 		//2.为自己再购买一张夺宝券，backup1=admin，backup2=邀请人		
