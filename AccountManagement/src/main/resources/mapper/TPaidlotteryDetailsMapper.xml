@@ -82,9 +82,11 @@
 		AND
 			lotteryId = #{lotteryId,jdbcType=INTEGER}
 		AND
-			backup1 = ''
-		AND 
+			backup1 = 'admin'
+		<!-- AND 
 			backup2 = ''
+		AND
+			CURDATE() = DATE(buyTime) -->
 	</select>
 	
 	<select id="selectHaveInvitedByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
@@ -97,7 +99,7 @@
 		AND
 			lotteryId = #{lotteryId,jdbcType=INTEGER}
 		AND
-			backup4 &gt; 4
+			backup2 = #{itcode,jdbcType=VARCHAR}
 	</select>
 	
 	<select id="selectIfInvitedByItcodeAndLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
@@ -106,8 +108,6 @@
 		FROM
 			<include refid="BASE_TABLE"/>
 		WHERE
-			backup4 &gt; 4
-		AND
 			lotteryId = #{lotteryId,jdbcType=INTEGER}
 		AND
 			backup1 = #{invitedItcode,jdbcType=VARCHAR}
@@ -243,7 +243,7 @@
 			backup3 = 2,
 			ticket = '交易未成功写入区块链。'
 		WHERE
-			(hashcode = '0x0' OR (hashcode = '' AND date_add(buyTime, interval 10 MINUTE) &lt;=now()))
+			(hashcode = '0x0' OR (date_add(buyTime, interval 30 MINUTE) &lt;=now()))
 		AND
 			backup3 = 0
 	</update>

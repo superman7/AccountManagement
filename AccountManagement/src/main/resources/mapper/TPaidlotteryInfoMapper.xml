@@ -57,6 +57,8 @@
 			flag = 0
 		AND
 			typeCode = 0
+		AND
+			backup3 = ''
 	</select>
 	
 	<select id="selectLotteryInfoById" resultType="com.digitalchina.xa.it.model.TPaidlotteryInfoDomain">
