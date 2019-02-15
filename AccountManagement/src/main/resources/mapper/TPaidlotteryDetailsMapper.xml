@@ -124,6 +124,17 @@
 			lotteryId = #{lotteryId,jdbcType=INTEGER}
 	</select>
 	
+	<select id="selectLotteryDetailsItcodeByLotteryId" resultType="java.lang.String">
+		SELECT
+			itcode
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			lotteryId = #{lotteryId,jdbcType=INTEGER}
+		group by
+			itcode
+	</select>
+	
 	<insert id="insertLotteryBaseInfo" parameterType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
 		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             select @@IDENTITY as id

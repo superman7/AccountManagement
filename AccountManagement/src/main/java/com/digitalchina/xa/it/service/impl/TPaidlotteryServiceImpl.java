@@ -5,7 +5,9 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import com.digitalchina.xa.it.service.EthAccountService;
 import com.digitalchina.xa.it.service.TPaidlotteryService;
 import com.digitalchina.xa.it.util.HttpRequest;
 import com.digitalchina.xa.it.util.MerkleTrees;
+import com.digitalchina.xa.it.util.PushWeaverNotificationUtils;
 import com.digitalchina.xa.it.util.TConfigUtils;
 
 @Service(value = "TPaidlotteryService")
@@ -59,6 +62,9 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		//开奖，根据lotteryId，更新此次参与者的result，winTicket，winReword字段,更新t_paidlottery_info表flag，lotteryTime，winner，winTicket
 		List<String> ticketList = generateWinTicketNew(tpid.getId(), tpid.getWinCount(), 0);
 		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryDetailsDAO.selectLotteryDetailsByLotteryId(tpid.getId());
+		
+		List<String> accedingItcode = tPaidlotteryDetailsDAO.selectLotteryDetailsItcodeByLotteryId(tpid.getId());
+		
 		String winTickets = "";
 		String winItcodes = "";
 		
@@ -72,10 +78,17 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 			TPaidlotteryDetailsDomain tpddTemp = tpddList.get(index1); 
 			for(int index2 = 0; index2 < ticketList.size(); index2++) {
 				if(tpddTemp.getTicket().equals(ticketList.get(index2))) {
+					//中奖用户状态更新
 					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 2, winTickets, rewardList[index2]);
 					tpddTemp.setResult(2);
 					winItcodes += tpddTemp.getItcode() + "&";
-					
+					//删除掉中奖用户
+					for(String x:accedingItcode){
+					    if(x.equals(tpddTemp.getItcode())){
+					    	accedingItcode.remove(x);
+					    	break;
+					    }
+					}
 					//抽奖奖品为神州币
 					if(tpid.getTypeCode() == 1){
 						//向kafka发送请求，参数为itcode, transactionId,  金额？， lotteryId？; 产生hashcode，更新account字段，并返回hashcode与transactionId。
@@ -84,13 +97,36 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 						String postParam = "itcode=" + tpddTemp.getItcode() + "&turnBalance=" + rewardList[index2].toString() + "&transactionDetailId=" + tpid.getId();
 						HttpRequest.sendPost(url, postParam);
 					}
+					//开奖提醒-中奖用户
+					Map<String, String> param = new HashMap<String, String>();
+					param.put("lotteryId", tpid.getId().toString());
+					param.put("reward", rewardList[index2]);
+					param.put("winItcode", tpddTemp.getItcode());
+					param.put("winTicket", tpddTemp.getTicket());
+					PushWeaverNotificationUtils pu = new PushWeaverNotificationUtils();
+					pu.pushWeaverNotification(tpddTemp.getItcode(), 1, "您参与的【" + tpid.getId().toString() + "】期夺宝已开奖", param);
+					
 				} else if(tpddTemp.getResult() != 2) {
+					//未中奖用户
 					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 1, winTickets, "无");
 				}
 			}
 		}
 		winItcodes = winItcodes.substring(0, winItcodes.length() - 1);
 		tPaidlotteryInfoDAO.updateAfterLotteryFinished(tpid.getId(), new Timestamp(new Date().getTime()), winItcodes, winTickets, 0);
+		//开奖提醒-未中奖用户
+		Map<String, String> param = new HashMap<String, String>();
+		param.put("lotteryId", tpid.getId().toString());
+		param.put("reward", tpid.getReward());
+		param.put("winItcode", winItcodes);
+		param.put("winTicket", winTickets);
+		PushWeaverNotificationUtils pu = new PushWeaverNotificationUtils();
+		String loseItcodeStr = "";
+		for(String x:accedingItcode){
+			loseItcodeStr += x + ",";
+		}
+		loseItcodeStr = loseItcodeStr.substring(0, loseItcodeStr.length() - 1);
+		pu.pushWeaverNotification(loseItcodeStr, 0, "您参与的【" + tpid.getId().toString() + "】期夺宝已开奖", param);
 	}
 
 	@Override
@@ -99,6 +135,9 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		//开奖，根据lotteryId，更新此次参与者的result，winTicket，winReword字段,更新t_paidlottery_info表flag，lotteryTime，winner，winTicket
 		List<String> ticketList = generateWinTicketNew(tpid.getId(), tpid.getWinCount(), option);
 		List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryDetailsDAO.selectLotteryDetailsByLotteryId(tpid.getId());
+		
+		List<String> accedingItcode = tPaidlotteryDetailsDAO.selectLotteryDetailsItcodeByLotteryId(tpid.getId());
+		
 		String winTickets = "";
 		String winItcodes = "";
 		
@@ -124,6 +163,22 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 						String postParam = "itcode=" + tpddTemp.getItcode() + "&turnBalance=" + rewardList[index2].toString() + "&transactionDetailId=" + tpid.getId();
 						HttpRequest.sendPost(url, postParam);
 					}
+					//删除掉中奖用户
+					for(String x:accedingItcode){
+					    if(x.equals(tpddTemp.getItcode())){
+					    	accedingItcode.remove(x);
+					    	break;
+					    }
+					}
+					//开奖提醒-中奖用户
+					Map<String, String> param = new HashMap<String, String>();
+					param.put("lotteryId", tpid.getId().toString());
+					param.put("reward", rewardList[index2]);
+					param.put("winItcode", tpddTemp.getItcode());
+					param.put("winTicket", tpddTemp.getTicket());
+					PushWeaverNotificationUtils pu = new PushWeaverNotificationUtils();
+					pu.pushWeaverNotification(tpddTemp.getItcode(), 1, "您参与的【" + tpid.getId().toString() + "】期夺宝已开奖", param);
+					
 				} else if(tpddTemp.getResult() != 2) {
 					tPaidlotteryDetailsDAO.updateDetailAfterLotteryFinished(tpddTemp.getId(), 1, winTickets, "无");
 				}
@@ -131,6 +186,20 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		}
 		winItcodes = winItcodes.substring(0, winItcodes.length() - 1);
 		tPaidlotteryInfoDAO.updateAfterLotteryFinished(tpid.getId(), new Timestamp(new Date().getTime()), winItcodes, winTickets, option);
+		
+		//开奖提醒-未中奖用户
+		Map<String, String> param = new HashMap<String, String>();
+		param.put("lotteryId", tpid.getId().toString());
+		param.put("reward", tpid.getReward());
+		param.put("winItcode", winItcodes);
+		param.put("winTicket", winTickets);
+		PushWeaverNotificationUtils pu = new PushWeaverNotificationUtils();
+		String loseItcodeStr = "";
+		for(String x:accedingItcode){
+			loseItcodeStr += x + ",";
+		}
+		loseItcodeStr = loseItcodeStr.substring(0, loseItcodeStr.length() - 1);
+		pu.pushWeaverNotification(loseItcodeStr, 0, "您参与的【" + tpid.getId().toString() + "】期夺宝已开奖", param);
 	}
 	
 	@Override

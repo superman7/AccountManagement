@@ -31,6 +31,9 @@ public interface TPaidlotteryDetailsDAO {
 	//根据lotteryId查询某次抽奖的参与用户信息
 	List<TPaidlotteryDetailsDomain> selectLotteryDetailsByLotteryId(@Param("lotteryId")int lotteryId);
 	
+	//根据lotteryId查询某次抽奖的参与用户itcode
+	List<String> selectLotteryDetailsItcodeByLotteryId(@Param("lotteryId")int lotteryId);
+	
 	//生成ticket
 	List<String> generateWinTicket(@Param("lotteryId")int lotteryId, @Param("winCount")int winCount);
 	
