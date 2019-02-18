@@ -16,6 +16,17 @@
 			<include refid="BASE_TABLE"/>
 	</select>
 	
+	<select id="selectEthAccountWhereAvailableIs4" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			available = 4
+		AND 
+			itcode &lt;&gt; 'getapps';
+	</select>
+	
 	<select id="selectEthAccountNew" resultType="com.digitalchina.xa.it.model.EthAccountDomain">
 		SELECT
 			<include refid="BASE_COLUMN"/>
@@ -125,5 +136,16 @@
 			available = #{available, jdbcType=INTEGER}
 		WHERE
 			account = #{account, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateDefaultAccountFrom4To3" parameterType="com.digitalchina.xa.it.model.EthAccountDomain">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET
+			available = 3,
+			balance = 20
+		WHERE
+			account = #{account, jdbcType=VARCHAR}
+		AND available = 4
 	</update>
 </mapper>
