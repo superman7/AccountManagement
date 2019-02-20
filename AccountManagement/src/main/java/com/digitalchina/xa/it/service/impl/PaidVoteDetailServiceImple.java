@@ -67,7 +67,7 @@ public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
 		    }
 			//FIXME 判断余额是否足够投票
 			BigInteger balance = web3j.ethGetBalance(fromaccount,DefaultBlockParameterName.LATEST).send().getBalance().divide(BigInteger.valueOf(10000000000000000L));
-			if(Double.valueOf(turncount) > Double.valueOf(balance.toString()) - 1) {
+			if(Double.valueOf(turncount) > Double.valueOf(balance.toString()) - 10) {
 				return "notEnough";
 			}
 		} catch (IOException e) {
@@ -81,7 +81,7 @@ public class PaidVoteDetailServiceImple implements PaidVoteDetailService{
 		
 		//向kafka发送交易请求，参数为：account，itcode，金额，transactionDetailId
 		String url = TConfigUtils.selectValueByKey("kafka_address") + "/paidVotes/insertVoteDetail";
-		String postParam = "itcode=" + fromitcode + "account" + toaccount + "&transactionDetailId=" + transactionDetailId 
+		String postParam = "itcode=" + fromitcode + "&account=" + toaccount + "&transactionDetailId=" + transactionDetailId 
 				+ "&turnBalance=" + BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(Long.valueOf(turncount)));
 		HttpRequest.sendPost(url, postParam);
 		return "enough";

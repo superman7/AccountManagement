@@ -60,7 +60,10 @@ public class SystemTransactionTask {
 		
 		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
 		List<SystemTransactionDetailDomain> wtdList = systemTransactionDetailDAO.selectTransactionDetailWhereHashIsNotNullAndTimerIs0();
-		if(wtdList == null) {
+		List<SystemTransactionDetailDomain> wtdList1 = systemTransactionDetailDAO.selectTransactionDetailWhereFlagIs0Or1AndTimerIs2();
+		
+		wtdList.addAll(wtdList1);
+		if(wtdList.isEmpty()) {
 			web3j.shutdown();
 			return;
 		}

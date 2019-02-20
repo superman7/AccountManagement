@@ -23,5 +23,6 @@ public interface SystemTransactionDetailDAO {
 	//定时任务使用，查询Hash值不为空，backup为
 	List<SystemTransactionDetailDomain> selectTransactionDetailWhereHashIsNotNullAndTimerIs0();
 	
+	List<SystemTransactionDetailDomain> selectTransactionDetailWhereFlagIs0Or1AndTimerIs2();
 	void updateTimerTo2(@Param("id")int id);
 }

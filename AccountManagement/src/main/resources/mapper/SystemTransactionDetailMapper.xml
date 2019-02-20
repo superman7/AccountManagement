@@ -32,6 +32,8 @@
 			fromitcode = #{itcode, jdbcType=VARCHAR}
 		Or
 			toitcode = #{itcode, jdbcType=VARCHAR}
+		Order by 
+			turndate DESC 
 	</select>
   
   	<select id="selectPaidTransactionDetailByItcode" resultType="com.digitalchina.xa.it.model.SystemTransactionDetailDomain">
@@ -70,6 +72,19 @@
 			turnhash &lt;&gt; ''
 		AND
 			timer &lt;&gt; 2
+	</select>
+	
+	<select id="selectTransactionDetailWhereFlagIs0Or1AndTimerIs2" resultType="com.digitalchina.xa.it.model.SystemTransactionDetailDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			turnhash &lt;&gt; ''
+		AND
+			timer = 2
+		AND 
+			flag &lt; 2
 	</select>
 	
 	<update id="updateTransactionDetailsWhereTimeOut">
