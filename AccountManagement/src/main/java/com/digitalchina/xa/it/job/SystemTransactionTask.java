@@ -23,15 +23,18 @@ import org.web3j.protocol.http.HttpService;
 
 import com.digitalchina.xa.it.dao.CashBackDAO;
 import com.digitalchina.xa.it.dao.PaidVoteDetailDAO;
+import com.digitalchina.xa.it.dao.SystemTransactionDetailDAO;
 import com.digitalchina.xa.it.dao.TConfigDAO;
 import com.digitalchina.xa.it.dao.TopicDAO;
 import com.digitalchina.xa.it.dao.VirtualMachineDAO;
 import com.digitalchina.xa.it.dao.WalletAccountDAO;
 import com.digitalchina.xa.it.dao.WalletTransactionDAO;
+import com.digitalchina.xa.it.model.SystemTransactionDetailDomain;
 import com.digitalchina.xa.it.model.TopicDomain;
 import com.digitalchina.xa.it.model.VirtualMachineDomain;
 import com.digitalchina.xa.it.model.WalletTransactionDomain;
 import com.digitalchina.xa.it.service.SigninRewardService;
+import com.digitalchina.xa.it.service.SystemTransactionDetailService;
 import com.digitalchina.xa.it.service.TConfigService;
 import com.digitalchina.xa.it.service.TopicOptionService;
 import com.digitalchina.xa.it.service.TopicService;
@@ -44,70 +47,41 @@ import scala.util.Random;
 @Component
 public class SystemTransactionTask {
 	@Autowired
-    private WalletAccountDAO walletAccountDAO;
-	@Autowired
-	private WalletTransactionDAO walletTransactionDAO;
+	private SystemTransactionDetailService systemTransactionDetailService;
 	
 	@Autowired
-	private PaidVoteDetailDAO paidVoteDetailDAO;
-	@Autowired
-	private CashBackDAO cashBackDAO;
-	@Autowired
-	private VirtualMachineDAO virtualMachineDAO;
-	@Autowired
-	private TConfigDAO tconfigDAO;
+	private SystemTransactionDetailDAO systemTransactionDetailDAO;
 	
-	@Autowired
-	private TopicService topicService;
-	@Autowired
-	private TopicOptionService topicOptionService;
-	@Autowired
-	private VoteService voteService;
-	@Autowired
-    private TopicDAO topicDAO;
 	
 	@Transactional
-//	@Scheduled(fixedRate=30000)
+	@Scheduled(fixedRate=20000)
 	public void updateTranscationStatus(){
+		systemTransactionDetailDAO.updateTransactionDetailsWhereTimeOut();
+		
 		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
-		List<WalletTransactionDomain> wtdList = walletTransactionDAO.selectHashAndAccounts();
+		List<SystemTransactionDetailDomain> wtdList = systemTransactionDetailDAO.selectTransactionDetailWhereHashIsNotNullAndTimerIs0();
 		if(wtdList == null) {
 			web3j.shutdown();
 			return;
 		}
 		try {
 			for(int i = 0; i < wtdList.size(); i++) {
-				String transactionHash = wtdList.get(i).getTransactionHash();
+				String transactionHash = wtdList.get(i).getTurnhash();
 				System.out.println("定时任务_链上未确认_transactionHash:" + transactionHash);
 				TransactionReceipt tr = web3j.ethGetTransactionReceipt(transactionHash).sendAsync().get().getResult();
 				if(tr == null) {
 					System.out.println(transactionHash + "仍未确认，查询下一个未确认交易");
 					continue;
 				}
-				if(!tr.getBlockHash().contains("00000000")) {
-					String accountFrom = wtdList.get(i).getAccountFrom();
-					String accountTo = wtdList.get(i).getAccountTo();
-					
-					BigInteger balanceFrom = web3j.ethGetBalance(accountFrom,DefaultBlockParameterName.LATEST).send().getBalance();
-					BigInteger balanceTo = web3j.ethGetBalance(accountTo,DefaultBlockParameterName.LATEST).send().getBalance();
-					
-					BigInteger gasUsed = tr.getGasUsed();
-					BigInteger blockNumber = tr.getBlockNumber();
-					WalletTransactionDomain wtd = new WalletTransactionDomain();
-					wtd.setTransactionHash(transactionHash);
-					wtd.setBalanceFrom(Double.parseDouble(balanceFrom.toString()));
-					wtd.setBalanceTo(Double.parseDouble(balanceTo.toString()));
-					wtd.setGas(Double.valueOf(gasUsed.toString()));
-					wtd.setConfirmBlock(Integer.valueOf(blockNumber.toString()));
-					wtd.setStatus(1);
-					walletTransactionDAO.updateByTransactionHash(wtd);
+				if(!tr.getBlockHash().contains("00000000000")) {
+					System.out.println("更新ID为" + wtdList.get(i).getId() + "的交易状态为已完成");
+					//更新timer
+					systemTransactionDetailService.updateTimerTo2(wtdList.get(i).getId());
 				}
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (ExecutionException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
 			web3j.shutdown();

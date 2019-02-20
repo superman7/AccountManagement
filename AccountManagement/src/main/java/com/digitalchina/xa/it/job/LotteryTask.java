@@ -25,6 +25,7 @@ import com.digitalchina.xa.it.model.TConfigDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain;
 import com.digitalchina.xa.it.model.TPaidlotteryInfoDomain;
 import com.digitalchina.xa.it.service.TPaidlotteryService;
+import com.digitalchina.xa.it.util.TConfigUtils;
 
 import scala.util.Random;
 
@@ -46,9 +47,6 @@ public class LotteryTask {
 	@Autowired
 	private VirtualMachineDAO virtualMachineDAO;
 	
-	private static String[] ip = {"http://10.7.10.124:8545","http://10.7.10.125:8545","http://10.0.5.217:8545","http://10.0.5.218:8545","http://10.0.5.219:8545"};
-	
-
 	@Autowired
     private TPaidlotteryDetailsDAO tPaidlotteryDetailsDAO;
 	@Autowired
@@ -62,7 +60,7 @@ public class LotteryTask {
 	public void updateTurnResultStatusJob(){
 		tPaidlotteryDetailsDAO.updateLotteryDetailsWhereTimeOut();
 		
-		Web3j web3j = Web3j.build(new HttpService(ip[new Random().nextInt(5)]));
+		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
 		List<TPaidlotteryDetailsDomain> wtdList = tPaidlotteryDetailsDAO.selectLotteryDetailsWhereHashIsNotNullAndBackup3Is0();
 		if(wtdList == null) {
 			web3j.shutdown();
@@ -77,7 +75,7 @@ public class LotteryTask {
 					System.out.println(transactionHash + "仍未确认，查询下一个未确认交易");
 					continue;
 				}
-				if(!tr.getBlockHash().contains("00000000")) {
+				if(!tr.getBlockHash().contains("00000000000")) {
 					System.out.println("更新ID为" + wtdList.get(i).getId() + "的交易状态为已完成");
 					tPaidlotteryService.updateHashcodeAndJudge(transactionHash, wtdList.get(i).getId());
 				}

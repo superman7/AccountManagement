@@ -39,6 +39,10 @@ public class SystemTransactionDetailDomain {
 	    
 	    private int backup5;
 	    
+	    public SystemTransactionDetailDomain(){
+	    	
+	    }
+	    
 		public SystemTransactionDetailDomain(String fromcount, String tocount, Double value, Double gas, String turndate, int flag, String remark, String fromitcode, String toitcode, 
 				String turnhash, int timer, String contracttype, int contractid) {
 			this.fromcount = fromcount;

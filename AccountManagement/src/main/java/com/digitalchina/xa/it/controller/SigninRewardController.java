@@ -127,7 +127,7 @@ public class SigninRewardController {
 	 *     error.
 	 */
 	@ResponseBody
-	@GetMapping("/voteReward/{itcode}/{reward}/{transactionDetailId}")
+	@GetMapping("/voteReward/{itcode}")
 	public void voteReward(@PathVariable String itcode) {
 		String voteRewardResult = srService.voteReward(itcode);
 		if(!voteRewardResult.equals("error")){
