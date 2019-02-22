@@ -62,6 +62,8 @@
         <include refid="BASE_TABLE"/>
       WHERE TYPE=0
 		AND DATE_FORMAT(signtime,'%Y%m%d') = DATE_FORMAT(NOW(),'%Y%m%d')
+		AND backup1 &lt;&gt; '每日投票奖励！'
+		AND backup1 &lt;&gt; '每日投票奖励！(未写入区块链)'
   </select>
   <!-- <select id="selectVmsByItcode" parameterType="java.lang.String" resultType="com.digitalchina.xa.it.model.VirtualMachineDomain">
       SELECT
