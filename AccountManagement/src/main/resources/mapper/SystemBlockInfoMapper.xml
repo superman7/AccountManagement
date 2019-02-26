@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.xa.it.dao.SystemBlockInfoDAO" >
+	<sql id="BASE_TABLE">
+		system_blockinfo
+	</sql>
+
+	<sql id="BASE_COLUMN">
+		id,number,hash,parentHash,nonce,sha3Uncles,logsBloom,transactionsRoot,stateRoot,receiptsRoot,author,miner,mixHash,difficulty,totalDifficulty,extraData,size,gasLimit,gasUsed,timestamp,transactions,uncles,sealFields
+	</sql>
+  	
+	<insert id="insert" parameterType="com.digitalchina.xa.it.model.SystemBlockInfoDomain">
+		INSERT INTO
+			<include refid="BASE_TABLE"/>
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				id,number,hash,parentHash,nonce,sha3Uncles,logsBloom,transactionsRoot,stateRoot,receiptsRoot,author,miner,mixHash,difficulty,totalDifficulty,extraData,size,gasLimit,gasUsed,timestamp,transactions,uncles,sealFields
+			</trim>
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				#{id, jdbcType=INTEGER},#{number, jdbcType=VARCHAR},#{hash, jdbcType=VARCHAR},#{parentHash, jdbcType=VARCHAR},#{nonce, jdbcType=VARCHAR},#{sha3Uncles, jdbcType=VARCHAR},#{logsBloom, jdbcType=VARCHAR},#{transactionsRoot, jdbcType=VARCHAR},#{stateRoot, jdbcType=VARCHAR},#{receiptsRoot, jdbcType=VARCHAR},#{author, jdbcType=VARCHAR},#{miner, jdbcType=VARCHAR},#{mixHash, jdbcType=VARCHAR},#{difficulty, jdbcType=VARCHAR},#{totalDifficulty, jdbcType=VARCHAR},#{extraData, jdbcType=VARCHAR},#{size, jdbcType=VARCHAR},#{gasLimit, jdbcType=VARCHAR},#{gasUsed, jdbcType=VARCHAR},#{timestamp, jdbcType=VARCHAR},#{transactions, jdbcType=VARCHAR},#{uncles, jdbcType=VARCHAR},#{sealFields, jdbcType=VARCHAR}
+			</trim>
+	</insert>
+</mapper>
