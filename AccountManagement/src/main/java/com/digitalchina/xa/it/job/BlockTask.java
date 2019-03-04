@@ -19,7 +19,7 @@ import com.digitalchina.xa.it.dao.SystemBlockInfoDAO;
 import com.digitalchina.xa.it.model.SystemBlockInfoDomain;
 import com.digitalchina.xa.it.util.TConfigUtils;
 
-@Component
+//@Component
 public class BlockTask {
 	@Autowired
     private SystemBlockInfoDAO systemBlockInfoDAO;
