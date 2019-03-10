@@ -277,29 +277,39 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
 		try {
 			TPaidlotteryInfoDomain tplid = tPaidlotteryInfoDAO.selectNewOpen(1).get(0);
+			//上期抽奖的获奖者及获奖码
 			String lastWinner = tplid.getWinner();
 			String lastWinTicket = tplid.getWinTicket();
 			
 			Block winBlock = web3j.ethGetBlockByNumber(DefaultBlockParameterName.LATEST, true).send().getResult();
+			//当前最后一个有效区块的信息：hash值，总难度，nonce值，区块时间戳
 			String winBlockHash = String.valueOf(winBlock.getHash());
 			String winBlockTotalDifficulty = String.valueOf(winBlock.getTotalDifficulty());
 			String winBlockNonce = String.valueOf(winBlock.getNonce());
 			String winBlockTimestamp = String.valueOf(winBlock.getTimestamp());
-			//根据以上参数计算MerkleTreesRoot
-			List<String> tempTxList = new ArrayList<String>();
-			tempTxList.add(lastWinner);
-			tempTxList.add(lastWinTicket);
-			tempTxList.add(winBlockHash);
-			tempTxList.add(winBlockTotalDifficulty);
-			tempTxList.add(winBlockNonce);
-			tempTxList.add(winBlockTimestamp);
-			MerkleTrees merkleTrees = new MerkleTrees(tempTxList);
-		    merkleTrees.merkle_tree();
-		    String merkleTreesRoot = merkleTrees.getRoot();
-		    BigInteger temp1 = new BigInteger(merkleTreesRoot, 16);
 		    
 		    List<String> ticketList = tPaidlotteryDetailsDAO.generateWinTicketNew1(lotteryId, option);
 		    BigInteger ticketListSize = new BigInteger(String.valueOf(ticketList.size() - 1));
+            //新添加当期抽奖总人数及时间戳
+            String allTicketCount = String.valueOf(ticketList.size());
+            String timestampNow = String.valueOf(System.currentTimeMillis());
+
+            //根据以上参数计算MerkleTreesRoot
+            List<String> tempTxList = new ArrayList<String>();
+            tempTxList.add(lastWinner);
+            tempTxList.add(lastWinTicket);
+            tempTxList.add(winBlockHash);
+            tempTxList.add(winBlockTotalDifficulty);
+            tempTxList.add(winBlockNonce);
+            tempTxList.add(winBlockTimestamp);
+            //新添加开奖时间戳和总人数作为开奖条件
+            tempTxList.add(allTicketCount);
+            tempTxList.add(timestampNow);
+
+            MerkleTrees merkleTrees = new MerkleTrees(tempTxList);
+            merkleTrees.merkle_tree();
+            String merkleTreesRoot = merkleTrees.getRoot();
+            BigInteger temp1 = new BigInteger(merkleTreesRoot, 16);
 //		    System.err.println(ticketListSize);
 //		    System.err.println(temp1.divideAndRemainder(ticketListSize)[1].toString());
 //		    System.err.println(ticketList.get(Integer.valueOf(temp1.divideAndRemainder(ticketListSize)[1].toString())));
