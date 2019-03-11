@@ -85,4 +85,7 @@ public interface TPaidlotteryService {
 	List<TPaidlotteryDetailsDomain> selectIfInvitedByItcodeAndLotteryId(String itcode, String invitedItcode, int lotteryId);
 
 	List<TPaidlotteryDetailsDomain> selectAcceptInviteLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId);
+	
+	/******************奖品发放**********************/
+	
 }

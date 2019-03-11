@@ -305,4 +305,15 @@
 		WHERE
 			id = #{id, jdbcType=INTEGER}
 	</update>
+	
+	<update id="updateLotteryReward">
+		UPDATE 
+			<include refid="BASE_TABLE"/>
+		SET    
+			winReward = #{reward,jdbcType=VARCHAR}
+		WHERE
+			lotteryId = #{id,jdbcType=INTEGER}
+		AND
+			result = 2
+	</update>
 </mapper>

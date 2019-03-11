@@ -79,4 +79,7 @@ public interface TPaidlotteryDetailsDAO {
 	List<TPaidlotteryDetailsDomain> selectIfInvitedByItcodeAndLotteryId(@Param("itcode")String itcode, @Param("invitedItcode")String invitedItcode, @Param("lotteryId")int lotteryId);
 
 	List<TPaidlotteryDetailsDomain> selectAcceptInviteLotteryDetailsByItcodeAndLotteryId(@Param("itcode")String itcode, @Param("lotteryId")int lotteryId);
+	
+	//更新中奖用户的红包码
+	Integer updateLotteryReward(int id, String reward);
 }

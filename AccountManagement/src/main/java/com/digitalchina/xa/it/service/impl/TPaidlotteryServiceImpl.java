@@ -380,6 +380,7 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		if(id != 0 && reward != null) {
 			try {
 				Integer effectedNumber = tPaidlotteryInfoDAO.updateLotteryReward(id, reward);
+				tPaidlotteryDetailsDAO.updateLotteryReward(id, reward);
 				if(effectedNumber > 0) {
 					return true;
 				} else {
