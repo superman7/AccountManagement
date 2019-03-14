@@ -87,5 +87,6 @@ public interface TPaidlotteryService {
 	List<TPaidlotteryDetailsDomain> selectAcceptInviteLotteryDetailsByItcodeAndLotteryId(String itcode, int lotteryId);
 	
 	/******************奖品发放**********************/
+	//点击兑换神州币奖励，取出90%的总奖池，然后在兑奖页面，进行选择
 	
 }
