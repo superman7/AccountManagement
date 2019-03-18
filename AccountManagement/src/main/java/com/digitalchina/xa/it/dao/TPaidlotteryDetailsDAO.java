@@ -61,6 +61,9 @@ public interface TPaidlotteryDetailsDAO {
 	//根据lottery，backup3查询个数
 	List<TPaidlotteryDetailsDomain> selectDetailByBackup3(@Param("lotteryId")int lotteryId, @Param("backup3")int backup3);
 	
+	//根据lottery，backup3查询个数
+	List<TPaidlotteryDetailsDomain> selectWinnerDetailByLotteryId(@Param("lotteryId")int lotteryId);
+	
 	//将backup3=2改为3
 	int updateBackup3From2To3(@Param("id")int id);
 	//将backup4=2改为0
@@ -81,5 +84,5 @@ public interface TPaidlotteryDetailsDAO {
 	List<TPaidlotteryDetailsDomain> selectAcceptInviteLotteryDetailsByItcodeAndLotteryId(@Param("itcode")String itcode, @Param("lotteryId")int lotteryId);
 	
 	//更新中奖用户的红包码
-	Integer updateLotteryReward(int id, String reward);
+	Integer updateLotteryReward(@Param("id")int id, @Param("reward")String reward);
 }

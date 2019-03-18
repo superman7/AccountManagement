@@ -13,12 +13,17 @@ import com.digitalchina.xa.it.util.PushWeaverNotificationUtils;
 @RequestMapping(value = "/etl")
 public class InsertTestController {
 	@ResponseBody
-	@GetMapping("/notification")
+	@GetMapping("/notificationGet")
 	public void insertTest(@RequestParam(name = "text", required = false)
 	String text) {
-		System.err.println(text);
 		PushWeaverNotificationUtils pu = new PushWeaverNotificationUtils();
-		pu.pushEtlNotification("renxlc,fannl", "ETL流程异常", text);
+		pu.pushEtlNotification("renxlc,fannl,caixc,zhoulm", "ETL任务执行失败", text);
 	}
-	
+	@ResponseBody
+	@PostMapping("/notificationPost")
+	public void insertTestPost(@RequestParam(name = "text", required = false)
+	String text) {
+		PushWeaverNotificationUtils pu = new PushWeaverNotificationUtils();
+		pu.pushEtlNotification("renxlc,fannl,caixc,zhoulm", "ETL任务执行失败", text);
+	}
 }

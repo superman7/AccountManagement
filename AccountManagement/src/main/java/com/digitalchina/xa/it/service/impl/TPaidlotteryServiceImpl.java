@@ -380,8 +380,16 @@ public class TPaidlotteryServiceImpl implements TPaidlotteryService {
 		if(id != 0 && reward != null) {
 			try {
 				Integer effectedNumber = tPaidlotteryInfoDAO.updateLotteryReward(id, reward);
-				tPaidlotteryDetailsDAO.updateLotteryReward(id, reward);
+				Integer winnerNumber = tPaidlotteryDetailsDAO.updateLotteryReward(id, reward);
 				if(effectedNumber > 0) {
+					//此处添加通知用户红包码
+					if(winnerNumber > 0){
+						List<TPaidlotteryDetailsDomain> tpddList = tPaidlotteryDetailsDAO.selectWinnerDetailByLotteryId(id);
+						if(tpddList.size() > 0){
+							PushWeaverNotificationUtils pu = new PushWeaverNotificationUtils();
+							pu.pushUpdateRewardWeaverNotification(tpddList.get(0).getItcode(), "您中奖的第【" +tpddList.get(0).getLotteryId().toString() + "】期夺宝红包码已更新", reward);
+						}
+					}
 					return true;
 				} else {
 					throw new RuntimeException("更新reward失败");

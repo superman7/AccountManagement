@@ -247,6 +247,17 @@
 			backup3 = #{backup3, jdbcType=INTEGER}
 	</select>
 	
+	<select id="selectWinnerDetailByLotteryId" resultType="com.digitalchina.xa.it.model.TPaidlotteryDetailsDomain">
+		SELECT
+			<include refid="BASE_COLUMN"/>
+		FROM
+			<include refid="BASE_TABLE"/>
+		WHERE
+			lotteryId = #{lotteryId,jdbcType=INTEGER}
+		AND
+			result = 2
+	</select>
+		
 	<update id="updateLotteryDetailsWhereTimeOut">
 		UPDATE 
 			<include refid="BASE_TABLE"/>
